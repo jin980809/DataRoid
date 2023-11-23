@@ -110,5 +110,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a10e35e364ed3134cba055c40230c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  getMarteria: 10
+  getMarterialAmount: 10
   MarterialType: 2

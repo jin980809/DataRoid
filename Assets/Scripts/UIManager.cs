@@ -28,10 +28,13 @@ public class UIManager : MonoBehaviour
     public GameObject inventoryPanel;
     public Text steelAmount;
     public Text gunPowderAmount;
+    public Text ExpPieceAmount;
     public Text ammoAmount;
     public Text specialAmmoAmount;
+    public Text ExpCapsuleAmount;
     public GameObject CreatingUI;
     public GameObject CreatingText;
+    public Slider ExpGauge;
 
     void Update()
     {
@@ -42,7 +45,9 @@ public class UIManager : MonoBehaviour
     {
         steelAmount.text = "Steel : " + MaterialManager.Instance.Steel;
         gunPowderAmount.text = "GunPowder : " + MaterialManager.Instance.GunPowder;
+        ExpPieceAmount.text = "ExpPiece : " + MaterialManager.Instance.ExpPiece;
         ammoAmount.text = "Ammo : " + MaterialManager.Instance.Ammo;
         specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.SpecialAmmo;
+        ExpCapsuleAmount.text = "ExpCapsule : " + MaterialManager.Instance.ExpCapsule;
     }
 }

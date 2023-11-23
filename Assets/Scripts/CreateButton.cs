@@ -46,6 +46,10 @@ public class CreateButton : MonoBehaviour
 
             case CreateManager.Type.SpecialAmmo:
                 MaterialManager.Instance.SpecialAmmo += create.resultAmount;
+                break; 
+            
+            case CreateManager.Type.ExpCapsule:
+                MaterialManager.Instance.ExpCapsule += create.resultAmount;
                 break;
         }
 
@@ -54,7 +58,9 @@ public class CreateButton : MonoBehaviour
 
     void ButtonEnabled()
     {
-        if (MaterialManager.Instance.Steel >= create.steel && MaterialManager.Instance.GunPowder >= create.gunPowder &&
+        if (MaterialManager.Instance.Steel >= create.steel && 
+            MaterialManager.Instance.GunPowder >= create.gunPowder &&
+            MaterialManager.Instance.ExpPiece >= create.expPiece &&
             !CreateManager.Instance.isCreating)
         {
             this.GetComponent<Button>().interactable = true;

@@ -160,8 +160,7 @@ public class Interaction : MonoBehaviour
     {
         player.enabled = false;
         cameraMove.enabled = false;
-        setCursor.cursorOn = true;
-
+        player.isCreaingUIOpen = true;
         UIManager.Instance.CreatingUI.SetActive(true);
     }
 }

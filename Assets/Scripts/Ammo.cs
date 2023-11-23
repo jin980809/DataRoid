@@ -10,7 +10,7 @@ public class Ammo : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            MaterialManager.Instance.Ammo += getAmmo; // ÃÑ¾Ë Ãß°¡
+            MaterialManager.Instance.Ammo += getAmmo;
             Destroy(this.gameObject);
         }
     }

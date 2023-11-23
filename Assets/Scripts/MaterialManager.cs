@@ -22,6 +22,8 @@ public class MaterialManager : MonoBehaviour
 
     public int Steel;
     public int GunPowder;
+    public int ExpPiece;
     public int Ammo;
     public int SpecialAmmo;
+    public int ExpCapsule;
 }
