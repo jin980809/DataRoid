@@ -22,7 +22,8 @@ public class CreateManager : MonoBehaviour
     public enum Type
     {
         Ammo = 0,
-        SpecialAmmo = 1 
+        SpecialAmmo = 1,
+        ExpCapsule = 2
     };
 
     [Serializable]
@@ -30,6 +31,7 @@ public class CreateManager : MonoBehaviour
     {
         public int steel;
         public int gunPowder;
+        public int expPiece;
         public float creatingTime;
         public Type ResultType;
         public int resultAmount;

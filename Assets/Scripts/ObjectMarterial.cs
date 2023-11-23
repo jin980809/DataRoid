@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class ObjectMarterial : MonoBehaviour
 {
-    public int getMarteria;
+    public int getMarterialAmount;
     public enum Type
     {
         Steel = 1,
-        GunPowder = 2
+        GunPowder = 2,
+        ExpPiece = 3,
+        DropExp = 4
     };
     public Type MarterialType;
 
@@ -19,11 +21,19 @@ public class ObjectMarterial : MonoBehaviour
             switch(MarterialType)
             {
                 case Type.Steel:
-                    MaterialManager.Instance.Steel += getMarteria;
+                    MaterialManager.Instance.Steel += getMarterialAmount;
                     break;
 
                 case Type.GunPowder:
-                    MaterialManager.Instance.GunPowder += getMarteria;
+                    MaterialManager.Instance.GunPowder += getMarterialAmount;
+                    break;
+
+                case Type.ExpPiece:
+                    MaterialManager.Instance.ExpPiece += getMarterialAmount;
+                    break;
+
+                case Type.DropExp:
+                    ExpManager.Instance.curExp += getMarterialAmount;
                     break;
             }
             

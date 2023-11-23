@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4860464644020376781}
   - component: {fileID: 2953483898577239791}
   m_Layer: 0
-  m_Name: Steel
+  m_Name: DropExp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -110,5 +110,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a10e35e364ed3134cba055c40230c314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  getMarterialAmount: 10
-  MarterialType: 1
+  getMarterialAmount: 5
+  MarterialType: 4

@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class SetCursor : MonoBehaviour
 {
-    public bool cursorOn = false;
+    Player player;
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        player = GetComponent<Player>();
+    }
 
-    // Update is called once per frame
     void Update()
     {
-        if (!cursorOn)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-        }
-        else
+        if(player.isInventoryOpen || player.isCreaingUIOpen)
         {
             Cursor.lockState = CursorLockMode.None;
         }
-
-
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 }

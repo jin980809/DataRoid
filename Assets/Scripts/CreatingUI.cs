@@ -9,7 +9,7 @@ public class CreatingUI : MonoBehaviour
 
     public Player player;
     public CameraMove cameraMove;
-    public SetCursor setCursor;
+    public bool openCreatingUI;
 
     void Update()
     {
@@ -29,8 +29,7 @@ public class CreatingUI : MonoBehaviour
         {
             player.enabled = true;
             cameraMove.enabled = true;
-            setCursor.cursorOn = false;
-
+            player.isCreaingUIOpen = false;
             this.gameObject.SetActive(false);
         }
     }

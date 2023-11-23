@@ -1,0 +1,31 @@
+Level,Version Name,Require Exp,Accumulate Exp
+1,Astro Boy,23,23
+2,Astro Boy,32,55
+3,GingerBread,41,96
+4,GingerBread,50,146
+5,GingerBread,59,205
+6,HoneyComb,68,273
+7,HoneyComb,77,350
+8,HoneyComb,86,436
+9,JellyBean,95,531
+10,JellyBean,95,626
+11,JellyBean,95,721
+12,LollyPop,95,816
+13,LollyPop,95,911
+14,LollyPop,95,1006
+15,Marshmallow,95,1101
+16,Marshmallow,95,1196
+17,Marshmallow,95,1291
+18,Nugat,95,1386
+19,Nugat,95,1481
+20,Nugat,95,1576
+21,Oreo,95,1671
+22,Oreo,95,1766
+23,Oreo,95,1861
+24,ApplePie,95,1956
+25,ApplePie,95,2051
+26,ApplePie,95,2146
+27,Tiramisu,95,2241
+28,Tiramisu,95,2336
+29,Tiramisu,95,2431
+30,Admin,100000,102431

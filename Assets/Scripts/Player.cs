@@ -59,6 +59,7 @@ public class Player : MonoBehaviour
     public bool isInteraction = false;
     public bool isInventoryOpen = false;
     public bool isFlashLightOn = false;
+    public bool isCreaingUIOpen = false;
 
     [SerializeField]
     private float shotDeley;
