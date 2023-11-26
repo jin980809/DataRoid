@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class CreatingUI : MonoBehaviour
 {
-    bool iDown;
+    bool qDown;
 
     public Player player;
     public CameraMove cameraMove;
@@ -20,12 +20,12 @@ public class CreatingUI : MonoBehaviour
 
     void GetInput()
     {
-        iDown = Input.GetButton("Cancel");
+        qDown = Input.GetButton("Cancel");
     }
 
     void CreatingOut()
     {
-        if (iDown)
+        if (qDown)
         {
             player.enabled = true;
             cameraMove.enabled = true;

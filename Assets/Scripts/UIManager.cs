@@ -20,11 +20,15 @@ public class UIManager : MonoBehaviour
     private static UIManager m_instance;
 
     public Player player;
+    public GameObject aim;
 
     [Space(10)]
+    [Header("Interaction")]
     public Slider InteractionGauge;
     public Text detectCount;
-    public GameObject aim;
+
+    [Space(10)]
+    [Header("Inventory")]
     public GameObject inventoryPanel;
     public Text steelAmount;
     public Text gunPowderAmount;
@@ -32,9 +36,23 @@ public class UIManager : MonoBehaviour
     public Text ammoAmount;
     public Text specialAmmoAmount;
     public Text ExpCapsuleAmount;
+
+    [Space(10)]
+    [Header("Creating")]
     public GameObject CreatingUI;
     public GameObject CreatingText;
+
+    [Space(10)]
+    [Header("EXP")]
     public Slider ExpGauge;
+
+    [Space(10)]
+    [Header("HackingUI")]
+    public GameObject HackingUI;
+    public Slider HackingGauge;
+    public Text EnemyModelName;
+    public Text IMEI;
+    public Text EnemyElec;
 
     void Update()
     {

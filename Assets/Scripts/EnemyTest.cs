@@ -26,7 +26,7 @@ public class EnemyTest : MonoBehaviour
     public int detectRange;
     public float decreaseRate;
 
-    bool isDodge = false;
+    //bool isDodge = false;
     bool isAttack = false;
     public bool isChase = false;
 

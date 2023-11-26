@@ -38,6 +38,10 @@ public class Enemy : MonoBehaviour
     [Space(10f)]
     public Vector3 playerShotPos;
 
+    [Space(10f)]
+    public string modelName;
+    public string iMEI;
+
     [Serializable]
     public struct dropItem
     {
