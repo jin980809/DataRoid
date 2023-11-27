@@ -264,11 +264,11 @@ public class Player : MonoBehaviour
 
                 SpawnHitEffect(hit.point);
 
-                if (hit.transform.gameObject.CompareTag("Enemy") && !enemy.isDeath)
+                if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                 {
-                    //Debug.Log(hit.transform.name);
+                    //Debug.Log(hit.collider.transform.tag);
 
-                    enemy.OnDamage(10f, playerShotPos);
+                    enemy.OnDamage(10f, playerShotPos, hitArea(hit.collider.transform.gameObject));
                 }
             }
             else if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, LayerMask.GetMask("Enviroment")))
@@ -280,6 +280,38 @@ public class Player : MonoBehaviour
         }
 
         anim.SetBool("isShotOut", isShot);
+    }
+
+    bool isEnemyHitArea(GameObject obj)
+    {
+        if(obj.CompareTag("Enemy") || obj.CompareTag("EnemyHead") || obj.CompareTag("EnemyBody") || obj.CompareTag("EnemyLeftArm") ||
+            obj.CompareTag("EnemyRightArm") || obj.CompareTag("EnemyLeftLeg") || obj.CompareTag("EnemyRightLeg"))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    int hitArea(GameObject obj)
+    {
+        switch(obj.tag)
+        {
+            case "EnemyHead":
+                return 0;
+            case "EnemyBody":
+                return 1;
+            case "EnemyLeftArm":
+                return 2;
+            case "EnemyRightArm":
+                return 3;
+            case "EnemyLeftLeg":
+                return 4;
+            case "EnemyRightLeg":
+                return 5;
+        }
+
+        return -1;
     }
 
     void SpawnHitEffect(Vector3 spawnPosition)
@@ -444,33 +476,33 @@ public class Player : MonoBehaviour
     void EnemyHacking()
     {
         RaycastHit hit1;
-        RaycastHit hit2;
+        //RaycastHit hit2;
 
         if (f2Down && isFireReady && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen)
         {
-            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit1, 20) && hackingEnemyInfo == null && hit1.transform.CompareTag("Enemy"))
+            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit1, 20) && hackingEnemyInfo == null && isEnemyHitArea(hit1.transform.gameObject))
             {
                 hackingEnemyInfo = hit1.transform.gameObject;
+                isHacking = true;
             }
 
-
-            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit2, 20) && hit1.transform.CompareTag("Enemy"))
-            {
-                if (hit2.transform.gameObject == hackingEnemyInfo)
-                {
-                    isHacking = true;
-                }
-                else
-                {
-                    isHacking = false;
-                    hackingEnemyInfo = null;
-                }
-            }
-            else
-            {
-                isHacking = false;
-                hackingEnemyInfo = null;
-            }
+            //if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit2, 20) && hit1.transform.CompareTag("Enemy"))
+            //{
+            //    if (hit2.transform.gameObject == hackingEnemyInfo)
+            //    {
+            //        isHacking = true;
+            //    }
+            //    else
+            //    {
+            //        isHacking = false;
+            //        hackingEnemyInfo = null;
+            //    }
+            //}
+            //else
+            //{
+            //    isHacking = false;
+            //    hackingEnemyInfo = null;
+            //}
 
             if (isHacking)
             {
@@ -481,6 +513,7 @@ public class Player : MonoBehaviour
                     curHackingTime = 0;
                     UIManager.Instance.HackingUI.GetComponent<HackingPanel>().EnemyInfo = hackingEnemyInfo;
                     UIManager.Instance.HackingUI.SetActive(true);
+                    hackingEnemyInfo.GetComponent<Enemy>().isHacking = true;
                     isHacking = false;
                 }
 
@@ -551,8 +584,6 @@ public class Player : MonoBehaviour
             flashLight.SetActive(isFlashLightOn);
         }
     }
-
-
 
     void OnFootstep(AnimationEvent animationEvent)
     {

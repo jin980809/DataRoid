@@ -53,6 +53,7 @@ public class UIManager : MonoBehaviour
     public Text EnemyModelName;
     public Text IMEI;
     public Text EnemyElec;
+    public Text HitArea;
 
     void Update()
     {

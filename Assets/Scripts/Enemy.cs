@@ -24,10 +24,12 @@ public class Enemy : MonoBehaviour
     public bool isShotChase = false;
     public bool isDeath = false;
     public bool isHit = false;
+    public bool isHacking = false;
 
     [Space(10f)]
     public float maxHealth;
     public float curHealth;
+    public float criticalRate;
 
     [Space(10f)]
     public float walkSpeed;
@@ -57,6 +59,18 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
+    public enum Type
+    {
+        Head = 0,
+        Body = 1,
+        LeftArm = 2,
+        RightArm = 3,
+        LeftLeg = 4,
+        RightLeg = 5
+    }
+
+    public Type hitAreaType;
+
     void Start()
     {
         curHealth = maxHealth;
@@ -66,9 +80,17 @@ public class Enemy : MonoBehaviour
     {
     }
 
-    public void OnDamage(float damage, Vector3 playerShotPos)
+    public void OnDamage(float damage, Vector3 playerShotPos, int hitArea)
     {
-        curHealth -= damage;
+        if (isHacking && hitArea == (int)hitAreaType)
+        {
+            //Debug.Log("Critical Hit");
+            curHealth -= damage * criticalRate;
+        }
+        else
+        {
+            curHealth -= damage;
+        }
 
         if (curHealth > 0)
         {
