@@ -7,11 +7,16 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     private Transform ShootPos;
-    public GameObject weapon;
+    public Weapon weapon;
     public Transform borderPos;
     public ParticleSystem flashEffect;
     public GameObject hitEffect;
     public GameObject flashLight;
+
+    public GameObject[] weapons;
+    public bool[] hasWeapons;
+    public int equipWeaponIndex;
+    private int lastSwapWeaponIndex = 0;
 
     [Space(10)]
     public float walkSpeed;
@@ -24,8 +29,6 @@ public class Player : MonoBehaviour
     [Space(10)]
     public float maxHp;
     public float curHp;
-    public int maxAmmo;
-    public int curAmmo;
 
     [Space(10)]
     public float dodgeCoolTime;
@@ -46,6 +49,9 @@ public class Player : MonoBehaviour
     bool iDown; // 인벤토리
     bool eDown; // 손전등
     bool qDown; // 취소
+    bool sDown1;
+    bool sDown2;
+    bool sDown3;
 
     [Space(10)]
     public bool isDamage = false;
@@ -58,6 +64,7 @@ public class Player : MonoBehaviour
     private bool isGunOn = false;
     public bool isShot = false;
     public bool isReload = false;
+    public bool isSwap = false;
     public bool isInteraction = false;
     public bool isInventoryOpen = false;
     public bool isFlashLightOn = false;
@@ -116,6 +123,8 @@ public class Player : MonoBehaviour
         FlashLightOnOff();
 
         EnemyHacking();
+
+        Swap();
     }
 
     void GetInput()
@@ -133,6 +142,9 @@ public class Player : MonoBehaviour
         iDown = Input.GetButtonDown("Inventory");
         eDown = Input.GetButtonDown("FlashLight");
         qDown = Input.GetButtonDown("Cancel");
+        sDown1 = Input.GetButtonDown("Swap1");
+        sDown2 = Input.GetButtonDown("Swap2");
+        sDown3 = Input.GetButtonDown("Swap3");
     }
 
     void Move()
@@ -210,16 +222,6 @@ public class Player : MonoBehaviour
         anim.SetFloat("Horizental", horBlend);
     }
 
-    void GunOnMove()
-    {
-        UIManager.Instance.aim.SetActive(isGunOn);
-        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking)
-        {
-            isGunOn = !isGunOn;
-            weapon.gameObject.SetActive(isGunOn);
-        }
-    }
-
     void Dodge()
     {
         culDodgeTime += Time.deltaTime;
@@ -243,19 +245,80 @@ public class Player : MonoBehaviour
         isDodge = false;
     }
 
+    void GunOnMove()
+    {
+        UIManager.Instance.aim.SetActive(isGunOn);
+        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking)
+        {
+            isGunOn = !isGunOn;
+            weapon.gameObject.SetActive(isGunOn);
+
+            if (!isGunOn)
+            {
+                lastSwapWeaponIndex = equipWeaponIndex;
+                equipWeaponIndex = -1;
+                
+            }
+            else
+            {
+                equipWeaponIndex = lastSwapWeaponIndex;
+            }
+
+        }
+
+        anim.SetInteger("weaponIndex", equipWeaponIndex);
+    }
+
+    void Swap()
+    {
+        if (sDown1 && (!hasWeapons[0] || equipWeaponIndex == 0))
+            return;
+        if (sDown2 && (!hasWeapons[1] || equipWeaponIndex == 1))
+            return;
+        if (sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
+            return;
+
+        if ((sDown1 || sDown2 || sDown3) && !isSwap && isGunOn && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen)
+        {
+            int weaponIndex = -1;
+
+            if (sDown1) { weaponIndex = 0; lastSwapWeaponIndex = 0; }
+            if (sDown2) { weaponIndex = 1; lastSwapWeaponIndex = 1; }
+            if (sDown3) { weaponIndex = 2; lastSwapWeaponIndex = 2; }
+
+            if (weapon != null)
+                weapon.gameObject.SetActive(false);
+
+            equipWeaponIndex = weaponIndex;
+            weapon = weapons[weaponIndex].GetComponent<Weapon>();
+            weapon.gameObject.SetActive(true);
+
+            //anim.SetTrigger("doSwap");
+
+            isSwap = true;
+
+            Invoke("SwapOut", 0.4f);
+        }
+    }
+
+    void SwapOut()
+    {
+        isSwap = false;
+    }
+
     void Shot()
     {
         fireDelay += Time.deltaTime;
-        isFireReady = shotDeley < fireDelay;
+        isFireReady = weapon.delay < fireDelay;
 
         isShot = fDown && isGunOn && !isInteraction;
 
-        if (fDown && isFireReady && !isDodge && isGunOn && curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
+        if (fDown && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
         {
             RaycastHit hit;
             flashEffect.Play();
             anim.SetTrigger("doShot");
-            curAmmo -= 1;
+            weapon.curAmmo -= 1;
             Vector3 playerShotPos = ShootPos.position;
 
             if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20))
@@ -268,7 +331,7 @@ public class Player : MonoBehaviour
                 {
                     //Debug.Log(hit.collider.transform.tag);
 
-                    enemy.OnDamage(10f, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                    enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
                 }
             }
             else if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, LayerMask.GetMask("Enviroment")))
@@ -323,7 +386,7 @@ public class Player : MonoBehaviour
 
     void Reload()
     {
-        if (lDown && curAmmo < maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
+        if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
             isReload = true;
             anim.SetTrigger("doReload");
@@ -335,15 +398,15 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(2.5f);
 
-        if (MaterialManager.Instance.Ammo < maxAmmo - curAmmo)
+        if (MaterialManager.Instance.Ammo < weapon.maxAmmo - weapon.curAmmo)
         {
-            curAmmo += MaterialManager.Instance.Ammo;
+            weapon.curAmmo += MaterialManager.Instance.Ammo;
             MaterialManager.Instance.Ammo = 0;
         }
         else
         {
-            MaterialManager.Instance.Ammo -= (maxAmmo - curAmmo);
-            curAmmo = maxAmmo;
+            MaterialManager.Instance.Ammo -= (weapon.maxAmmo - weapon.curAmmo);
+            weapon.curAmmo = weapon.maxAmmo;
 
         }
 
