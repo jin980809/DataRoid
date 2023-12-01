@@ -9,7 +9,7 @@ public class Weapon : MonoBehaviour
     public int maxAmmo;
     public int curAmmo;
     public float reLoadTime;
-
+    public bool isSemiauto;
     void Start()
     {
         

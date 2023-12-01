@@ -126,7 +126,7 @@ public class EnemyA : Enemy
                 (transform.position.z == aroundTarget[aroundTargetIndex].position.z))
             {
 
-                Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
+                //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
                 if (aroundTargetIndex == aroundTarget.Length - 1)
                 {
                     aroundTargetIndex = 0;

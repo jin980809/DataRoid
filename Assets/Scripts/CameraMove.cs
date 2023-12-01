@@ -55,7 +55,7 @@ public class CameraMove : MonoBehaviour
         Cinemachine3rdPersonFollow cine3rd = cineVirCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
         Vector3 currCameraOffset = cineVirCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().ShoulderOffset;
 
-        if(player.isShot)
+        if(player.isZoom)
         {
             cine3rd.ShoulderOffset = Vector3.SmoothDamp(cineVirCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().ShoulderOffset, shotCameraOffset, ref valo, 0.1f);
         }
