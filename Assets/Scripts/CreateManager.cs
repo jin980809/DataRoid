@@ -60,4 +60,35 @@ public class CreateManager : MonoBehaviour
             //Debug.Log(curCreatingTime);
         }
     }
+
+    IEnumerator CreateResult(int ID)
+    {
+        yield return new WaitForSeconds(creats[ID].creatingTime);
+
+        MaterialManager.Instance.Steel -= creats[ID].steel;
+        MaterialManager.Instance.GunPowder -= creats[ID].gunPowder;
+        MaterialManager.Instance.ExpPiece -= creats[ID].expPiece;
+
+        switch (creats[ID].ResultType)
+        {
+            case Type.Ammo:
+                MaterialManager.Instance.Ammo += creats[ID].resultAmount;
+                break;
+
+            case Type.SpecialAmmo:
+                MaterialManager.Instance.SpecialAmmo += creats[ID].resultAmount;
+                break;
+
+            case Type.ExpCapsule:
+                MaterialManager.Instance.ExpCapsule += creats[ID].resultAmount;
+                break;
+        }
+
+        UIManager.Instance.CreatingText.SetActive(false);
+    }
+
+    public void CreatingStart(int ID)
+    {
+        StartCoroutine(CreateResult(ID));
+    }    
 }

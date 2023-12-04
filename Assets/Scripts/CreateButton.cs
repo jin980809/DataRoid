@@ -27,33 +27,9 @@ public class CreateButton : MonoBehaviour
             CreateManager.Instance.isCreating = true;
             //코루틴 시작
             UIManager.Instance.CreatingText.SetActive(true);
-            StartCoroutine(CreateResult());
+            CreateManager.Instance.CreatingStart(ID);
+            transform.parent.GetComponent<CreatingUI>().CreatingUIOut();
         }
-    }
-
-    IEnumerator CreateResult()
-    {
-        yield return new WaitForSeconds(create.creatingTime);
-
-        MaterialManager.Instance.Steel -= create.steel;
-        MaterialManager.Instance.GunPowder -= create.gunPowder;
-
-        switch (create.ResultType)
-        {
-            case CreateManager.Type.Ammo:
-                MaterialManager.Instance.Ammo += create.resultAmount;
-                break;
-
-            case CreateManager.Type.SpecialAmmo:
-                MaterialManager.Instance.SpecialAmmo += create.resultAmount;
-                break; 
-            
-            case CreateManager.Type.ExpCapsule:
-                MaterialManager.Instance.ExpCapsule += create.resultAmount;
-                break;
-        }
-
-        UIManager.Instance.CreatingText.SetActive(false);
     }
 
     void ButtonEnabled()

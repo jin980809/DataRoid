@@ -27,10 +27,18 @@ public class CreatingUI : MonoBehaviour
     {
         if (qDown)
         {
-            player.enabled = true;
-            cameraMove.enabled = true;
-            player.isCreaingUIOpen = false;
-            this.gameObject.SetActive(false);
+            CreatingUIOut();
         }
+    }
+
+    public void CreatingUIOut()
+    {
+        player.enabled = true;
+        cameraMove.enabled = true;
+        player.isCreaingUIOpen = false;
+        player.isInventoryOpen = false;
+        player.cameraArm.enabled = true;
+        Time.timeScale = 1.0f;
+        UIManager.Instance.CreatingUI.SetActive(false);
     }
 }

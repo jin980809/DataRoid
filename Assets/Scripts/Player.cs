@@ -418,6 +418,7 @@ public class Player : MonoBehaviour
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
             isReload = true;
+            isZoom = false;
             //isZoom = false;
             anim.SetTrigger("doReload");
             StartCoroutine(ReloadOut());
@@ -470,6 +471,7 @@ public class Player : MonoBehaviour
         {
             isBorder = false;
             GetComponent<Rigidbody>().constraints = ~RigidbodyConstraints.FreezeAll;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         }
     }
 
@@ -650,7 +652,7 @@ public class Player : MonoBehaviour
 
     void OCInventory()
     {
-        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction)
+        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating)
         {
 
             if (iDown)
