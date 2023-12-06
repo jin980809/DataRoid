@@ -8,6 +8,12 @@ TagManager:
   - Attack
   - Device
   - CinemachineTarget
+  - EnemyRightArm
+  - EnemyLeftLeg
+  - EnemyLeftArm
+  - EnemyBody
+  - EnemyRightLeg
+  - EnemyHead
   layers:
   - Default
   - TransparentFX
@@ -21,8 +27,8 @@ TagManager:
   - Enemy
   - EnemyDead
   - Door
-  - 
-  - 
+  - MiniMap
+  - Effect
   - 
   - 
   - 

@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
     bool eDown; // 손전등
     bool qDown; // 취소
     bool skDown1; // 스킬1
+    bool mDown; // 스킬1
 
     bool sDown1;
     bool sDown2;
@@ -74,10 +75,10 @@ public class Player : MonoBehaviour
     public bool isHacking = false;
     public bool isZoom = false;
     bool isSemiReady = true;
+    bool isMapOpen = false;
+    public bool isShotEnd = true;
 
-    [SerializeField]
-    private float shotDeley;
-
+    [SerializeField] private float shotDeley;
     private float rotationVelocity;
     private float _animationBlend;
     private float verBlend;
@@ -96,12 +97,14 @@ public class Player : MonoBehaviour
     public GameObject _mainCamera;
     public CameraMove cameraArm;
     Rigidbody rigid;
+    RectTransform miniMap;
     [SerializeField] private GameObject hackingEnemyInfo;
 
     void Awake()
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
+        miniMap = UIManager.Instance.MiniMap.GetComponent<RectTransform>();
     }
 
     void Update()
@@ -132,6 +135,7 @@ public class Player : MonoBehaviour
 
         ZoomInOut();
 
+        OCMap();
     }
 
     void GetInput()
@@ -153,6 +157,7 @@ public class Player : MonoBehaviour
         sDown2 = Input.GetButtonDown("Swap2");
         sDown3 = Input.GetButtonDown("Swap3");
         skDown1 = Input.GetButton("Skill1");
+        mDown = Input.GetButtonDown("Map");
     }
 
     void Move()
@@ -161,7 +166,7 @@ public class Player : MonoBehaviour
         {
             if(isGunOn)
             {
-                if (rDown && !isReload && fireDelay > weapon.delay + 0.1f) targetSpeed = gunRunSpeed;
+                if (rDown && !isReload && isShotEnd ) targetSpeed = gunRunSpeed;
                 else targetSpeed = gunWalkSpeed;
             }
             else
@@ -330,6 +335,7 @@ public class Player : MonoBehaviour
 
         if (fDown && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
         {
+            isShotEnd = false;
             fireDelay = 0;
             RaycastHit hit;
             flashEffect.Play();
@@ -363,7 +369,7 @@ public class Player : MonoBehaviour
             isSemiReady = true;
         }
         
-        anim.SetBool("isShotOut", isShot);
+        anim.SetBool("isShotOut", !isShotEnd && !isDodge);
     }
 
     void ZoomInOut()
@@ -483,7 +489,7 @@ public class Player : MonoBehaviour
             {
                 Attack attack = other.GetComponent<Attack>();
                 curHp -= attack.damage;
-                Debug.Log(curHp);
+                //Debug.Log(curHp);
 
                 StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z)));
             }
@@ -682,9 +688,46 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OCMap()
+    {
+        if((mDown || qDown) && !isShot && !isDodge && !isHacking && !isReload && !isInteraction)
+        {
+            if(mDown)
+            {
+                isMapOpen = !isMapOpen;
+                
+                if(isMapOpen)
+                {
+                    miniMap.position = new Vector3(350, 730, 0);
+                    miniMap.sizeDelta = new Vector2(600, 600);
+                    UIManager.Instance.miniMapCamera.orthographicSize = 20;
+                }
+                else
+                {
+                    miniMap.position = new Vector3(200, 880, 0);
+                    miniMap.sizeDelta = new Vector2(300, 300);
+                    UIManager.Instance.miniMapCamera.orthographicSize = 10;
+                }
+            }
+
+            if(qDown)
+            {
+                isMapOpen = false;
+                miniMap.position = new Vector3(200, -200, 0);
+                miniMap.sizeDelta = new Vector2(300, 300);
+                UIManager.Instance.miniMapCamera.orthographicSize = 10;
+            }
+        }
+    }
+
     void OnFootstep(AnimationEvent animationEvent)
     {
 
+    }
+
+    public void ShotAnimEnd()
+    {
+        isShotEnd = true;
     }
 
     void OnDrawGizmos()

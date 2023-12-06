@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
 
     public Player player;
     public GameObject aim;
+    public Slider hpGauge;
 
     [Space(10)]
     [Header("Interaction")]
@@ -55,9 +56,20 @@ public class UIManager : MonoBehaviour
     public Text EnemyElec;
     public Text HitArea;
 
+
+    [Space(10)]
+    [Header("MiniMap")]
+    public GameObject MiniMap;
+    public Camera miniMapCamera;
+
     void Update()
     {
         TextUpdate();
+        
+        float hp = player.curHp / player.maxHp;
+        if (hp < 0) hp = 0;
+        hpGauge.value = hp;
+
     }
 
     void TextUpdate()

@@ -145,7 +145,8 @@ public class EnemyA : Enemy
     void RotationSpeedUp()
     {
         Vector3 lookrotation = nav.steeringTarget - transform.position;
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime);
+        if(lookrotation != Vector3.zero)
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime);
     }
     void OnDrawGizmos()
     {
