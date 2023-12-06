@@ -18598,7 +18598,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 904262886}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &651764250 stripped
 Transform:
@@ -21278,7 +21278,8 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2552387758790648287, guid: e979f7b13119261458e0dc8aea699877, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e979f7b13119261458e0dc8aea699877, type: 3}
 --- !u!4 &721079425 stripped
 Transform:
@@ -29386,6 +29387,52 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1414842596}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &948288559
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 948288560}
+  - component: {fileID: 948288561}
+  m_Layer: 14
+  m_Name: PhysicsCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &948288560
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948288559}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 70322042}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &948288561
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 948288559}
+  m_Material: {fileID: 13400000, guid: 4b53df9daf9d49248afb291774d72750, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.22926208
+  m_Height: 1.6532127
+  m_Direction: 1
+  m_Center: {x: 0.009659767, y: 0.7930401, z: -0.042073965}
 --- !u!137 &949836332 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8969568633691675975, guid: e979f7b13119261458e0dc8aea699877,
@@ -32612,6 +32659,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InteractionGauge
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7936096043752824604, guid: 692f3e2424735f34aa9a8db1f136a276,
+        type: 3}
+      propertyPath: equipWeaponIndex
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 7936096043752824604, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
