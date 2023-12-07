@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public Transform borderPos;
     public ParticleSystem flashEffect;
     public GameObject hitEffect;
+    public GameObject damageEffect;
     public GameObject flashLight;
 
     public GameObject[] weapons;
@@ -246,6 +247,7 @@ public class Player : MonoBehaviour
 
         if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
         {
+            isShotEnd = true;
             isDodge = true;
             culDodgeTime = 0f;
             dodgeVec = moveVec;
@@ -265,7 +267,7 @@ public class Player : MonoBehaviour
     void GunOnMove()
     {
         UIManager.Instance.aim.SetActive(isGunOn);
-        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking)
+        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd)
         {
             isGunOn = !isGunOn;
             weapon.gameObject.SetActive(isGunOn);
@@ -296,7 +298,7 @@ public class Player : MonoBehaviour
         if (sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
             return;
 
-        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen)
+        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd)
         {
             isGunOn = true;
             isZoom = false;
@@ -416,7 +418,7 @@ public class Player : MonoBehaviour
     {
         Quaternion enemyRotation = Quaternion.LookRotation(_mainCamera.transform.forward, Vector3.up);
         GameObject hitObj = Instantiate(hitEffect, spawnPosition, enemyRotation);
-        hitObj.GetComponent<ParticleSystem>().Play();
+        //hitObj.GetComponent<>().Play();
     }
 
     void Reload()
@@ -425,6 +427,7 @@ public class Player : MonoBehaviour
         {
             isReload = true;
             isZoom = false;
+            isShotEnd = true;
             //isZoom = false;
             anim.SetTrigger("doReload");
             StartCoroutine(ReloadOut());
@@ -499,15 +502,18 @@ public class Player : MonoBehaviour
     IEnumerator OnDamage(Vector3 enemyPos)
     {
         isDamage = true;
-        Vector3 playerDir = new Vector3(transform.position.x, 0.5f, transform.position.z);
-
+        Vector3 playerDir = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        Vector3 EnemyDir = new Vector3(enemyPos.x, enemyPos.y + 1f, enemyPos.z);
+        damageEffect.transform.rotation = Quaternion.LookRotation((EnemyDir - playerDir).normalized);
+        damageEffect.SetActive(true);
 
         yield return new WaitForSeconds(0.5f);
         //rigid.AddForce((playerDir - enemyPos).normalized * 50, ForceMode.Impulse);
-        anim.SetTrigger("Hit");
+        //anim.SetTrigger("Hit");
 
         yield return new WaitForSeconds(0.5f);
         isDamage = false;
+        damageEffect.SetActive(false);
         yield return null;
     }
 
@@ -708,14 +714,6 @@ public class Player : MonoBehaviour
                     miniMap.sizeDelta = new Vector2(300, 300);
                     UIManager.Instance.miniMapCamera.orthographicSize = 10;
                 }
-            }
-
-            if(qDown)
-            {
-                isMapOpen = false;
-                miniMap.position = new Vector3(200, -200, 0);
-                miniMap.sizeDelta = new Vector2(300, 300);
-                UIManager.Instance.miniMapCamera.orthographicSize = 10;
             }
         }
     }
