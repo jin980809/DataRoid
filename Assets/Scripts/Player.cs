@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -9,7 +10,7 @@ public class Player : MonoBehaviour
     private Transform ShootPos;
     public Weapon weapon;
     public Transform borderPos;
-    public ParticleSystem flashEffect;
+    public VisualEffect muzzleEffect;
     public GameObject hitEffect;
     public GameObject damageEffect;
     public GameObject flashLight;
@@ -271,6 +272,7 @@ public class Player : MonoBehaviour
         {
             isGunOn = !isGunOn;
             weapon.gameObject.SetActive(isGunOn);
+            muzzleEffect = weapon.muzzleFlash;
 
             if (!isGunOn)
             {
@@ -314,6 +316,7 @@ public class Player : MonoBehaviour
             equipWeaponIndex = weaponIndex;
             weapon = weapons[weaponIndex].GetComponent<Weapon>();
             weapon.gameObject.SetActive(true);
+            muzzleEffect = weapon.muzzleFlash;
 
             //anim.SetTrigger("doSwap");
 
@@ -340,7 +343,7 @@ public class Player : MonoBehaviour
             isShotEnd = false;
             fireDelay = 0;
             RaycastHit hit;
-            flashEffect.Play();
+            muzzleEffect.Play();
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
             Vector3 playerShotPos = ShootPos.position;
