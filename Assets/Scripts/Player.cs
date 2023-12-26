@@ -347,23 +347,50 @@ public class Player : MonoBehaviour
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
             Vector3 playerShotPos = ShootPos.position;
+            //샷건 일떄 for문으로 여러번 돌리기
 
-            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy")))
+            if (!weapon.isShotGun)
             {
-                Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
-
-                SpawnHitEffect(hit.point);
-
-                if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
+                if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy")))
                 {
-                    Debug.Log(hit.collider.transform.tag);
+                    Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
 
-                    enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                    SpawnHitEffect(hit.point);
+
+                    if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
+                    {
+                        Debug.Log(hit.collider.transform.tag);
+
+                        enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                    }
+                }
+                else if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, LayerMask.GetMask("Enviroment")))
+                {
+                    SpawnHitEffect(hit.point);
                 }
             }
-            else if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, LayerMask.GetMask("Enviroment")))
+            else
             {
-                SpawnHitEffect(hit.point);
+                for(int i = 0; i < weapon.shotGunSpreadAmount; i++)
+                {
+                    if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, ~LayerMask.GetMask("PhysicsEnemy")))
+                    {
+                        Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
+
+                        SpawnHitEffect(hit.point);
+                        
+                        if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
+                        {
+                            Debug.Log(hit.collider.transform.tag);
+
+                            enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                        }
+                    }
+                    else if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, LayerMask.GetMask("Enviroment")))
+                    {
+                        SpawnHitEffect(hit.point);
+                    }
+                }
             }
 
             isSemiReady = false;
@@ -375,6 +402,20 @@ public class Player : MonoBehaviour
         }
         
         anim.SetBool("isShotOut", !isShotEnd && !isDodge);
+    }
+
+    Vector3 GetShotgunDirecting()
+    {
+        Vector3 targetPos = _mainCamera.transform.position + _mainCamera.transform.forward * weapon.shotGunRange;
+        targetPos = new Vector3(
+            targetPos.x + Random.Range(-weapon.inaccuracyDistance, weapon.inaccuracyDistance),
+            targetPos.y + Random.Range(-weapon.inaccuracyDistance, weapon.inaccuracyDistance),
+            targetPos.z + Random.Range(-weapon.inaccuracyDistance, weapon.inaccuracyDistance)
+            );
+
+        Vector3 direction = targetPos - _mainCamera.transform.position;
+
+        return direction.normalized;
     }
 
     void ZoomInOut()

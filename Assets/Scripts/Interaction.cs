@@ -9,7 +9,6 @@ public class Interaction : MonoBehaviour
         ElecCharge = 1,
         ConnectCCTV = 2,
         Door = 3,
-        Creating = 4
     };
     public Type interactionType;
 
@@ -27,10 +26,8 @@ public class Interaction : MonoBehaviour
     [Header("ConnectCCTV")]
     public Camera mainCamera;
     public GameObject CCTV;
-    [Header("ConnectCCTV / Creating")]
     public CameraMove cameraMove;
-    [Header("Creating")]
-    public SetCursor setCursor;
+
 
     [Space(10)]
     [Header("Door")]
@@ -83,11 +80,6 @@ public class Interaction : MonoBehaviour
             case Type.Door:
                 DoorOpen();
                 break;
-
-            case Type.Creating:
-                OpenCreatingUI();
-                break;
-
         }
     }
 
@@ -154,13 +146,5 @@ public class Interaction : MonoBehaviour
         StartCoroutine(MoveRightDoor(leftDoor));
         StartCoroutine(MoveLeftDoor(rightDoor));
         isOpen = false;
-    }
-
-    public void OpenCreatingUI()
-    {
-        player.enabled = false;
-        cameraMove.enabled = false;
-        player.isCreaingUIOpen = true;
-        UIManager.Instance.CreatingUI.SetActive(true);
     }
 }

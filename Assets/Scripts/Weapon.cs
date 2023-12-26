@@ -12,6 +12,11 @@ public class Weapon : MonoBehaviour
     public float reLoadTime;
     public bool isSemiauto;
     public VisualEffect muzzleFlash;
+    public bool isShotGun;
+    public int shotGunSpreadAmount;
+    public float shotGunRange;
+    public float inaccuracyDistance;
+
     void Start()
     {
         

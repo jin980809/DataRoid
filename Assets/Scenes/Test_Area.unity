@@ -12722,7 +12722,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 1
   isOpen: 0
   leftDoor: {fileID: 1050992366}
@@ -13974,6 +13973,80 @@ Transform:
   m_Father: {fileID: 450750295}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 21.316}
+--- !u!1001 &253909060
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1019662269}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.19319469
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.2893169
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6517486
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.6739402
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -82
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 263
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -123
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_Name
+      value: shotgun
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b3634bd9c61988d4aab05b058496ff4b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b3634bd9c61988d4aab05b058496ff4b, type: 3}
 --- !u!1 &255100798 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4972167997025983199, guid: 22d2c44fed4ffa743aac7afe4d993905,
@@ -18908,7 +18981,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 1
   isOpen: 0
   leftDoor: {fileID: 569915972}
@@ -20599,7 +20671,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 1
   isOpen: 0
   leftDoor: {fileID: 755724166}
@@ -29850,7 +29921,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 0
   isOpen: 0
   leftDoor: {fileID: 57758270}
@@ -29963,6 +30033,12 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 19780abbfd696634891d23fa413b7e99, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9c1302e1d5dbcbb4cb06c4ed7b7e403f, type: 3}
+--- !u!4 &1019662269 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8302858653682240635, guid: 692f3e2424735f34aa9a8db1f136a276,
+    type: 3}
+  m_PrefabInstance: {fileID: 1143592551}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1028241200
 GameObject:
   m_ObjectHideFlags: 0
@@ -31223,7 +31299,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 0
   isOpen: 0
   leftDoor: {fileID: 2000332010}
@@ -32827,12 +32902,12 @@ PrefabInstance:
     - target: {fileID: 7936096043752824604, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
       propertyPath: weapons.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7936096043752824604, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
       propertyPath: hasWeapons.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7936096043752824604, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
@@ -32848,7 +32923,7 @@ PrefabInstance:
         type: 3}
       propertyPath: weapons.Array.data[2]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1167428431}
     - target: {fileID: 7936096043752824604, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
       propertyPath: hasWeapons.Array.data[0]
@@ -32862,7 +32937,7 @@ PrefabInstance:
     - target: {fileID: 7936096043752824604, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
       propertyPath: hasWeapons.Array.data[2]
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7936096043752824605, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
@@ -33148,6 +33223,35 @@ CapsuleCollider:
   m_Height: 0.4623557
   m_Direction: 1
   m_Center: {x: 0.006506304, y: 0.30644214, z: 0.008218954}
+--- !u!1 &1167428431 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b3634bd9c61988d4aab05b058496ff4b,
+    type: 3}
+  m_PrefabInstance: {fileID: 253909060}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1167428433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167428431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa378f56722de84389aa9253130e8a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 7
+  delay: 0.5
+  maxAmmo: 5
+  curAmmo: 5
+  reLoadTime: 0
+  isSemiauto: 1
+  muzzleFlash: {fileID: 823829947}
+  isShotGun: 1
+  shotGunSpreadAmount: 5
+  shotGunRange: 5
+  inaccuracyDistance: 0.2
 --- !u!1 &1169512854
 GameObject:
   m_ObjectHideFlags: 0
@@ -35191,7 +35295,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 0
   isOpen: 0
   leftDoor: {fileID: 858588355}
@@ -38474,7 +38577,6 @@ MonoBehaviour:
   mainCamera: {fileID: 133386528}
   CCTV: {fileID: 1204643605}
   cameraMove: {fileID: 1747190185}
-  setCursor: {fileID: 0}
   openSpeed: 0
   isOpen: 0
   leftDoor: {fileID: 0}
@@ -40200,7 +40302,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 1
   isOpen: 0
   leftDoor: {fileID: 576886905}
@@ -41567,6 +41668,10 @@ MonoBehaviour:
   reLoadTime: 0
   isSemiauto: 1
   muzzleFlash: {fileID: 823829947}
+  isShotGun: 0
+  shotGunSpreadAmount: 0
+  shotGunRange: 0
+  inaccuracyDistance: 0
 --- !u!4 &1722710012 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9165874742816108667, guid: 692f3e2424735f34aa9a8db1f136a276,
@@ -42457,7 +42562,6 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   CCTV: {fileID: 0}
   cameraMove: {fileID: 0}
-  setCursor: {fileID: 0}
   openSpeed: 1
   isOpen: 0
   leftDoor: {fileID: 206134496}
