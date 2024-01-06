@@ -347,7 +347,6 @@ public class Player : MonoBehaviour
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
             Vector3 playerShotPos = ShootPos.position;
-            //샷건 일떄 for문으로 여러번 돌리기
 
             if (!weapon.isShotGun)
             {
@@ -359,8 +358,6 @@ public class Player : MonoBehaviour
 
                     if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                     {
-                        Debug.Log(hit.collider.transform.tag);
-
                         enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
                     }
                 }
@@ -381,8 +378,6 @@ public class Player : MonoBehaviour
                         
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                         {
-                            Debug.Log(hit.collider.transform.tag);
-
                             enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
                         }
                     }

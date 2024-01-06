@@ -5,12 +5,14 @@ using UnityEngine;
 public class ObjectMarterial : MonoBehaviour
 {
     public int getMarterialAmount;
+    public float dataAmount;
     public enum Type
     {
         Steel = 1,
         GunPowder = 2,
         ExpPiece = 3,
-        DropExp = 4
+        DropExp = 4,
+        Data = 5
     };
     public Type MarterialType;
 
@@ -34,6 +36,10 @@ public class ObjectMarterial : MonoBehaviour
 
                 case Type.DropExp:
                     ExpManager.Instance.curExp += getMarterialAmount;
+                    break;
+
+                case Type.Data:
+                    ProgressManager.Instance.curProgress += dataAmount;
                     break;
             }
             
