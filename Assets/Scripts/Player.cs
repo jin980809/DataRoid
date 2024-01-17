@@ -58,6 +58,8 @@ public class Player : MonoBehaviour
     bool sDown2;
     bool sDown3;
 
+    public bool qToggle = false;
+
     [Space(10)]
     public bool isDamage = false;
     public bool isWalk;
@@ -79,6 +81,8 @@ public class Player : MonoBehaviour
     bool isSemiReady = true;
     bool isMapOpen = false;
     public bool isShotEnd = true;
+
+    public bool qSkillOn = false;
 
     [SerializeField] private float shotDeley;
     private float rotationVelocity;
@@ -158,7 +162,7 @@ public class Player : MonoBehaviour
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
         sDown3 = Input.GetButtonDown("Swap3");
-        skDown1 = Input.GetButton("Skill1");
+        skDown1 = Input.GetButtonDown("Skill1");
         mDown = Input.GetButtonDown("Map");
     }
 
@@ -336,9 +340,9 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime;
         isFireReady = (weapon.delay < fireDelay) && (weapon.isSemiauto ? isSemiReady : true);
 
-        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking;
+        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle;
 
-        if (fDown && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
+        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
         {
             isShotEnd = false;
             fireDelay = 0;
@@ -625,7 +629,12 @@ public class Player : MonoBehaviour
         RaycastHit hit1;
         //RaycastHit hit2;
 
-        if (skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen)
+        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn)
+        {
+            qToggle = !qToggle;
+        }
+
+        if (qToggle && fDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn)
         {
             if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit1, 20) && hackingEnemyInfo == null && isEnemyHitArea(hit1.transform.gameObject))
             {
@@ -633,23 +642,6 @@ public class Player : MonoBehaviour
                 isHacking = true;
             }
 
-            //if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit2, 20) && hit1.transform.CompareTag("Enemy"))
-            //{
-            //    if (hit2.transform.gameObject == hackingEnemyInfo)
-            //    {
-            //        isHacking = true;
-            //    }
-            //    else
-            //    {
-            //        isHacking = false;
-            //        hackingEnemyInfo = null;
-            //    }
-            //}
-            //else
-            //{
-            //    isHacking = false;
-            //    hackingEnemyInfo = null;
-            //}
 
             if (isHacking)
             {
@@ -658,8 +650,8 @@ public class Player : MonoBehaviour
                 if (curHackingTime >= hackingTime)
                 {
                     curHackingTime = 0;
-                    UIManager.Instance.HackingUI.GetComponent<HackingPanel>().EnemyInfo = hackingEnemyInfo;
-                    UIManager.Instance.HackingUI.SetActive(true);
+                    //UIManager.Instance.HackingUI.GetComponent<HackingPanel>().EnemyInfo = hackingEnemyInfo;
+                    //UIManager.Instance.HackingUI.SetActive(true);
                     hackingEnemyInfo.GetComponent<Enemy>().isHacking = true;
                     isHacking = false;
                 }

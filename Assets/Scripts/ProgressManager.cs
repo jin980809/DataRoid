@@ -21,7 +21,9 @@ public class ProgressManager : MonoBehaviour
 
     public float curProgress;
     public float maxProgress;
-    float saveProgress;
+    public float saveProgress;
+
+    public Player player;
 
     void Start()
     {
@@ -33,6 +35,7 @@ public class ProgressManager : MonoBehaviour
         MaxProgress();
         UpdateMaxProgress();
         DataGauge();
+        ProgressUnlock();
     }
 
     void UpdateMaxProgress()
@@ -55,4 +58,10 @@ public class ProgressManager : MonoBehaviour
     {
         UIManager.Instance.ExpGauge.value = (curProgress + 0.001f) / maxProgress;
     }
+
+    void ProgressUnlock()
+    {
+        player.qSkillOn = curProgress >= 15 ? true : false;
+    }
+
 }

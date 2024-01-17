@@ -18,8 +18,6 @@ public class MaterialManager : MonoBehaviour
     }
     private static MaterialManager m_instance;
 
-
-
     public int Steel;
     public int GunPowder;
     public int ExpPiece;

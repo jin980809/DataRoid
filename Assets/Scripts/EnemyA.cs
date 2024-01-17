@@ -21,6 +21,8 @@ public class EnemyA : Enemy
         RotationSpeedUp();
 
         SwitchLight();
+
+        HackingUI();
     }
 
     void TargetPlayer()
@@ -148,6 +150,7 @@ public class EnemyA : Enemy
         if(lookrotation != Vector3.zero)
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime);
     }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

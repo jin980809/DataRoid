@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Interaction : MonoBehaviour
 {
@@ -9,6 +12,7 @@ public class Interaction : MonoBehaviour
         ElecCharge = 1,
         ConnectCCTV = 2,
         Door = 3,
+        SavePoint = 4,
     };
     public Type interactionType;
 
@@ -37,6 +41,12 @@ public class Interaction : MonoBehaviour
     public GameObject rightDoor;
     public float openTime;
 
+    [Space(10)]
+    [Header("SavePoint")]
+    public int savePoint;
+    public string fileName = "Save.csv";
+    List<string[]> data = new List<string[]>();
+    string[] tempData;
 
     void Start()
     {
@@ -79,6 +89,10 @@ public class Interaction : MonoBehaviour
 
             case Type.Door:
                 DoorOpen();
+                break;
+
+            case Type.SavePoint:
+                SaveCSVFile(savePoint);
                 break;
         }
     }
@@ -146,5 +160,64 @@ public class Interaction : MonoBehaviour
         StartCoroutine(MoveRightDoor(leftDoor));
         StartCoroutine(MoveLeftDoor(rightDoor));
         isOpen = false;
+    }
+
+
+
+    void Awake()
+    {
+        data.Clear();
+
+        tempData = new string[7];
+        tempData[0] = "SavePoint";
+        tempData[1] = "Progress";
+        tempData[2] = "MaxProgress";
+        tempData[3] = "Ammo";
+        tempData[4] = "SpecialAmmo";
+        tempData[5] = "Steel";
+        tempData[6] = "GunPowder";
+        data.Add(tempData);
+    }
+
+
+    public void SaveCSVFile(int savePointIndex)
+    {
+        tempData = new string[7];
+        tempData[0] = savePointIndex.ToString();
+        tempData[1] = ProgressManager.Instance.curProgress.ToString();
+        tempData[2] = ProgressManager.Instance.saveProgress.ToString();
+        tempData[3] = MaterialManager.Instance.Ammo.ToString();
+        tempData[4] = MaterialManager.Instance.SpecialAmmo.ToString();
+        tempData[5] = MaterialManager.Instance.Steel.ToString();
+        tempData[6] = MaterialManager.Instance.GunPowder.ToString();
+        data.Add(tempData);
+
+        string[][] output = new string[data.Count][];
+
+        for (int i = 0; i < output.Length; i++)
+        {
+            output[i] = data[i];
+        }
+
+        int length = output.GetLength(0);
+        string delimiter = ",";
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < length; i++)
+        {
+            sb.AppendLine(string.Join(delimiter, output[i]));
+        }
+
+        string filepath = SystemPath.GetPath();
+
+        if (!Directory.Exists(filepath))
+        {
+            Directory.CreateDirectory(filepath);
+        }
+
+        StreamWriter outStream = System.IO.File.CreateText(filepath + fileName);
+        outStream.Write(sb);
+        outStream.Close();
     }
 }

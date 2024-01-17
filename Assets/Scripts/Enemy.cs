@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.AI;
+using System.IO;
+using System.Text;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
@@ -17,6 +20,7 @@ public class Enemy : MonoBehaviour
     public Material oLight;
     public Material rLight;
     public SkinnedMeshRenderer headLight;
+    public string fileName = "Enemy";
 
     [Space(10f)]
     public bool isAttack = false;
@@ -43,6 +47,9 @@ public class Enemy : MonoBehaviour
     [Space(10f)]
     public string modelName;
     public string iMEI;
+    public int ID;
+    public float sheild;
+    public float maxSheild;
 
     [Serializable]
     public struct dropItem
@@ -52,11 +59,27 @@ public class Enemy : MonoBehaviour
     }
     public dropItem[] dropItems;
 
+    List<Dictionary<string, object>> enemyInfo = new List<Dictionary<string, object>>();
+
+    [Space(10f)]
+    List<string[]> data = new List<string[]>();
+    string[] tempData;
+    public string wfileName = "Enemy.csv";
+
+    [Space(10f)]
+    public GameObject enemyPrefab; // 프리팹으로 사용할 적 UI
+    public Canvas canvas; // UI가 속한 캔버스
+    public GameObject enemyUI; // 생성된 적 UI
+    RectTransform rectTransform; // RectTransform 컴포넌트
+    public Camera mainCamera;
+    public Transform[] parts;
+
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
+        LoadCSVFile();
     }
 
     public enum Type
@@ -73,18 +96,43 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        curHealth = maxHealth;
+        enemyInfo.Clear();
+
+        enemyInfo = CSVReader.Read(fileName);
+
+        EnemyInitialization();
+
+        //curHealth = maxHealth;
+        rectTransform = enemyPrefab.GetComponent<RectTransform>();
+
+
+        CreateEnemyUI();
+        
     }
 
     void Update()
     {
+        
+    }
+
+    void EnemyInitialization()
+    {
+        if (int.Parse(enemyInfo[ID]["isDead"] + "") == 1)
+        {
+            this.gameObject.SetActive(false);
+        }
+
+        maxHealth = float.Parse(enemyInfo[ID]["HP"] + "");
+        curHealth = maxHealth;
+        maxSheild = float.Parse(enemyInfo[ID]["Sheild"] + "");
+        sheild = maxSheild;
     }
 
     public void OnDamage(float damage, Vector3 playerShotPos, int hitArea)
     {
         if (isHacking && hitArea == (int)hitAreaType)
         {
-            //Debug.Log("Critical Hit");
+            Debug.Log("Critical Hit");
             curHealth -= damage * criticalRate;
         }
         else
@@ -103,6 +151,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
+            UpdateCSVFile(ID + 1);
             this.gameObject.layer = 10;
             isDeath = true;
             nav.isStopped = true;
@@ -167,5 +216,151 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(1f);
         //nav.isStopped = false;
         isHit = false;
+    }
+
+    public void HackingUI()
+    {
+        if (isHacking)
+        {
+            Debug.Log(IsEnemyVisible());
+            if (IsEnemyVisible())
+            {
+                UpdateUIPosition();
+                UpdateUIScale();
+                enemyUI.SetActive(true); // 적이 화면에 있으면 UI 활성화
+            }
+            else
+            {
+                enemyUI.SetActive(false); // 적이 화면에 없으면 UI 비활성화
+            }
+
+        }
+    }
+
+    void CreateEnemyUI()
+    {
+        enemyUI = Instantiate(enemyPrefab, canvas.transform);
+        enemyUI.SetActive(false); // 처음에는 비활성화 상태로 생성
+    }
+
+    bool IsEnemyVisible()
+    {
+        // 적이 카메라에 보이는지 여부 확인
+        Vector3 screenPos = mainCamera.WorldToScreenPoint(this.transform.position);
+        //Debug.Log(screenPos);
+        return screenPos.z > 0 && screenPos.x > 0 && screenPos.x < Screen.width && screenPos.y > 0 && screenPos.y < Screen.height;
+    }
+
+    void UpdateUIPosition()
+    {
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+
+        // 적의 위치를 월드 좌표에서 스크린 좌표로 변환
+        switch (hitAreaType)
+        {
+            case Type.Body:
+                screenPos = Camera.main.WorldToScreenPoint(parts[0].position);
+                break;
+            case Type.Head:
+                screenPos = Camera.main.WorldToScreenPoint(parts[1].position);
+                break;
+            case Type.LeftArm:
+                screenPos = Camera.main.WorldToScreenPoint(parts[2].position);
+                break;
+            case Type.RightArm:
+                screenPos = Camera.main.WorldToScreenPoint(parts[3].position);
+                break;
+            case Type.LeftLeg:
+                screenPos = Camera.main.WorldToScreenPoint(parts[4].position);
+                break;
+            case Type.RightLeg:
+                screenPos = Camera.main.WorldToScreenPoint(parts[5].position);
+                break;
+        }
+
+        // 캔버스의 크기를 고려하여 위치 조정
+        Vector3 canvasPos = screenPos / canvas.scaleFactor;
+
+        // UI의 위치 업데이트
+        enemyUI.transform.position = canvasPos;
+    }
+
+    void UpdateUIScale()
+    {
+        // 적과 카메라의 거리에 따라 UI의 크기 조정
+        float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
+        float scaleFactor = Mathf.Clamp(10f / distance, 0.5f, 2f);
+
+        // UI의 크기 업데이트
+        enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+    }
+
+    void LoadCSVFile()
+    {
+        data.Clear(); // 기존 데이터 초기화
+
+        string filepath = SystemPath.GetPath() + wfileName;
+
+        if (File.Exists(filepath))
+        {
+            string[] lines = File.ReadAllLines(filepath);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] values = lines[i].Split(',');
+                data.Add(values);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("CSV file not found: " + filepath);
+        }
+    }
+    public void UpdateCSVFile(int rowIndex)
+    {
+        if (rowIndex >= 0 && rowIndex < data.Count)
+        {
+            tempData = new string[5];
+            tempData[0] = ID.ToString();
+            tempData[1] = maxHealth.ToString();
+            tempData[2] = maxSheild.ToString();
+            tempData[3] =  "10";
+            tempData[4] = "1";
+  
+
+            data[rowIndex] = tempData; // 특정 줄 업데이트
+
+            string[][] output = new string[data.Count][];
+
+            for (int i = 0; i < output.Length; i++)
+            {
+                output[i] = data[i];
+            }
+
+            int length = output.GetLength(0);
+            string delimiter = ",";
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < length; i++)
+            {
+                sb.AppendLine(string.Join(delimiter, output[i]));
+            }
+
+            string filepath = SystemPath.GetPath();
+
+            if (!Directory.Exists(filepath))
+            {
+                Directory.CreateDirectory(filepath);
+            }
+
+            StreamWriter outStream = System.IO.File.CreateText(filepath + wfileName);
+            outStream.Write(sb);
+            outStream.Close();
+        }
+        else
+        {
+            Debug.LogWarning("Invalid row index for updating CSV file.");
+        }
     }
 }
