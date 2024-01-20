@@ -37,6 +37,9 @@ public class Player : MonoBehaviour
     public float hackingTime;
     private float targetSpeed;
     private float culDodgeTime;
+    public float sheildDamage;
+    public float sheildDiscountRate;
+    [SerializeField] private float shotDeley;
 
     float hAxis;
     float vAxis;
@@ -57,8 +60,6 @@ public class Player : MonoBehaviour
     bool sDown1;
     bool sDown2;
     bool sDown3;
-
-    public bool qToggle = false;
 
     [Space(10)]
     public bool isDamage = false;
@@ -81,10 +82,9 @@ public class Player : MonoBehaviour
     bool isSemiReady = true;
     bool isMapOpen = false;
     public bool isShotEnd = true;
-
+    public bool qToggle = false;
     public bool qSkillOn = false;
 
-    [SerializeField] private float shotDeley;
     private float rotationVelocity;
     private float _animationBlend;
     private float verBlend;
@@ -100,17 +100,23 @@ public class Player : MonoBehaviour
 
     Animator anim;
 
+    [Space(10f)]
     public GameObject _mainCamera;
     public CameraMove cameraArm;
     Rigidbody rigid;
     RectTransform miniMap;
-    [SerializeField] private GameObject hackingEnemyInfo;
+    private GameObject hackingEnemyInfo;
+    public float hackingCoolTime;
+    public int hackingNum;
+    private float curHackingCoolTime;
+    private float curHackingNum;
 
     void Awake()
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         miniMap = UIManager.Instance.MiniMap.GetComponent<RectTransform>();
+        curHackingNum = hackingNum;
     }
 
     void Update()
@@ -142,6 +148,8 @@ public class Player : MonoBehaviour
         ZoomInOut();
 
         OCMap();
+
+        HackingCoolDown();
     }
 
     void GetInput()
@@ -250,10 +258,19 @@ public class Player : MonoBehaviour
         culDodgeTime += Time.deltaTime;
         isDodgeReady = dodgeCoolTime < culDodgeTime;
 
-        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
+        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking)
         {
             isShotEnd = true;
             isDodge = true;
+            
+            if (isReload)
+            {
+                StopCoroutine(ReloadOut());
+                isReload = false;
+                anim.SetTrigger("doReloadOut");
+            }
+
+
             culDodgeTime = 0f;
             dodgeVec = moveVec;
             //targetSpeed *= 4;
@@ -362,7 +379,14 @@ public class Player : MonoBehaviour
 
                     if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                     {
-                        enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                        if (enemy.sheild <= 0)
+                        {
+                            enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
+                        }
+                        else
+                        {
+                            enemy.OnDamage(weapon.damage * sheildDiscountRate, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
+                        }
                     }
                 }
                 else if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, LayerMask.GetMask("Enviroment")))
@@ -382,7 +406,14 @@ public class Player : MonoBehaviour
                         
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                         {
-                            enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                            if (enemy.sheild <= 0)
+                            {
+                                enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
+                            }
+                            else
+                            {
+                                enemy.OnDamage(weapon.damage * sheildDiscountRate, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
+                            }
                         }
                     }
                     else if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, LayerMask.GetMask("Enviroment")))
@@ -481,20 +512,26 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(2.5f);
 
-        if (MaterialManager.Instance.Ammo < weapon.maxAmmo - weapon.curAmmo)
+        if (isReload)
         {
-            weapon.curAmmo += MaterialManager.Instance.Ammo;
-            MaterialManager.Instance.Ammo = 0;
-        }
-        else
-        {
-            MaterialManager.Instance.Ammo -= (weapon.maxAmmo - weapon.curAmmo);
-            weapon.curAmmo = weapon.maxAmmo;
+            if (MaterialManager.Instance.Ammo < weapon.maxAmmo - weapon.curAmmo)
+            {
+                weapon.curAmmo += MaterialManager.Instance.Ammo;
+                MaterialManager.Instance.Ammo = 0;
+            }
+            else
+            {
+                MaterialManager.Instance.Ammo -= (weapon.maxAmmo - weapon.curAmmo);
+                weapon.curAmmo = weapon.maxAmmo;
 
+            }
         }
-
         //가지고 있는 총알개수가 maxAmmo보다 적으면 가지고 있는 총알 개수만 curAmmo에 장전
         yield return new WaitForSeconds(0.5f);
+        if (isReload)
+        {
+            anim.SetTrigger("doReloadOut");
+        }
         isReload = false;
     }
 
@@ -638,10 +675,16 @@ public class Player : MonoBehaviour
         {
             if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit1, 20) && hackingEnemyInfo == null && isEnemyHitArea(hit1.transform.gameObject))
             {
-                hackingEnemyInfo = hit1.transform.gameObject;
-                isHacking = true;
+                if (hit1.transform.GetComponent<Enemy>().sheild > 0 && !hit1.transform.GetComponent<Enemy>().isHacking && curHackingNum > 0)
+                {
+                    hackingEnemyInfo = hit1.transform.gameObject;
+                    isHacking = true;
+                }
+                else
+                {
+                    //실드 이미 없다고 하는 이미지나 이팩트 택스트 나타내기
+                }
             }
-
 
             if (isHacking)
             {
@@ -650,9 +693,9 @@ public class Player : MonoBehaviour
                 if (curHackingTime >= hackingTime)
                 {
                     curHackingTime = 0;
-                    //UIManager.Instance.HackingUI.GetComponent<HackingPanel>().EnemyInfo = hackingEnemyInfo;
-                    //UIManager.Instance.HackingUI.SetActive(true);
+                    curHackingNum--;
                     hackingEnemyInfo.GetComponent<Enemy>().isHacking = true;
+                    hackingEnemyInfo.GetComponent<Enemy>().CreateEnemyUI();
                     isHacking = false;
                 }
 
@@ -681,6 +724,19 @@ public class Player : MonoBehaviour
         }
 
         UIManager.Instance.HackingGauge.value = curHackingTime / hackingTime;
+    }
+
+    void HackingCoolDown()
+    {
+        if(curHackingNum < hackingNum)
+        {
+            curHackingCoolTime += Time.deltaTime;
+            if(curHackingCoolTime > hackingCoolTime)
+            {
+                curHackingCoolTime = 0;
+                curHackingNum++;
+            }
+        }
     }
 
     private bool IsObstacleBetween(Vector3 start, Vector3 end, LayerMask obstacleLayer)

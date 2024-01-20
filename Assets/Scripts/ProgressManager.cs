@@ -61,7 +61,32 @@ public class ProgressManager : MonoBehaviour
 
     void ProgressUnlock()
     {
-        player.qSkillOn = curProgress >= 15 ? true : false;
+        //player.qSkillOn = curProgress >= 15 ? true : false;
+
+        if (curProgress >= 10f)
+        {
+            player.sheildDamage = 3.7f;
+        }
+
+        if (curProgress >= 15f)
+        {
+            player.qSkillOn = true;
+        }
+
+        if (curProgress >= 33f)
+        {
+            player.sheildDamage = 4f;
+        }
+
+        if (curProgress >= 66f)
+        {
+            player.sheildDamage = 5.5f;
+        }
+
+        if (curProgress >= 100f)
+        {
+            player.sheildDamage = 6f;
+        }
     }
 
 }

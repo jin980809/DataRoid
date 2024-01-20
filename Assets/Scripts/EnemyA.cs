@@ -23,6 +23,10 @@ public class EnemyA : Enemy
         SwitchLight();
 
         HackingUI();
+
+        HackingCoolDown();
+
+        Stun();
     }
 
     void TargetPlayer()
@@ -54,7 +58,7 @@ public class EnemyA : Enemy
             }
 
             RaycastHit[] attackHit = Physics.SphereCastAll(transform.position, attackDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
-            if (attackHit.Length > 0 && !isAttack && !isDeath)
+            if (attackHit.Length > 0 && !isAttack && !isDeath && !isStun)
             {
                 Vector3 AttackPos = new Vector3(attackHit[0].transform.position.x, attackHit[0].transform.position.y + 1, attackHit[0].transform.position.z);
                 if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")))
@@ -114,7 +118,7 @@ public class EnemyA : Enemy
 
     void Chase()
     {
-        if(isChase && !isDeath)
+        if(isChase && !isDeath && !isStun)
         {
             nav.SetDestination(target.transform.position);
         }

@@ -29,11 +29,11 @@ public class Enemy : MonoBehaviour
     public bool isDeath = false;
     public bool isHit = false;
     public bool isHacking = false;
+    public bool isStun = false;
 
     [Space(10f)]
     public float maxHealth;
     public float curHealth;
-    public float criticalRate;
 
     [Space(10f)]
     public float walkSpeed;
@@ -73,6 +73,10 @@ public class Enemy : MonoBehaviour
     RectTransform rectTransform; // RectTransform 컴포넌트
     public Camera mainCamera;
     public Transform[] parts;
+    private Slider sheildUI;
+    private Slider hackingDurationUI;
+    private float curHackingDuration;
+    public float hackingDuration;
 
     void Awake()
     {
@@ -104,15 +108,32 @@ public class Enemy : MonoBehaviour
 
         //curHealth = maxHealth;
         rectTransform = enemyPrefab.GetComponent<RectTransform>();
-
-
-        CreateEnemyUI();
-        
     }
 
     void Update()
     {
-        
+       
+    }
+
+    public void Stun()
+    {
+        if(isStun)
+        {
+            //애니메이션 실행
+            anim.SetBool("isStun", true);
+            nav.isStopped = true;
+            isAttack = false;
+            StartCoroutine(StunOut());
+        }
+    }
+
+    IEnumerator StunOut()
+    {
+        //애니메이션 실행
+        yield return new WaitForSeconds(3f);
+        anim.SetBool("isStun", false);
+        nav.isStopped = false;
+        isStun = false;
     }
 
     void EnemyInitialization()
@@ -128,12 +149,20 @@ public class Enemy : MonoBehaviour
         sheild = maxSheild;
     }
 
-    public void OnDamage(float damage, Vector3 playerShotPos, int hitArea)
+    public void OnDamage(float damage, Vector3 playerShotPos, int hitArea, float sheildDamage)
     {
         if (isHacking && hitArea == (int)hitAreaType)
         {
             Debug.Log("Critical Hit");
-            curHealth -= damage * criticalRate;
+            curHealth -= damage;
+            sheild -= sheildDamage;
+
+            if (sheild <= 0)
+            {
+                Destroy(enemyUI);
+                isStun = true;
+                isHacking = false;
+            }
         }
         else
         {
@@ -222,30 +251,60 @@ public class Enemy : MonoBehaviour
     {
         if (isHacking)
         {
-            Debug.Log(IsEnemyVisible());
+            //Debug.Log(IsEnemyVisible());
             if (IsEnemyVisible())
             {
                 UpdateUIPosition();
                 UpdateUIScale();
-                enemyUI.SetActive(true); // 적이 화면에 있으면 UI 활성화
+                enemyUI.SetActive(true);
             }
             else
             {
-                enemyUI.SetActive(false); // 적이 화면에 없으면 UI 비활성화
+                enemyUI.SetActive(false);
             }
 
         }
+        else
+        {
+            if (enemyUI != null)
+            {
+                enemyUI.SetActive(false);
+            }
+        }
     }
 
-    void CreateEnemyUI()
+    public void HackingCoolDown()
     {
-        enemyUI = Instantiate(enemyPrefab, canvas.transform);
-        enemyUI.SetActive(false); // 처음에는 비활성화 상태로 생성
+        if(isHacking)
+        {
+            curHackingDuration -= Time.deltaTime;
+            hackingDurationUI.value = curHackingDuration / hackingDuration;
+            sheildUI.value = sheild / maxSheild;
+        }
+
+        if(curHackingDuration <= 0)
+        {
+            isHacking = false;
+            curHackingDuration = hackingDuration;
+        }
+    }
+
+    public void CreateEnemyUI()
+    {
+        if (enemyUI == null)
+        {
+            enemyUI = Instantiate(enemyPrefab, canvas.transform);
+            sheildUI = enemyUI.transform.GetChild(0).GetComponent<Slider>();
+            hackingDurationUI = enemyUI.transform.GetChild(1).GetComponent<Slider>();
+        }
+        else
+        {
+            enemyUI.SetActive(true);
+        }
     }
 
     bool IsEnemyVisible()
     {
-        // 적이 카메라에 보이는지 여부 확인
         Vector3 screenPos = mainCamera.WorldToScreenPoint(this.transform.position);
         //Debug.Log(screenPos);
         return screenPos.z > 0 && screenPos.x > 0 && screenPos.x < Screen.width && screenPos.y > 0 && screenPos.y < Screen.height;
@@ -255,13 +314,12 @@ public class Enemy : MonoBehaviour
     {
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
 
-        // 적의 위치를 월드 좌표에서 스크린 좌표로 변환
         switch (hitAreaType)
         {
-            case Type.Body:
+            case Type.Head:
                 screenPos = Camera.main.WorldToScreenPoint(parts[0].position);
                 break;
-            case Type.Head:
+            case Type.Body:
                 screenPos = Camera.main.WorldToScreenPoint(parts[1].position);
                 break;
             case Type.LeftArm:
@@ -278,20 +336,15 @@ public class Enemy : MonoBehaviour
                 break;
         }
 
-        // 캔버스의 크기를 고려하여 위치 조정
         Vector3 canvasPos = screenPos / canvas.scaleFactor;
-
-        // UI의 위치 업데이트
         enemyUI.transform.position = canvasPos;
     }
 
     void UpdateUIScale()
     {
-        // 적과 카메라의 거리에 따라 UI의 크기 조정
         float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
         float scaleFactor = Mathf.Clamp(10f / distance, 0.5f, 2f);
 
-        // UI의 크기 업데이트
         enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
     }
 
@@ -316,6 +369,7 @@ public class Enemy : MonoBehaviour
             Debug.LogWarning("CSV file not found: " + filepath);
         }
     }
+
     public void UpdateCSVFile(int rowIndex)
     {
         if (rowIndex >= 0 && rowIndex < data.Count)
