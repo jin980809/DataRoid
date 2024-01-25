@@ -77,6 +77,7 @@ public class Enemy : MonoBehaviour
     private Slider hackingDurationUI;
     private float curHackingDuration;
     public float hackingDuration;
+    public Coroutine attackCoroutine;
 
     void Awake()
     {
@@ -115,16 +116,30 @@ public class Enemy : MonoBehaviour
        
     }
 
-    public void Stun()
+    public void Stun(bool isSkill)
     {
-        if(isStun)
+        //애니메이션 실행
+        isStun = true;
+        anim.SetBool("isStun", true);
+        anim.SetBool("isAttack", false);
+        nav.isStopped = true;
+        isAttack = false;
+        isChase = false;
+        isShotChase = false;
+        attackCollider.enabled = false;
+        StartCoroutine(StunOut());
+        if (attackCoroutine != null)
         {
-            //애니메이션 실행
-            anim.SetBool("isStun", true);
-            nav.isStopped = true;
-            isAttack = false;
-            StartCoroutine(StunOut());
+            StopCoroutine(attackCoroutine);
         }
+
+        //if(isSkill)
+        //{
+        //    Vector3 enemyDir = new Vector3(transform.position.x, 20, transform.position.z);
+        //    Vector3 playerDir = new Vector3(target.transform.position.x, 20, target.transform.position.z);
+        //    Vector3 KnockBackPos = transform.position + (enemyDir - playerDir) * 5f;
+        //    transform.position = Vector3.Lerp(transform.position, KnockBackPos, 10 * Time.deltaTime);
+        //}
     }
 
     IEnumerator StunOut()
@@ -160,7 +175,7 @@ public class Enemy : MonoBehaviour
             if (sheild <= 0)
             {
                 Destroy(enemyUI);
-                isStun = true;
+                Stun(false);
                 isHacking = false;
             }
         }

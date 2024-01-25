@@ -55,7 +55,8 @@ public class Player : MonoBehaviour
     bool eDown; // 손전등
     bool qDown; // 취소
     bool skDown1; // 스킬1
-    bool mDown; // 스킬1
+    bool skDown2; // 스킬2
+    bool mDown; // 맵 크기
 
     bool sDown1;
     bool sDown2;
@@ -84,6 +85,7 @@ public class Player : MonoBehaviour
     public bool isShotEnd = true;
     public bool qToggle = false;
     public bool qSkillOn = false;
+    bool eSkillOn = false;
 
     private float rotationVelocity;
     private float _animationBlend;
@@ -111,12 +113,18 @@ public class Player : MonoBehaviour
     private float curHackingCoolTime;
     private float curHackingNum;
 
+    public float stunDistance;
+    public float stunCoolTime;
+    private float curStunCoolTime;
+    private LayerMask enemyLayer;
+
     void Awake()
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         miniMap = UIManager.Instance.MiniMap.GetComponent<RectTransform>();
         curHackingNum = hackingNum;
+        curStunCoolTime = stunCoolTime;
     }
 
     void Update()
@@ -150,6 +158,8 @@ public class Player : MonoBehaviour
         OCMap();
 
         HackingCoolDown();
+
+        EnemysStun();
     }
 
     void GetInput()
@@ -171,6 +181,7 @@ public class Player : MonoBehaviour
         sDown2 = Input.GetButtonDown("Swap2");
         sDown3 = Input.GetButtonDown("Swap3");
         skDown1 = Input.GetButtonDown("Skill1");
+        skDown2 = Input.GetButtonDown("Skill2");
         mDown = Input.GetButtonDown("Map");
     }
 
@@ -739,6 +750,34 @@ public class Player : MonoBehaviour
         }
     }
 
+    void EnemysStun()
+    {
+        enemyLayer = LayerMask.GetMask("Enemy");
+        StunCoolDown();
+
+        if (skDown2 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && curStunCoolTime >= stunCoolTime)
+        {
+            //Debug.Log("sk2");
+            curStunCoolTime = 0;
+
+            RaycastHit[] hits = Physics.SphereCastAll(ShootPos.position, stunDistance, Vector3.up, 0f, enemyLayer);
+
+            foreach (RaycastHit hit in hits)
+            {
+                GameObject enemyObject = hit.transform.gameObject;
+                enemyObject.GetComponentInParent<Enemy>().Stun(true);
+            }
+        }
+    }
+
+    void StunCoolDown()
+    {
+        if(curStunCoolTime < stunCoolTime)
+        {
+            curStunCoolTime += Time.deltaTime;
+        }
+    }
+
     private bool IsObstacleBetween(Vector3 start, Vector3 end, LayerMask obstacleLayer)
     {
         RaycastHit hit;
@@ -820,7 +859,7 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, 5);
 
-        Gizmos.DrawRay(_mainCamera.transform.position, _mainCamera.transform.forward * 20);
+        //Gizmos.DrawRay(_mainCamera.transform.position, _mainCamera.transform.forward * 20);
         
     }
 }

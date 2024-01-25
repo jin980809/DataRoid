@@ -26,7 +26,7 @@ public class EnemyA : Enemy
 
         HackingCoolDown();
 
-        Stun();
+
     }
 
     void TargetPlayer()
@@ -39,7 +39,7 @@ public class EnemyA : Enemy
             Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
             if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment")))
             {
-                if (!isAttack && !isDeath)
+                if (!isAttack && !isDeath && !isStun)
                 {
                     //Debug.Log("target " + hit[0].transform.name);
                     nav.speed = runSpeed;
@@ -49,7 +49,7 @@ public class EnemyA : Enemy
             }
             else
             {
-                if (isShotChase && !isDeath)
+                if (isShotChase && !isDeath && !isStun)
                 {
                     nav.SetDestination(playerShotPos);
                     if ((transform.position.x == playerShotPos.x) && (transform.position.z == playerShotPos.z))
@@ -58,19 +58,19 @@ public class EnemyA : Enemy
             }
 
             RaycastHit[] attackHit = Physics.SphereCastAll(transform.position, attackDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
-            if (attackHit.Length > 0 && !isAttack && !isDeath && !isStun)
+            if (attackHit.Length > 0 && !isAttack && !isDeath)
             {
                 Vector3 AttackPos = new Vector3(attackHit[0].transform.position.x, attackHit[0].transform.position.y + 1, attackHit[0].transform.position.z);
-                if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")))
+                if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")) && !isStun)
                 {
                     isShotChase = false;
-                    StartCoroutine(DoAttack());
+                    attackCoroutine = StartCoroutine(DoAttack());
                 }
             }
         }
         else
         {
-            if(!isAttack && !isShotChase && !isDeath)
+            if(!isAttack && !isShotChase && !isDeath && !isStun)
             {
                 nav.speed = walkSpeed;
                 isChase = false;
@@ -126,7 +126,7 @@ public class EnemyA : Enemy
 
     void Around()
     {
-        if (!isChase && !isDeath)
+        if (!isChase && !isDeath && !isStun)
         {
             nav.SetDestination(aroundTarget[aroundTargetIndex].position);
 

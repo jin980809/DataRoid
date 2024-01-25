@@ -2035,37 +2035,6 @@ Transform:
   m_Father: {fileID: 1083584167751902642}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1083584168065503056
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1083584168677214912}
-  m_Layer: 9
-  m_Name: RightLegCollider
-  m_TagString: EnemyRightLeg
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1083584168677214912
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1083584168065503056}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1083584168669281332}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1083584168134421434
 GameObject:
   m_ObjectHideFlags: 0
@@ -2392,8 +2361,8 @@ MonoBehaviour:
   - {fileID: 1083584167253275699}
   - {fileID: 1083584167857783469}
   - {fileID: 1083584168874317821}
-  - {fileID: 1083584168677214912}
-  hackingCoolTime: 10
+  - {fileID: 0}
+  hackingDuration: 0
   hitAreaType: 1
   aroundTargetIndex: 0
   aroundTarget:
@@ -2800,7 +2769,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1083584168769108954}
-  - {fileID: 1083584168677214912}
   m_Father: {fileID: 1083584168307018632}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
