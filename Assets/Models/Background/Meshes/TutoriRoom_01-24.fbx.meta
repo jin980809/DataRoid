@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9fc8772613934df44817ac0bc9654dee
+guid: 32c875cf1d8010347aafb7a67dc42eca
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -13,32 +13,32 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Tutori_Father's Office
-    second: {fileID: 2100000, guid: 9ee79d4b450a7aa4886f87f3943b6e89, type: 2}
+    second: {fileID: 2100000, guid: 1b52c371809255c4893df75d0aabb06b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Tutori_MeetingRoom
-    second: {fileID: 2100000, guid: f5b0a959d4577b9428e0d2f3affc2cfd, type: 2}
+    second: {fileID: 2100000, guid: 7563337a5f87b524ba595bb2f7067a17, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Tutori_Robby
-    second: {fileID: 2100000, guid: fec3a442d3f2f4f468b97ce0d1d64c5b, type: 2}
+    second: {fileID: 2100000, guid: 88c60368fdfbbf74da5f7dd37989e91d, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Tutori_armory
-    second: {fileID: 2100000, guid: ba19b44de5a614b46b8cd5e7fe68f291, type: 2}
+    second: {fileID: 2100000, guid: ff737913781d3724281a9e01f18843f2, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Tutori_corridor_v2
-    second: {fileID: 2100000, guid: f2d966c752168b94c9986303f9053dd2, type: 2}
+    second: {fileID: 2100000, guid: 49ef351f12d7bda44953bab38a7aa823, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: laboratory
-    second: {fileID: 2100000, guid: 8dcd945353c11c44995e666078663a4d, type: 2}
+    second: {fileID: 2100000, guid: 9b7b0447e801ece4b89c582c6f0d1cae, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
