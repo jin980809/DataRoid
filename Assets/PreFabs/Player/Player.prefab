@@ -103,6 +103,11 @@ MonoBehaviour:
   curAmmo: 0
   reLoadTime: 0
   isSemiauto: 0
+  muzzleFlash: {fileID: 0}
+  isShotGun: 0
+  shotGunSpreadAmount: 0
+  shotGunRange: 0
+  inaccuracyDistance: 0
 --- !u!1 &5796417509714214921
 GameObject:
   m_ObjectHideFlags: 0
@@ -5127,6 +5132,9 @@ MonoBehaviour:
   curHp: 100
   dodgeCoolTime: 2
   hackingTime: 0
+  sheildDamage: 0
+  sheildDiscountRate: 0
+  shotDeley: 0.2
   isDamage: 0
   isWalk: 0
   isRun: 0
@@ -5141,10 +5149,12 @@ MonoBehaviour:
   isHacking: 0
   isZoom: 0
   isShotEnd: 1
-  shotDeley: 0.2
+  qToggle: 0
+  qSkillOn: 0
   _mainCamera: {fileID: 0}
   cameraArm: {fileID: 0}
-  hackingEnemyInfo: {fileID: 0}
+  hackingCoolTime: 0
+  hackingNum: 0
 --- !u!114 &7936096043752824606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5250,10 +5260,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5969646736056632419, guid: 0f7c5913d289a5744b3750d0795fe479,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.2577
+      objectReference: {fileID: 0}
+    - target: {fileID: -5969646736056632419, guid: 0f7c5913d289a5744b3750d0795fe479,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.3085
+      objectReference: {fileID: 0}
+    - target: {fileID: -5969646736056632419, guid: 0f7c5913d289a5744b3750d0795fe479,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.3492
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0f7c5913d289a5744b3750d0795fe479,
         type: 3}
       propertyPath: m_Name
       value: mainCharacterVert40k
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0f7c5913d289a5744b3750d0795fe479,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0f7c5913d289a5744b3750d0795fe479, type: 3}
