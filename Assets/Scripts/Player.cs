@@ -46,16 +46,16 @@ public class Player : MonoBehaviour
     bool rDown; // 뛰기
     bool sDown; // 앉기
     bool fDown; // 공격
-    bool f2Down; // 해킹
-    bool dDown; // 구르기
-    bool gDown; // 총 꺼내고 넣기
-    bool lDown; // 재장전
-    bool aDown; // 상호작용
-    bool iDown; // 인벤토리
-    bool eDown; // 손전등
-    bool qDown; // 취소
-    bool skDown1; // 스킬1
-    bool skDown2; // 스킬2
+    bool f2Down; // 조준
+    bool dDown; // 구르기 space
+    bool gDown; // 총 꺼내고 넣기 x
+    bool lDown; // 재장전 r
+    bool aDown; // 상호작용 f
+    bool iDown; // 인벤토리 i
+    bool eDown; // 손전등 t
+    bool qDown; // esc
+    bool skDown1; // 스킬1 Q
+    bool skDown2; // 스킬2 E
     bool mDown; // 맵 크기
 
     bool sDown1;
@@ -173,7 +173,7 @@ public class Player : MonoBehaviour
         rDown = Input.GetButton("Run");
         sDown = Input.GetButton("Crouch");
         fDown = Input.GetButton("Fire1");
-        f2Down = Input.GetButtonDown("Fire2");
+        f2Down = Input.GetButton("Fire2");
         dDown = Input.GetButton("Dodge");
         gDown = Input.GetButtonDown("GunOn");
         lDown = Input.GetButton("Reload");
@@ -195,7 +195,7 @@ public class Player : MonoBehaviour
         {
             if(isGunOn)
             {
-                if (rDown && !isReload && isShotEnd ) targetSpeed = gunRunSpeed;
+                if (rDown && !isReload && isShotEnd && !isZoom) targetSpeed = gunRunSpeed;
                 else targetSpeed = gunWalkSpeed;
             }
             else
@@ -224,9 +224,9 @@ public class Player : MonoBehaviour
 
             if (!isDodge && !isInteraction)
             {
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, 0.12f);
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, 0.17f);
 
-                transform.rotation = Quaternion.Euler(0.0f, isGunOn ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
+                transform.rotation = Quaternion.Euler(0.0f, (!isShotEnd || isZoom) ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
             }
             else
             {
@@ -238,7 +238,7 @@ public class Player : MonoBehaviour
         {
             isWalk = false;
 
-            if (isGunOn && !isDodge && !isInteraction)
+            if ((!isShotEnd || isZoom) && !isDodge && !isInteraction)
                 transform.rotation = Quaternion.Euler(0.0f, _mainCamera.transform.eulerAngles.y, 0.0f);
         }
 
@@ -467,7 +467,11 @@ public class Player : MonoBehaviour
     {
         if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue)
         {
-            isZoom = !isZoom;
+            isZoom = true;
+        }
+        else
+        {
+            isZoom = false;
         }
     }
 
