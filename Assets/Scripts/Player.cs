@@ -86,6 +86,7 @@ public class Player : MonoBehaviour
     public bool qToggle = false;
     public bool qSkillOn = false;
     bool eSkillOn = false;
+    public bool isSubdue = false;
 
     private float rotationVelocity;
     private float _animationBlend;
@@ -117,6 +118,7 @@ public class Player : MonoBehaviour
     public float stunCoolTime;
     private float curStunCoolTime;
     private LayerMask enemyLayer;
+    public ESN08Phase1 phase1ESN08;
 
     void Awake()
     {
@@ -160,6 +162,8 @@ public class Player : MonoBehaviour
         HackingCoolDown();
 
         EnemysStun();
+
+        SubdueCancel();
     }
 
     void GetInput()
@@ -173,7 +177,7 @@ public class Player : MonoBehaviour
         dDown = Input.GetButton("Dodge");
         gDown = Input.GetButtonDown("GunOn");
         lDown = Input.GetButton("Reload");
-        aDown = Input.GetButton("Interaction");
+        aDown = isSubdue ? Input.GetButtonDown("Interaction") : Input.GetButton("Interaction");
         iDown = Input.GetButtonDown("Inventory");
         eDown = Input.GetButtonDown("FlashLight");
         qDown = Input.GetButtonDown("Cancel");
@@ -187,7 +191,7 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        if (!isDodge && !isInteraction)
+        if (!isDodge && !isInteraction && !isSubdue)
         {
             if(isGunOn)
             {
@@ -269,7 +273,7 @@ public class Player : MonoBehaviour
         culDodgeTime += Time.deltaTime;
         isDodgeReady = dodgeCoolTime < culDodgeTime;
 
-        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking)
+        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue)
         {
             isShotEnd = true;
             isDodge = true;
@@ -300,7 +304,7 @@ public class Player : MonoBehaviour
     void GunOnMove()
     {
         UIManager.Instance.aim.SetActive(isGunOn);
-        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd)
+        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue)
         {
             isGunOn = !isGunOn;
             weapon.gameObject.SetActive(isGunOn);
@@ -332,7 +336,7 @@ public class Player : MonoBehaviour
         if (sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
             return;
 
-        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd)
+        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue)
         {
             isGunOn = true;
             isZoom = false;
@@ -368,9 +372,9 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime;
         isFireReady = (weapon.delay < fireDelay) && (weapon.isSemiauto ? isSemiReady : true);
 
-        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle;
+        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue;
 
-        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking)
+        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue)
         {
             isShotEnd = false;
             fireDelay = 0;
@@ -461,7 +465,7 @@ public class Player : MonoBehaviour
 
     void ZoomInOut()
     {
-        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn)
+        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue)
         {
             isZoom = !isZoom;
         }
@@ -508,7 +512,7 @@ public class Player : MonoBehaviour
 
     void Reload()
     {
-        if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
+        if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking && !isSubdue) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
             isReload = true;
             isZoom = false;
@@ -577,9 +581,9 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Attack")
+        if (other.CompareTag("Attack"))
         {
-            if (!isDamage)
+            if (!isDamage && !isSubdue)
             {
                 Attack attack = other.GetComponent<Attack>();
                 curHp -= attack.damage;
@@ -588,6 +592,7 @@ public class Player : MonoBehaviour
                 StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z)));
             }
         }
+        
     }
 
     IEnumerator OnDamage(Vector3 enemyPos)
@@ -617,7 +622,7 @@ public class Player : MonoBehaviour
         {
             interactionObj = hit.transform.GetComponent<Interaction>();
 
-            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen)
+            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue)
             {
                 isInteraction = true;
                 isZoom = false;
@@ -677,7 +682,7 @@ public class Player : MonoBehaviour
         RaycastHit hit1;
         //RaycastHit hit2;
 
-        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn)
+        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue)
         {
             qToggle = !qToggle;
         }
@@ -755,7 +760,7 @@ public class Player : MonoBehaviour
         enemyLayer = LayerMask.GetMask("Enemy");
         StunCoolDown();
 
-        if (skDown2 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && curStunCoolTime >= stunCoolTime)
+        if (skDown2 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && curStunCoolTime >= stunCoolTime && !isSubdue)
         {
             //Debug.Log("sk2");
             curStunCoolTime = 0;
@@ -790,7 +795,7 @@ public class Player : MonoBehaviour
 
     void OCInventory()
     {
-        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating)
+        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue)
         {
 
             if (iDown)
@@ -822,7 +827,7 @@ public class Player : MonoBehaviour
 
     void OCMap()
     {
-        if((mDown || qDown) && !isShot && !isDodge && !isHacking && !isReload && !isInteraction)
+        if((mDown || qDown) && !isShot && !isDodge && !isHacking && !isReload && !isInteraction && !isSubdue)
         {
             if(mDown)
             {
@@ -841,6 +846,14 @@ public class Player : MonoBehaviour
                     UIManager.Instance.miniMapCamera.orthographicSize = 10;
                 }
             }
+        }
+    }
+
+    void SubdueCancel()
+    {
+        if(isSubdue && aDown && phase1ESN08.curSubdueProgress > 0.4f)
+        {
+            phase1ESN08.curSubdueProgress -= 0.3f;
         }
     }
 

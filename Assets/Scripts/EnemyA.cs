@@ -25,8 +25,6 @@ public class EnemyA : Enemy
         HackingUI();
 
         HackingCoolDown();
-
-
     }
 
     void TargetPlayer()
@@ -146,13 +144,6 @@ public class EnemyA : Enemy
             }
         }
 
-    }
-
-    void RotationSpeedUp()
-    {
-        Vector3 lookrotation = nav.steeringTarget - transform.position;
-        if(lookrotation != Vector3.zero)
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime);
     }
 
     void OnDrawGizmos()

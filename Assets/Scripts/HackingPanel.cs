@@ -22,20 +22,20 @@ public class HackingPanel : MonoBehaviour
 
     void UIUpdate()
     {
-        if (EnemyInfo != null)
-        {
-            UIManager.Instance.EnemyModelName.text = EnemyInfo.GetComponent<Enemy>().modelName;
-            UIManager.Instance.IMEI.text = EnemyInfo.GetComponent<Enemy>().iMEI;
-            UIManager.Instance.EnemyElec.text = EnemyInfo.GetComponent<Enemy>().curHealth.ToString("F2");
-            UIManager.Instance.HitArea.text = "Critical Area : " + EnemyEnumToString((int)EnemyInfo.GetComponent<Enemy>().hitAreaType);
-        }
-        else
-        {
-            UIManager.Instance.EnemyModelName.text = "Missing";
-            UIManager.Instance.IMEI.text = "Missing";
-            UIManager.Instance.EnemyElec.text = "Missing";
-            UIManager.Instance.HitArea.text = "Missing";
-        }
+        //if (EnemyInfo != null)
+        //{
+        //    UIManager.Instance.EnemyModelName.text = EnemyInfo.GetComponent<Enemy>().modelName;
+        //    UIManager.Instance.IMEI.text = EnemyInfo.GetComponent<Enemy>().iMEI;
+        //    UIManager.Instance.EnemyElec.text = EnemyInfo.GetComponent<Enemy>().curHealth.ToString("F2");
+        //    UIManager.Instance.HitArea.text = "Critical Area : " + EnemyEnumToString((int)EnemyInfo.GetComponent<Enemy>().hitAreaType);
+        //}
+        //else
+        //{
+        //    UIManager.Instance.EnemyModelName.text = "Missing";
+        //    UIManager.Instance.IMEI.text = "Missing";
+        //    UIManager.Instance.EnemyElec.text = "Missing";
+        //    UIManager.Instance.HitArea.text = "Missing";
+        //}
     }
 
     string EnemyEnumToString(int n)

@@ -49,18 +49,17 @@ public class UIManager : MonoBehaviour
 
     [Space(10)]
     [Header("HackingUI")]
-    public GameObject HackingUI;
     public Slider HackingGauge;
-    public Text EnemyModelName;
-    public Text IMEI;
-    public Text EnemyElec;
-    public Text HitArea;
 
 
     [Space(10)]
     [Header("MiniMap")]
     public GameObject MiniMap;
     public Camera miniMapCamera;
+
+    [Space(10)]
+    [Header("SubDue")]
+    public Slider SubDueSlider;
 
     void Update()
     {

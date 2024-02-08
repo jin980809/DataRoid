@@ -4,11 +4,28 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance
+    {
+        get
+        {
+            if (m_instance == null)
+            {
+                m_instance = FindObjectOfType<GameManager>();
+            }
+
+            return m_instance;
+        }
+    }
+    private static GameManager m_instance;
+
+
     public Player player;
     public string fileName = "Save";
 
     public Transform[] spawnPoints;
     public int spawnPoint;
+
+    public int ESN08Phase2Diff = 0;
 
     List<Dictionary<string, object>> dicList = new List<Dictionary<string, object>>();
 

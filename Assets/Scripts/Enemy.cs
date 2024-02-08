@@ -135,8 +135,8 @@ public class Enemy : MonoBehaviour
 
         //if(isSkill)
         //{
-        //    Vector3 enemyDir = new Vector3(transform.position.x, 20, transform.position.z);
-        //    Vector3 playerDir = new Vector3(target.transform.position.x, 20, target.transform.position.z);
+        //    Vector3 enemyDir = new Vector3(transform.position.x, 0, transform.position.z);
+        //    Vector3 playerDir = new Vector3(target.transform.position.x, 0, target.transform.position.z);
         //    Vector3 KnockBackPos = transform.position + (enemyDir - playerDir) * 5f;
         //    transform.position = Vector3.Lerp(transform.position, KnockBackPos, 10 * Time.deltaTime);
         //}
@@ -431,5 +431,12 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogWarning("Invalid row index for updating CSV file.");
         }
+    }
+
+    public void RotationSpeedUp()
+    {
+        Vector3 lookrotation = nav.steeringTarget - transform.position;
+        if (lookrotation != Vector3.zero)
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime);
     }
 }
