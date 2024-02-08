@@ -46,10 +46,10 @@ public class CameraMove : MonoBehaviour
 
         followCam();
 
-        switchCamera();
+        SwitchCamera();
     }
 
-    void switchCamera()
+    void SwitchCamera()
     {
         CinemachineVirtualCamera cineVirCam = cineCameraObj.GetComponent<CinemachineVirtualCamera>();
         Cinemachine3rdPersonFollow cine3rd = cineVirCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();

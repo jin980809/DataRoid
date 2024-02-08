@@ -2574,7 +2574,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -21.436, y: 2.8580003}
+  m_AnchoredPosition: {x: -19.49, y: 2.8580003}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &186499771 stripped
@@ -16478,6 +16478,21 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3428183716228836659, guid: 692f3e2424735f34aa9a8db1f136a276,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3428183716228836659, guid: 692f3e2424735f34aa9a8db1f136a276,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.613
+      objectReference: {fileID: 0}
+    - target: {fileID: 3428183716228836659, guid: 692f3e2424735f34aa9a8db1f136a276,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.085
+      objectReference: {fileID: 0}
     - target: {fileID: 5577754440976232477, guid: 692f3e2424735f34aa9a8db1f136a276,
         type: 3}
       propertyPath: m_IsActive
@@ -17376,7 +17391,7 @@ PrefabInstance:
     - target: {fileID: 4972167997025879799, guid: 22d2c44fed4ffa743aac7afe4d993905,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.789
+      value: -4.542
       objectReference: {fileID: 0}
     - target: {fileID: 4972167997025879799, guid: 22d2c44fed4ffa743aac7afe4d993905,
         type: 3}
@@ -19261,12 +19276,18 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Interaction : F
 
-    FlashLight: E
+    FlashLight: T
 
     Inventory : I
 
     Restart : P
 
+    HackingMode
+    : Q
+
+    MiniMap : M
+
+    WeaponChange, 1 2 3
 
 '
   m_isRightToLeft: 0
@@ -19399,7 +19420,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -21.436, y: 2.8580003}
+  m_AnchoredPosition: {x: -19.49, y: 2.8580003}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!64 &1411891573
