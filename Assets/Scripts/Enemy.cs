@@ -111,11 +111,6 @@ public class Enemy : MonoBehaviour
         rectTransform = enemyPrefab.GetComponent<RectTransform>();
     }
 
-    void Update()
-    {
-       
-    }
-
     public void Stun(bool isSkill)
     {
         //애니메이션 실행
@@ -257,7 +252,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator OnDamageOut()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
         //nav.isStopped = false;
         isHit = false;
     }
@@ -271,7 +266,8 @@ public class Enemy : MonoBehaviour
             {
                 UpdateUIPosition();
                 UpdateUIScale();
-                enemyUI.SetActive(true);
+                if(enemyUI != null)
+                    enemyUI.SetActive(true);
             }
             else
             {
@@ -351,8 +347,12 @@ public class Enemy : MonoBehaviour
                 break;
         }
 
-        Vector3 canvasPos = screenPos / canvas.scaleFactor;
-        enemyUI.transform.position = canvasPos;
+        if (enemyUI != null)
+        {
+            Vector3 canvasPos = screenPos / canvas.scaleFactor;
+            enemyUI.transform.position = canvasPos;
+        }
+
     }
 
     void UpdateUIScale()
@@ -360,7 +360,8 @@ public class Enemy : MonoBehaviour
         float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
         float scaleFactor = Mathf.Clamp(10f / distance, 0.5f, 2f);
 
-        enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+        if(enemyUI != null)
+            enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
     }
 
     void LoadCSVFile()

@@ -87,6 +87,7 @@ public class Player : MonoBehaviour
     public bool qSkillOn = false;
     bool eSkillOn = false;
     public bool isSubdue = false;
+    public bool isStun;
 
     private float rotationVelocity;
     private float _animationBlend;
@@ -191,11 +192,11 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        if (!isDodge && !isInteraction && !isSubdue)
+        if (!isDodge && !isInteraction && !isSubdue && !isStun)
         {
             if(isGunOn)
             {
-                if (rDown && !isReload && isShotEnd && !isZoom) targetSpeed = gunRunSpeed;
+                if (rDown && !isReload && isShotEnd && !isZoom && !isHacking) targetSpeed = gunRunSpeed;
                 else targetSpeed = gunWalkSpeed;
             }
             else
@@ -226,7 +227,7 @@ public class Player : MonoBehaviour
             {
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, 0.17f);
 
-                transform.rotation = Quaternion.Euler(0.0f, (!isShotEnd || isZoom) ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
+                transform.rotation = Quaternion.Euler(0.0f, (!isShotEnd || isZoom || isHacking || isSubdue || isStun) ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
             }
             else
             {
@@ -238,7 +239,7 @@ public class Player : MonoBehaviour
         {
             isWalk = false;
 
-            if ((!isShotEnd || isZoom) && !isDodge && !isInteraction)
+            if ((!isShotEnd || isZoom || isHacking) && !isDodge && !isInteraction)
                 transform.rotation = Quaternion.Euler(0.0f, _mainCamera.transform.eulerAngles.y, 0.0f);
         }
 
@@ -273,7 +274,7 @@ public class Player : MonoBehaviour
         culDodgeTime += Time.deltaTime;
         isDodgeReady = dodgeCoolTime < culDodgeTime;
 
-        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue)
+        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun)
         {
             isShotEnd = true;
             isDodge = true;
@@ -304,7 +305,7 @@ public class Player : MonoBehaviour
     void GunOnMove()
     {
         UIManager.Instance.aim.SetActive(isGunOn);
-        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue)
+        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun)
         {
             isGunOn = !isGunOn;
             weapon.gameObject.SetActive(isGunOn);
@@ -336,7 +337,7 @@ public class Player : MonoBehaviour
         if (sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
             return;
 
-        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue)
+        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue && !isStun)
         {
             isGunOn = true;
             isZoom = false;
@@ -372,9 +373,9 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime;
         isFireReady = (weapon.delay < fireDelay) && (weapon.isSemiauto ? isSemiReady : true);
 
-        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue;
+        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue && !isStun;
 
-        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue)
+        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun)
         {
             isShotEnd = false;
             fireDelay = 0;
@@ -465,7 +466,7 @@ public class Player : MonoBehaviour
 
     void ZoomInOut()
     {
-        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue)
+        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue && !isStun)
         {
             isZoom = true;
         }
@@ -516,7 +517,8 @@ public class Player : MonoBehaviour
 
     void Reload()
     {
-        if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking && !isSubdue) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
+        if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
+            && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking && !isSubdue && !isStun) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
             isReload = true;
             isZoom = false;
@@ -590,28 +592,34 @@ public class Player : MonoBehaviour
             if (!isDamage && !isSubdue)
             {
                 Attack attack = other.GetComponent<Attack>();
-                curHp -= attack.damage;
+
                 //Debug.Log(curHp);
 
-                StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z)));
+                StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z), attack.damage));
+                if(other.transform.GetComponentInParent<EnemyB>() != null)
+                {
+                    other.transform.GetComponentInParent<EnemyB>().isAimming = false;
+                    other.enabled = false;
+                    other.transform.GetComponentInParent<EnemyB>().isMeleeAttack = false;
+                    other.transform.GetComponentInParent<EnemyB>().isSCoolDown = true;
+                }
             }
         }
         
     }
 
-    IEnumerator OnDamage(Vector3 enemyPos)
+
+    public IEnumerator OnDamage(Vector3 enemyPos, float damage)
     {
         isDamage = true;
+        isStun = false;
+        curHp -= damage;
         Vector3 playerDir = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         Vector3 EnemyDir = new Vector3(enemyPos.x, enemyPos.y + 1f, enemyPos.z);
         damageEffect.transform.rotation = Quaternion.LookRotation((EnemyDir - playerDir).normalized);
         damageEffect.SetActive(true);
 
-        yield return new WaitForSeconds(0.5f);
-        //rigid.AddForce((playerDir - enemyPos).normalized * 50, ForceMode.Impulse);
-        //anim.SetTrigger("Hit");
-
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         isDamage = false;
         damageEffect.SetActive(false);
         yield return null;
@@ -626,7 +634,7 @@ public class Player : MonoBehaviour
         {
             interactionObj = hit.transform.GetComponent<Interaction>();
 
-            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue)
+            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun)
             {
                 isInteraction = true;
                 isZoom = false;
@@ -686,7 +694,7 @@ public class Player : MonoBehaviour
         RaycastHit hit1;
         //RaycastHit hit2;
 
-        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue)
+        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun)
         {
             qToggle = !qToggle;
         }
@@ -764,7 +772,7 @@ public class Player : MonoBehaviour
         enemyLayer = LayerMask.GetMask("Enemy");
         StunCoolDown();
 
-        if (skDown2 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && curStunCoolTime >= stunCoolTime && !isSubdue)
+        if (skDown2 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && curStunCoolTime >= stunCoolTime && !isSubdue && !isStun)
         {
             //Debug.Log("sk2");
             curStunCoolTime = 0;
@@ -799,7 +807,7 @@ public class Player : MonoBehaviour
 
     void OCInventory()
     {
-        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue)
+        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue && !isStun)
         {
 
             if (iDown)
@@ -859,6 +867,19 @@ public class Player : MonoBehaviour
         {
             phase1ESN08.curSubdueProgress -= 0.3f;
         }
+    }
+
+    public void Stun(float stunTime)
+    {
+        isStun = true;
+        //기절 애니메이션 실행
+        StartCoroutine(StunOut(stunTime));
+    }
+
+    IEnumerator StunOut(float stunTime)
+    {
+        yield return new WaitForSeconds(stunTime);
+        isStun = false;
     }
 
     void OnFootstep(AnimationEvent animationEvent)

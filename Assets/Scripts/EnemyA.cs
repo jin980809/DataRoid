@@ -128,8 +128,7 @@ public class EnemyA : Enemy
         {
             nav.SetDestination(aroundTarget[aroundTargetIndex].position);
 
-            if ((transform.position.x == aroundTarget[aroundTargetIndex].position.x) &&
-                (transform.position.z == aroundTarget[aroundTargetIndex].position.z))
+            if (nav.remainingDistance <= 0.5f)
             {
 
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
