@@ -4933,7 +4933,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   materialLayers: []
   procedrualGradientEnabled: 1
-  procedrualGradientUpdate: 1
+  procedrualGradientUpdate: 0
   procedrualGradientRamp:
     serializedVersion: 2
     key0: {r: 0, g: 0, b: 0, a: 1}
@@ -4965,7 +4965,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   procedrualRampColorTint: {r: 0.40392157, g: 1, b: 0.9019608, a: 0}
   controlParticleSystem: {fileID: 3223525736335272229}
-  getRenderersInChildren: {fileID: 0}
+  getRenderersInChildren: {fileID: 3223525736363261828}
   getRenderersCustom: []
 --- !u!1001 &7765564651594927478
 PrefabInstance:
