@@ -7,7 +7,7 @@ public class EnemyA : Enemy
     [Space(10f)]
     public int aroundTargetIndex = 0;
     public Transform[] aroundTarget;
-
+    private bool aroundIndexIncre;
     void Update()
     {
         Around();
@@ -130,19 +130,36 @@ public class EnemyA : Enemy
 
             if (nav.remainingDistance <= 0.5f)
             {
-
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
-                if (aroundTargetIndex == aroundTarget.Length - 1)
+                //if (aroundTargetIndex == aroundTarget.Length - 1)
+                //{
+                //    aroundTargetIndex = 0;
+                //}
+                //else
+                //{
+                //    aroundTargetIndex++;
+                //}
+
+
+                if(aroundTargetIndex == aroundTarget.Length - 1)
                 {
-                    aroundTargetIndex = 0;
+                    aroundIndexIncre = false;
                 }
-                else
+                else if (aroundTargetIndex == 0)
+                {
+                    aroundIndexIncre = true;
+                }
+
+                if (aroundIndexIncre)
                 {
                     aroundTargetIndex++;
                 }
+                else if(!aroundIndexIncre)
+                {
+                    aroundTargetIndex--;
+                }
             }
         }
-
     }
 
     void OnDrawGizmos()

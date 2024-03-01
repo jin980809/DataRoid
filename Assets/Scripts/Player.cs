@@ -602,6 +602,10 @@ public class Player : MonoBehaviour
                     other.enabled = false;
                     other.transform.GetComponentInParent<EnemyB>().isMeleeAttack = false;
                     other.transform.GetComponentInParent<EnemyB>().isSCoolDown = true;
+                    other.transform.GetComponentInParent<EnemyB>().isSpecialAttack = false;
+
+                    other.transform.GetComponentInParent<EnemyB>().anim.SetTrigger("doMeleeAttack");
+                    isStun = false;
                 }
             }
         }
@@ -871,9 +875,13 @@ public class Player : MonoBehaviour
 
     public void Stun(float stunTime)
     {
-        isStun = true;
-        //기절 애니메이션 실행
-        StartCoroutine(StunOut(stunTime));
+        if (!isStun)
+        {
+            Debug.Log("aaa");
+            isStun = true;
+            //기절 애니메이션 실행
+            StartCoroutine(StunOut(stunTime));
+        }
     }
 
     IEnumerator StunOut(float stunTime)

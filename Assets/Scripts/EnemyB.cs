@@ -6,7 +6,8 @@ public class EnemyB : Enemy
 {
     int diff = 1;
 
-    [SerializeField] private bool isMoveStop = false;
+    private bool isMoveStop = false;
+    private bool isMoveFar = false;
     public float moveDistance;
     public float stopDistance;
 
@@ -38,6 +39,10 @@ public class EnemyB : Enemy
     IEnumerator cNormalAttack;
     IEnumerator cMeleeAttack;
 
+    public GameObject handGun;
+    public GameObject riffle;
+    public Interaction p2EndInter;
+
     void Update()
     {
         LookAtTarget();
@@ -48,46 +53,87 @@ public class EnemyB : Enemy
 
         Targeting();
 
-        nav.speed = runSpeed;
-
-        anim.SetFloat("speed", nav.speed);
+        //anim.SetFloat("speed", nav.speed);
+        DiffSetting();
 
         Attack();
 
         Stun();
 
-        DashAttack();
+        //DashAttack();
+
+        Die();
+    }
+
+    void DiffSetting()
+    {
+        if (!isMeleeAttack)
+        {
+            nav.speed = walkSpeed;
+        }
+        else
+        {
+            nav.speed = runSpeed;
+        }
+        diff = GameManager.Instance.ESN08Phase2Diff;
+        if (diff == 1)
+            handGun.SetActive(true);
+        else
+            riffle.SetActive(true);
+        anim.SetInteger("Diff", diff);
+    }
+
+    void Die()
+    {
+        if(isDeath)
+        {
+            p2EndInter.enabled = true;
+        }
     }
 
     void Targeting()
     {
         Vector3 playerTargeting = new Vector3(target.transform.position.x, 0, target.transform.position.z);
         Vector3 enemyPos = new Vector3(transform.position.x, 0, transform.position.z);
-
+        
         float distance = Vector3.Distance(enemyPos, playerTargeting);
         if (!isAimming && !isStun)
         {
             if (distance <= stopDistance) // «√∑π¿ÃæÓøÕ ∏÷æÓ¡¸
             {
+                anim.SetFloat("Vertical", -1f);
+                anim.SetFloat("speed", nav.speed);
                 nav.isStopped = false;
-                isMoveStop = true;
+                isMoveFar = true;
+                isMoveStop = false;
                 Vector3 oppositeDirection = (transform.position - target.transform.position).normalized;
                 nav.SetDestination(transform.position + oppositeDirection * 3.5f);
             }
 
             else if (distance < moveDistance && distance > stopDistance) // ∏ÿ√„
             {
+                anim.SetFloat("speed", 0);
                 nav.isStopped = true;
                 isMoveStop = true;
+                isMoveFar = false;
             }
 
             else if (distance >= moveDistance) //«√∑π¿ÃæÓø°∞‘ ¿Ãµø
             {
+                anim.SetFloat("Vertical", 1f);
+                anim.SetFloat("speed", nav.speed);
                 isMoveStop = false;
+                isMoveFar = false;
                 nav.isStopped = false;
                 nav.SetDestination(target.transform.position);
             }
         }
+        else
+        {
+            if(isMeleeAttack)
+                nav.SetDestination(target.transform.position);
+        }
+
     }
 
     void LookAtTarget()
@@ -113,17 +159,20 @@ public class EnemyB : Enemy
 
         RaycastHit hit;
 
-        if(isMoveStop && !isNAttackReady && !isSAttackReady && !isNormalAttack && !isSpecialAttack && !isMeleeAttack & !isDashAttack && !isStun && Physics.Raycast(attackPos.position, -attackPos.forward, out hit, 1.5f, LayerMask.GetMask("Enviroment")))
+        if(isMoveFar && !isNAttackReady && !isSAttackReady && !isNormalAttack && !isSpecialAttack && !isMeleeAttack & !isDashAttack && !isStun && Physics.Raycast(attackPos.position, -attackPos.forward, out hit, 1.5f, LayerMask.GetMask("Enviroment")))
         {
-            isDashAttack = true;
+            //isDashAttack = true;
             isAimming = true;
             attackCollider.enabled = true;
-            Debug.Log("DashAttackReady");
+            //nav.SetDestination(target.transform.position);
+            MeleeAttack();
+            //Debug.Log("DashAttackReady");
         }
-        else if (isMoveStop && !isNormalAttack && !isSpecialAttack && !isMeleeAttack && curSAttack1CoolTime > sAttackCoolTime && !isSAttackReady && !isNAttackReady && !isDashAttack && !isStun)
+        else if ((isMoveStop || isMoveFar) && !isNormalAttack && !isSpecialAttack && !isMeleeAttack && curSAttack1CoolTime > sAttackCoolTime && !isSAttackReady && !isNAttackReady && !isDashAttack && !isStun)
         {
             isSAttackReady = true;
             isSCoolDown = false;
+            
             curSAttack1CoolTime = 0;
             Debug.Log("Special1AttackReady");
             cSpecialAttack = SpecialAttackReady();
@@ -134,6 +183,7 @@ public class EnemyB : Enemy
             isNAttackReady = true;
             isNCoolDown = false;
             curNAttackCoolTime = 0;
+            anim.SetBool("isAimming", true);
             Debug.Log("NormalAttackReady");
             cNormalAttack = NormalAttackReady();
             StartCoroutine(cNormalAttack);
@@ -164,6 +214,8 @@ public class EnemyB : Enemy
         //¿Ã∆—∆Æ √ﬂ∞°
 
         yield return new WaitForSeconds(3f);
+        anim.SetBool("isAimming", false);
+        anim.SetBool("isShotOut", false);
         isNormalAttack = true;
         isNAttackReady = false;
 
@@ -174,16 +226,19 @@ public class EnemyB : Enemy
             NormalAttack();
         }
 
+        yield return new WaitForSeconds(0.5f);
+
         isNormalAttack = false;
         isNCoolDown = true;
         isAimming = false;
+        anim.SetBool("isShotOut", true);
     }
 
     void NormalAttack()
     {
         RaycastHit hit;
         //√—±∏ »≠ø∞ ¿Ã∆—∆Æ
-
+        anim.SetTrigger("doShot");
         if (Physics.SphereCast(attackPos.position, 0.05f, attackPos.forward, out hit, 20, LayerMask.GetMask("Player")))
         {
             if (!IsObstacleBetween(attackPos.position, hit.transform.position, LayerMask.GetMask("Enviroment")))
@@ -216,8 +271,7 @@ public class EnemyB : Enemy
         yield return new WaitForSeconds(1f);
         SpecialAttack();
 
-        yield return new WaitForSeconds(1f);
-        isSpecialAttack = false;
+        //yield return new WaitForSeconds(1f);
         nav.isStopped = false;
     }
 
@@ -236,19 +290,22 @@ public class EnemyB : Enemy
                 Debug.Log("player stun");
                 Player playerObject = hits[0].collider.gameObject.GetComponent<Player>();
                 playerObject.Stun(5f);
-                cMeleeAttack = MeleeAttack();
-                StartCoroutine(cMeleeAttack);
+                nav.SetDestination(hits[0].collider.transform.position);
+                isAimming = true;
+                MeleeAttack();
             }
             else
             {
                 isAimming = false;
                 isSCoolDown = true;
+                isSpecialAttack = false;
             }
         }
         else
         {
             isAimming = false;
             isSCoolDown = true;
+            isSpecialAttack = false;
         }
         //StartCoroutine(Special1AttackOut());
     }
@@ -263,20 +320,19 @@ public class EnemyB : Enemy
         return false;
     }
 
-    IEnumerator MeleeAttack()
+    void MeleeAttack()
     {
         Debug.Log("MeleeAttack");
         isMeleeAttack = true;
-        isAimming = true;
-        nav.SetDestination(target.transform.position);
+        anim.SetFloat("speed", runSpeed);
+        anim.SetFloat("Vertical", 1);
         attackCollider.enabled = true;
-        yield return null;
     }
 
     public void Stun()
     {
-        if(isStun)
-        {
+        if (isStun)
+        { 
             //Ω∫≈≥ ƒ⁄∑Á∆æ ∏ÿ√ﬂ±‚
             if (cMeleeAttack != null)
             {
@@ -308,13 +364,13 @@ public class EnemyB : Enemy
         }
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            other.GetComponent<Player>().Stun(3f);
-        }
-    }
+    //void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.CompareTag("Player"))
+    //    {
+    //        other.GetComponent<Player>().Stun(3f);
+    //    }
+    //}
 
     void OnDrawGizmos()
     {
@@ -338,6 +394,11 @@ public class EnemyB : Enemy
         Gizmos.DrawRay(playerPosition, rightRayRotation * playerDirection * flashDistance);
         Gizmos.DrawRay(attackPos.position, transform.forward * 20);
         Gizmos.DrawRay(attackPos.position, -transform.forward * 1.5f);
+
+    }
+    
+    public void ShotAnimEnd()
+    {
 
     }
 }

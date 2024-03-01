@@ -59,7 +59,7 @@ public class Enemy : MonoBehaviour
     }
     public dropItem[] dropItems;
 
-    List<Dictionary<string, object>> enemyInfo = new List<Dictionary<string, object>>();
+    public List<Dictionary<string, object>> enemyInfo = new List<Dictionary<string, object>>();
 
     [Space(10f)]
     List<string[]> data = new List<string[]>();
@@ -85,6 +85,12 @@ public class Enemy : MonoBehaviour
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         LoadCSVFile();
+
+        enemyInfo.Clear();
+
+        enemyInfo = CSVReader.Read(fileName);
+
+        EnemyInitialization();
     }
 
     public enum Type
@@ -100,13 +106,7 @@ public class Enemy : MonoBehaviour
     public Type hitAreaType;
 
     void Start()
-    {
-        enemyInfo.Clear();
-
-        enemyInfo = CSVReader.Read(fileName);
-
-        EnemyInitialization();
-
+    { 
         //curHealth = maxHealth;
         rectTransform = enemyPrefab.GetComponent<RectTransform>();
     }
@@ -151,6 +151,7 @@ public class Enemy : MonoBehaviour
         if (int.Parse(enemyInfo[ID]["isDead"] + "") == 1)
         {
             this.gameObject.SetActive(false);
+            isDeath = true;
         }
 
         maxHealth = float.Parse(enemyInfo[ID]["HP"] + "");

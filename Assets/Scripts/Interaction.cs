@@ -13,6 +13,7 @@ public class Interaction : MonoBehaviour
         ConnectCCTV = 2,
         Door = 3,
         SavePoint = 4,
+        MovePlayer = 5,
     };
     public Type interactionType;
 
@@ -47,6 +48,10 @@ public class Interaction : MonoBehaviour
     public string fileName = "Save.csv";
     List<string[]> data = new List<string[]>();
     string[] tempData;
+
+    [Space(10)]
+    [Header("MovePlayer")]
+    public Transform movePoint;
 
     void Start()
     {
@@ -93,6 +98,10 @@ public class Interaction : MonoBehaviour
 
             case Type.SavePoint:
                 SaveCSVFile(savePoint);
+                break;
+
+            case Type.MovePlayer:
+                MovePlayer();
                 break;
         }
     }
@@ -219,5 +228,10 @@ public class Interaction : MonoBehaviour
         StreamWriter outStream = System.IO.File.CreateText(filepath + fileName);
         outStream.Write(sb);
         outStream.Close();
+    }
+
+    void MovePlayer()
+    {
+        player.transform.position = movePoint.position;
     }
 }

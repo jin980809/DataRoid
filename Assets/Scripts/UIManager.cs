@@ -61,6 +61,10 @@ public class UIManager : MonoBehaviour
     [Header("SubDue")]
     public Slider SubDueSlider;
 
+    [Space(10)]
+    [Header("Create TextBox")]
+    public GameObject textBox;
+
     void Update()
     {
         TextUpdate();
@@ -79,5 +83,11 @@ public class UIManager : MonoBehaviour
         ammoAmount.text = "Ammo : " + MaterialManager.Instance.Ammo;
         specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.SpecialAmmo;
         ExpCapsuleAmount.text = "ExpCapsule : " + MaterialManager.Instance.ExpCapsule;
+    }
+
+    public void CreateTextBox(string text)
+    {
+        GameObject box = Instantiate(textBox);
+        box.GetComponentInChildren<Text>().text = text;
     }
 }
