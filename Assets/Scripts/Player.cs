@@ -430,6 +430,8 @@ public class Player : MonoBehaviour
                             {
                                 enemy.OnDamage(weapon.damage * sheildDiscountRate, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
                             }
+
+                            Debug.Log(isEnemyHitArea(hit.collider.transform.gameObject));
                         }
                     }
                     else if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, LayerMask.GetMask("Enviroment")))

@@ -7,7 +7,7 @@ public class EnemyA : Enemy
     [Space(10f)]
     public int aroundTargetIndex = 0;
     public Transform[] aroundTarget;
-    private bool aroundIndexIncre;
+    [SerializeField] private bool aroundIndexIncre;
     void Update()
     {
         Around();
@@ -35,6 +35,7 @@ public class EnemyA : Enemy
         if (hit.Length > 0)
         {
             Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
+
             if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment")))
             {
                 if (!isAttack && !isDeath && !isStun)
@@ -79,7 +80,7 @@ public class EnemyA : Enemy
 
                 nav.speed = runSpeed;
 
-                if ((transform.position.x == playerShotPos.x) && (transform.position.z == playerShotPos.z))
+                if (nav.remainingDistance <= 0.5f)
                     isShotChase = false;
 
             }
@@ -126,8 +127,6 @@ public class EnemyA : Enemy
     {
         if (!isChase && !isDeath && !isStun)
         {
-            nav.SetDestination(aroundTarget[aroundTargetIndex].position);
-
             if (nav.remainingDistance <= 0.5f)
             {
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
@@ -158,6 +157,8 @@ public class EnemyA : Enemy
                 {
                     aroundTargetIndex--;
                 }
+
+                nav.SetDestination(aroundTarget[aroundTargetIndex].position);
             }
         }
     }

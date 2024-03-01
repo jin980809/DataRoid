@@ -177,6 +177,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
+            Debug.Log("aa");
             curHealth -= damage;
         }
 

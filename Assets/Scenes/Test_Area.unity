@@ -3821,9 +3821,9 @@ GameObject:
   m_Component:
   - component: {fileID: 225658095}
   - component: {fileID: 225658096}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitRightLegCollider
-  m_TagString: Enemy
+  m_TagString: EnemyRightLeg
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3850,7 +3850,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 225658094}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.058489054
@@ -4345,9 +4345,9 @@ GameObject:
   m_Component:
   - component: {fileID: 283038914}
   - component: {fileID: 283038915}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitRightArmCollider
-  m_TagString: Enemy
+  m_TagString: EnemyRightArm
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4375,7 +4375,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 283038913}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.043914076
@@ -4691,9 +4691,9 @@ GameObject:
   m_Component:
   - component: {fileID: 321543812}
   - component: {fileID: 321543813}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitLeftLegCollider
-  m_TagString: Enemy
+  m_TagString: EnemyLeftLeg
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4720,7 +4720,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 321543811}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.069426365
@@ -4827,9 +4827,9 @@ GameObject:
   m_Component:
   - component: {fileID: 331381755}
   - component: {fileID: 331381756}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitRightSholderCollider
-  m_TagString: Enemy
+  m_TagString: EnemyRightArm
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4857,7 +4857,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 331381754}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.06772499
@@ -5207,28 +5207,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5843023440420259604, guid: d056f6bb14624ef4d9ac3fbbeb3e33d1, type: 3}
---- !u!1 &348696659 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7399549662697051291, guid: b426d6dfd6b6e344682eb79a2391720e,
-    type: 3}
-  m_PrefabInstance: {fileID: 580093131}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &348696665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 348696659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f8bf5b14178a2b4faa2f60677a47ff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  subdueCoolTime: 10
-  isPlayerSubdue: 0
-  subdueProgress: 10
-  curSubdueProgress: 0
 --- !u!1 &361755145
 GameObject:
   m_ObjectHideFlags: 0
@@ -5706,9 +5684,9 @@ GameObject:
   m_Component:
   - component: {fileID: 397361254}
   - component: {fileID: 397361255}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitLeftLegCollider
-  m_TagString: Enemy
+  m_TagString: EnemyLeftLeg
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5735,7 +5713,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 397361253}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.084596574
@@ -8958,7 +8936,7 @@ PrefabInstance:
         type: 3}
       propertyPath: enemy
       value: 
-      objectReference: {fileID: 348696659}
+      objectReference: {fileID: 0}
     - target: {fileID: 3795714899659485483, guid: b426d6dfd6b6e344682eb79a2391720e,
         type: 3}
       propertyPath: player
@@ -10528,12 +10506,6 @@ PrefabInstance:
 --- !u!4 &580093132 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2547953126270128557, guid: b426d6dfd6b6e344682eb79a2391720e,
-    type: 3}
-  m_PrefabInstance: {fileID: 580093131}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &580093134 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7399549662697051287, guid: b426d6dfd6b6e344682eb79a2391720e,
     type: 3}
   m_PrefabInstance: {fileID: 580093131}
   m_PrefabAsset: {fileID: 0}
@@ -24219,7 +24191,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1539251770}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 49.19, y: 7.881, z: -36.43}
+  m_LocalPosition: {x: -40.25, y: 7.881, z: 32.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -28031,9 +28003,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1810754959}
   - component: {fileID: 1810754960}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitLeftArmCollider
-  m_TagString: Enemy
+  m_TagString: EnemyLeftArm
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28060,7 +28032,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810754958}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.043914076
@@ -33257,9 +33229,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2038518281}
   - component: {fileID: 2038518282}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitLeftSholderCollider
-  m_TagString: Enemy
+  m_TagString: EnemyLeftArm
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33287,7 +33259,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2038518280}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.06772499
@@ -33936,9 +33908,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2078430884}
   - component: {fileID: 2078430885}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitBodyCollider
-  m_TagString: Enemy
+  m_TagString: EnemyBody
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33966,7 +33938,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2078430883}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.14620122
@@ -34107,51 +34079,6 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: a8d3bfb9ad6dffe4bbb54705593dd3a3, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9c1302e1d5dbcbb4cb06c4ed7b7e403f, type: 3}
---- !u!1 &2079510315
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2079510316}
-  - component: {fileID: 2079510317}
-  m_Layer: 0
-  m_Name: Attack
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2079510316
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2079510315}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 580093134}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2079510317
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2079510315}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.795784, y: 2.3976169, z: 1.9731121}
-  m_Center: {x: -0.073963165, y: 0.69880843, z: 1.1207266}
 --- !u!1 &2081855327
 GameObject:
   m_ObjectHideFlags: 0
@@ -34531,9 +34458,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2123454043}
   - component: {fileID: 2123454044}
-  m_Layer: 9
+  m_Layer: 15
   m_Name: HitRightLegCollider
-  m_TagString: Enemy
+  m_TagString: EnemyRightLeg
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -34560,7 +34487,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2123454042}
-  m_Material: {fileID: 13400000, guid: e7eeef35972b517418d79df2f4c80803, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.082200594
@@ -34871,7 +34798,7 @@ PrefabInstance:
     - target: {fileID: 1083584167207619033, guid: ecd24ecd0e92f2942a9690d0efb7e516,
         type: 3}
       propertyPath: m_Layer
-      value: 9
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 1083584167207945623, guid: ecd24ecd0e92f2942a9690d0efb7e516,
         type: 3}
@@ -34976,7 +34903,7 @@ PrefabInstance:
     - target: {fileID: 1083584168202079062, guid: ecd24ecd0e92f2942a9690d0efb7e516,
         type: 3}
       propertyPath: hitAreaType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1083584168202079062, guid: ecd24ecd0e92f2942a9690d0efb7e516,
         type: 3}
