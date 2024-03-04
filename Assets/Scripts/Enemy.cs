@@ -78,6 +78,7 @@ public class Enemy : MonoBehaviour
     private float curHackingDuration;
     public float hackingDuration;
     public Coroutine attackCoroutine;
+    public ParticleSystem cps;
 
     void Awake()
     {
@@ -160,6 +161,12 @@ public class Enemy : MonoBehaviour
         sheild = maxSheild;
     }
 
+    public void HitEffect(Vector3 spawnPosition)
+    {
+        cps.transform.position = spawnPosition;
+        cps.Emit(1);
+    }
+
     public void OnDamage(float damage, Vector3 playerShotPos, int hitArea, float sheildDamage)
     {
         if (isHacking && hitArea == (int)hitAreaType)
@@ -177,7 +184,6 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            Debug.Log("aa");
             curHealth -= damage;
         }
 
@@ -201,6 +207,13 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject, 4);
         }
     }
+
+    IEnumerator OnDamageOut()
+     {
+        yield return new WaitForSeconds(0.01f);
+        //nav.isStopped = false;
+        isHit = false;
+     }
 
     public void SwitchLight()
     {
@@ -250,13 +263,6 @@ public class Enemy : MonoBehaviour
             Success = true;
         }
         return Success;
-    }
-
-    IEnumerator OnDamageOut()
-    {
-        yield return new WaitForSeconds(0.1f);
-        //nav.isStopped = false;
-        isHit = false;
     }
 
     public void HackingUI()

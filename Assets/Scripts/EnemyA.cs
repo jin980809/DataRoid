@@ -51,7 +51,7 @@ public class EnemyA : Enemy
                 if (isShotChase && !isDeath && !isStun)
                 {
                     nav.SetDestination(playerShotPos);
-                    if ((transform.position.x == playerShotPos.x) && (transform.position.z == playerShotPos.z))
+                    if (nav.remainingDistance <= 0.5f)
                         isShotChase = false;
                 }
             }
@@ -79,10 +79,6 @@ public class EnemyA : Enemy
                 nav.SetDestination(playerShotPos);
 
                 nav.speed = runSpeed;
-
-                if (nav.remainingDistance <= 0.5f)
-                    isShotChase = false;
-
             }
         }
     }
