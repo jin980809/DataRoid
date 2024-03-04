@@ -10,8 +10,8 @@ public class Player : MonoBehaviour
     private Transform ShootPos;
     public Weapon weapon;
     public Transform borderPos;
-    public VisualEffect muzzleEffect;
-    public GameObject hitEffect;
+    public GameObject muzzleEffect;
+    public GameObject[] hitEffect;
     public GameObject damageEffect;
     public GameObject flashLight;
 
@@ -265,8 +265,16 @@ public class Player : MonoBehaviour
         anim.SetBool("isCrouch", sDown);
         anim.SetFloat("speed", _animationBlend);
         anim.SetBool("isGunOn", isGunOn);
-        anim.SetFloat("Vertical", verBlend);
-        anim.SetFloat("Horizental", horBlend);
+        if (isZoom)
+        {
+            anim.SetFloat("Vertical", verBlend);
+            anim.SetFloat("Horizental", horBlend);
+        }
+        else
+        {
+            anim.SetFloat("Vertical", 1);
+            anim.SetFloat("Horizental", 0);
+        }
     }
 
     void Dodge()
@@ -372,6 +380,10 @@ public class Player : MonoBehaviour
     {
         fireDelay += Time.deltaTime;
         isFireReady = (weapon.delay < fireDelay) && (weapon.isSemiauto ? isSemiReady : true);
+        if (isFireReady && muzzleEffect != null)
+        {
+            muzzleEffect.SetActive(false);
+        }
 
         isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue && !isStun;
 
@@ -380,18 +392,31 @@ public class Player : MonoBehaviour
             isShotEnd = false;
             fireDelay = 0;
             RaycastHit hit;
-            muzzleEffect.Play();
+            muzzleEffect.SetActive(true);
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
             Vector3 playerShotPos = ShootPos.position;
-
             if (!weapon.isShotGun)
             {
-                if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy")))
+                if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy") | LayerMask.GetMask("Enemy")))
                 {
                     Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
 
-                    SpawnHitEffect(hit.point);
+                    switch (hit.transform.gameObject.layer)
+                    {
+                        case 9://Enemy
+                            SpawnHitEffect(hit.point, 1);
+                            enemy.HitEffect(hit.point);
+                            break;
+
+                        case 6: //Enviroment
+                            SpawnHitEffect(hit.point, 0);
+                            break;
+
+                        case 16: // Glass
+                            SpawnHitEffect(hit.point, 2);
+                            break;
+                    }
 
                     if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                     {
@@ -405,21 +430,31 @@ public class Player : MonoBehaviour
                         }
                     }
                 }
-                else if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, LayerMask.GetMask("Enviroment")))
-                {
-                    SpawnHitEffect(hit.point);
-                }
             }
             else
             {
                 for(int i = 0; i < weapon.shotGunSpreadAmount; i++)
                 {
-                    if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, ~LayerMask.GetMask("PhysicsEnemy")))
+                    if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, LayerMask.GetMask("PhysicsEnemy")))
                     {
                         Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
 
-                        SpawnHitEffect(hit.point);
-                        
+                        switch (hit.transform.gameObject.layer)
+                        {
+                            case 9://Enemy
+                                SpawnHitEffect(hit.point, 1);
+                                enemy.HitEffect(hit.point);
+                                break;
+
+                            case 6: //Enviroment
+                                SpawnHitEffect(hit.point, 0);
+                                break;
+
+                            case 16: // Glass
+                                SpawnHitEffect(hit.point, 2);
+                                break;
+                        }
+
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                         {
                             if (enemy.sheild <= 0)
@@ -433,10 +468,6 @@ public class Player : MonoBehaviour
 
                             Debug.Log(isEnemyHitArea(hit.collider.transform.gameObject));
                         }
-                    }
-                    else if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, LayerMask.GetMask("Enviroment")))
-                    {
-                        SpawnHitEffect(hit.point);
                     }
                 }
             }
@@ -476,6 +507,7 @@ public class Player : MonoBehaviour
         {
             isZoom = false;
         }
+        anim.SetBool("isAim", isZoom && !isShot && isShotEnd);
     }
 
     bool isEnemyHitArea(GameObject obj)
@@ -510,10 +542,11 @@ public class Player : MonoBehaviour
         return -1;
     }
 
-    void SpawnHitEffect(Vector3 spawnPosition)
+    void SpawnHitEffect(Vector3 spawnPosition, int eIndex)
     {
         Quaternion enemyRotation = Quaternion.LookRotation(_mainCamera.transform.forward, Vector3.up);
-        GameObject hitObj = Instantiate(hitEffect, spawnPosition, enemyRotation);
+        GameObject hitObj = Instantiate(hitEffect[eIndex], spawnPosition, enemyRotation);
+
         //hitObj.GetComponent<>().Play();
     }
 
@@ -572,7 +605,7 @@ public class Player : MonoBehaviour
     void StopToWall()
     {
         //Debug.DrawLine(ShootPos.position, transform.forward , Color.green);
-        int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("Enemy"));
+        int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("Enemy")) + (1 << LayerMask.NameToLayer("Glass"));
 
         if (Physics.Raycast(borderPos.position, targetDirection, 0.7f, layerMask))
         {
@@ -613,7 +646,6 @@ public class Player : MonoBehaviour
         }
         
     }
-
 
     public IEnumerator OnDamage(Vector3 enemyPos, float damage)
     {

@@ -11,7 +11,7 @@ public class ControlParticlesSpawner : MonoBehaviour {
     {
         if (collision.gameObject.CompareTag(bulletTag) == true)
         {
-            Destroy(collision.gameObject);
+            //Destroy(collision.gameObject);
             cps.transform.position = collision.transform.position;
             cps.Emit(1);
         }
