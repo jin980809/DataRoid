@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,14 +12,27 @@ public class Interaction : MonoBehaviour
         Door = 3,
         SavePoint = 4,
         MovePlayer = 5,
+        ObjecctActive = 6,
+        GunActive = 7,
+        GetUSFData = 8,
+        LightOn = 9,
     };
     public Type interactionType;
 
+    public bool isNonCharging;
+    public Player player;
+
+    [Space(10)]
+    [Header("Save Object")]
+    public bool isSaveObject;
+    public int ObjectID;
+
+    [Space(10)]
+    [Header("Charging Interaction")]
     public float coolTime;
     private float curCoolTime;
     public float interactionTime;
     public bool isCoolTime = false;
-    public Player player;
 
     [Space(10)]
     [Header("ChargeElec")]
@@ -45,13 +56,37 @@ public class Interaction : MonoBehaviour
     [Space(10)]
     [Header("SavePoint")]
     public int savePoint;
-    public string fileName = "Save.csv";
-    List<string[]> data = new List<string[]>();
-    string[] tempData;
+
 
     [Space(10)]
     [Header("MovePlayer")]
     public Transform movePoint;
+
+    [Space(10)]
+    [Header("ObjectActive")]
+    public bool activeTrue;
+    public GameObject activeObj;
+
+    [Space(10)]
+    [Header("GetGun")]
+    public int gunIndex;
+
+    [Space(10)]
+    [Header("GetUFSData")]
+    public int DataCount;
+
+    [Space(10)]
+    [Header("Light On")]
+    public GameObject offLight;
+    public GameObject OnLight;
+
+    void Awake()
+    {
+        if (isSaveObject)
+        {
+            transform.gameObject.SetActive(ObjectManager.Instance.saveObjects[ObjectID]);
+        }
+    }
 
     void Start()
     {
@@ -65,7 +100,7 @@ public class Interaction : MonoBehaviour
 
     void CoolDown()
     {
-        if(isCoolTime)
+        if(isCoolTime && !isNonCharging)
         {
             curCoolTime -= Time.deltaTime;
 
@@ -97,12 +132,35 @@ public class Interaction : MonoBehaviour
                 break;
 
             case Type.SavePoint:
-                SaveCSVFile(savePoint);
+                GameManager.Instance.SaveCSVFile(savePoint);
+                ObjectManager.Instance.SaveObjectFile();
+                EnemyManager.Instance.SaveEnemyData();
                 break;
 
             case Type.MovePlayer:
                 MovePlayer();
                 break;
+
+            case Type.ObjecctActive:
+                ObjectActive();
+                break;
+
+            case Type.GunActive:
+                GunActive();
+                break;
+
+            case Type.GetUSFData:
+                GetData();
+                break;
+
+            case Type.LightOn:
+                LightOn();
+                break;
+        }
+
+        if(isSaveObject)
+        {
+            ObjectManager.Instance.saveObjects[ObjectID] = false;
         }
     }
 
@@ -171,67 +229,38 @@ public class Interaction : MonoBehaviour
         isOpen = false;
     }
 
-
-
-    void Awake()
-    {
-        data.Clear();
-
-        tempData = new string[7];
-        tempData[0] = "SavePoint";
-        tempData[1] = "Progress";
-        tempData[2] = "MaxProgress";
-        tempData[3] = "Ammo";
-        tempData[4] = "SpecialAmmo";
-        tempData[5] = "Steel";
-        tempData[6] = "GunPowder";
-        data.Add(tempData);
-    }
-
-
-    public void SaveCSVFile(int savePointIndex)
-    {
-        tempData = new string[7];
-        tempData[0] = savePointIndex.ToString();
-        tempData[1] = ProgressManager.Instance.curProgress.ToString();
-        tempData[2] = ProgressManager.Instance.saveProgress.ToString();
-        tempData[3] = MaterialManager.Instance.Ammo.ToString();
-        tempData[4] = MaterialManager.Instance.SpecialAmmo.ToString();
-        tempData[5] = MaterialManager.Instance.Steel.ToString();
-        tempData[6] = MaterialManager.Instance.GunPowder.ToString();
-        data.Add(tempData);
-
-        string[][] output = new string[data.Count][];
-
-        for (int i = 0; i < output.Length; i++)
-        {
-            output[i] = data[i];
-        }
-
-        int length = output.GetLength(0);
-        string delimiter = ",";
-
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < length; i++)
-        {
-            sb.AppendLine(string.Join(delimiter, output[i]));
-        }
-
-        string filepath = SystemPath.GetPath();
-
-        if (!Directory.Exists(filepath))
-        {
-            Directory.CreateDirectory(filepath);
-        }
-
-        StreamWriter outStream = System.IO.File.CreateText(filepath + fileName);
-        outStream.Write(sb);
-        outStream.Close();
-    }
+ 
 
     void MovePlayer()
     {
         player.transform.position = movePoint.position;
+    }
+
+    void ObjectActive()
+    {
+        activeObj.SetActive(activeTrue);
+        transform.gameObject.SetActive(false);
+        ObjectManager.Instance.saveObjects[ObjectID] = false;
+    }
+
+    void GunActive()
+    {
+        player.hasWeapons[gunIndex] = true;
+        transform.gameObject.SetActive(false);
+        ObjectManager.Instance.saveObjects[ObjectID] = false;
+    }
+
+    void GetData()
+    {
+        MaterialManager.Instance.UFSData += DataCount;
+        transform.gameObject.SetActive(false);
+        ObjectManager.Instance.saveObjects[ObjectID] = false;
+    }
+
+    void LightOn()
+    {
+        offLight.SetActive(false);
+        OnLight.SetActive(true);
+        GetComponent<BoxCollider>().enabled = false;
     }
 }

@@ -29,7 +29,7 @@ public class ESN08Phase1 : MonoBehaviour
         if(other.CompareTag("Player"))
         {
             player = other.GetComponent<Player>();
-            player.phase1ESN08 = GetComponent<ESN08Phase1>();
+            player.SubdueObject = transform.gameObject;
             isPlayerSubdue = true;   
         }
     }

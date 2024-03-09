@@ -62,7 +62,7 @@ Material:
     m_Floats:
     - Vector1_60e46bc93cb8407cad7d4e680a73591a: 2
     - Vector1_8f5dd88bc6624859b759ac02b6f0075a: 1
-    - _Power: 20
+    - _Power: 10
     - _QueueControl: 1
     - _QueueOffset: 0
     - _Size: 20

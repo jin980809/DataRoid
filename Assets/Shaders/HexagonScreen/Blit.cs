@@ -5,7 +5,6 @@ using UnityEngine.Rendering.Universal;
 // Saved in Blit.cs
 public class Blit : ScriptableRendererFeature
 {
-
     public class BlitPass : ScriptableRenderPass
     {
         public enum RenderTarget

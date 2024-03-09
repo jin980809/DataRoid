@@ -6013,6 +6013,7 @@ MonoBehaviour:
   Ammo: 0
   SpecialAmmo: 0
   ExpCapsule: 0
+  UFSData: 0
 --- !u!1001 &1356072614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8432,6 +8433,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 410911626600617420, guid: d8fcac0f89303b84a84cb7626b4dd23b,
+        type: 3}
+      propertyPath: m_FillAmount
+      value: 0.97
+      objectReference: {fileID: 0}
     - target: {fileID: 2989389191443651573, guid: d8fcac0f89303b84a84cb7626b4dd23b,
         type: 3}
       propertyPath: m_Sprite
@@ -8446,7 +8452,7 @@ PrefabInstance:
     - target: {fileID: 2989389192592328417, guid: d8fcac0f89303b84a84cb7626b4dd23b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2989389192592328421, guid: d8fcac0f89303b84a84cb7626b4dd23b,
         type: 3}
@@ -8636,6 +8642,7 @@ GameObject:
   - component: {fileID: 1697895780}
   - component: {fileID: 1697895779}
   - component: {fileID: 1697895778}
+  - component: {fileID: 1697895782}
   m_Layer: 0
   m_Name: Camera (1)
   m_TagString: Untagged
@@ -8742,6 +8749,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1697895782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697895777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52907938089e7ef4fa6ff37c3dc5d00f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mat1: {fileID: 0}
+  mat2: {fileID: 0}
 --- !u!1001 &1698802138
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering;
+using System.Reflection;
 
 public class Player : MonoBehaviour
 {
     [SerializeField]
     private Transform ShootPos;
-    public Weapon weapon;
+    public Weapon weapon; //초기 총기 설정(권총)
     public Transform borderPos;
     public GameObject muzzleEffect;
     public GameObject[] hitEffect;
@@ -18,7 +21,7 @@ public class Player : MonoBehaviour
     public GameObject[] weapons;
     public bool[] hasWeapons;
     public int equipWeaponIndex;
-    private int lastSwapWeaponIndex = 0;
+    public  int lastSwapWeaponIndex;
 
     [Space(10)]
     public float walkSpeed;
@@ -102,7 +105,7 @@ public class Player : MonoBehaviour
     Vector3 gunOnVec;
     Vector3 targetDirection;
 
-    Animator anim;
+    [SerializeField] Animator anim;
 
     [Space(10f)]
     public GameObject _mainCamera;
@@ -119,7 +122,9 @@ public class Player : MonoBehaviour
     public float stunCoolTime;
     private float curStunCoolTime;
     private LayerMask enemyLayer;
-    public ESN08Phase1 phase1ESN08;
+    public GameObject SubdueObject;
+    List<ScriptableRendererFeature> rendererFeatures;
+    ScriptableRendererData data;
 
     void Awake()
     {
@@ -128,6 +133,10 @@ public class Player : MonoBehaviour
         miniMap = UIManager.Instance.MiniMap.GetComponent<RectTransform>();
         curHackingNum = hackingNum;
         curStunCoolTime = stunCoolTime;
+
+        data = GetRendererData(1);
+        rendererFeatures = data.rendererFeatures;
+        rendererFeatures[0].SetActive(false);
     }
 
     void Update()
@@ -192,7 +201,7 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        if (!isDodge && !isInteraction && !isSubdue && !isStun)
+        if (!isDodge && !isSubdue && !isStun && !isInteraction)
         {
             if(isGunOn)
             {
@@ -206,7 +215,7 @@ public class Player : MonoBehaviour
                 else targetSpeed = walkSpeed;
             }
 
-            isRun = (rDown && !sDown);
+            isRun = (rDown && !sDown && !aDown);
         }
         if (isDodge && !isInteraction)
         {
@@ -215,11 +224,11 @@ public class Player : MonoBehaviour
         }
 
         moveVec = new Vector3(hAxis, 0f, vAxis).normalized;
-        if (moveVec == Vector3.zero && !isDodge) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
+        if (moveVec == Vector3.zero && !isDodge || (isInteraction || isSubdue)) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
 
         float targetRotation = Mathf.Atan2(moveVec.x, moveVec.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
 
-        if (moveVec != Vector3.zero)
+        if (moveVec != Vector3.zero && !isSubdue && !isInteraction)
         {
             isWalk = true;
 
@@ -259,11 +268,14 @@ public class Player : MonoBehaviour
             if (horBlend < 0.01f) horBlend = 0f;
         }
 
-        if (!isBorder)
+        if (!isBorder && !isInteraction)
             transform.position += targetDirection.normalized * (/*sDown ? crouchSpeed : */targetSpeed) * Time.deltaTime;
+
+        float aimAngle = _mainCamera.transform.eulerAngles.x + 35f;
 
         anim.SetBool("isCrouch", sDown);
         anim.SetFloat("speed", _animationBlend);
+        anim.SetFloat("UpDown", (float) (aimAngle >= 359.1f ? aimAngle - 359.9f : aimAngle) / 105f);
         anim.SetBool("isGunOn", isGunOn);
         if (isZoom)
         {
@@ -313,7 +325,7 @@ public class Player : MonoBehaviour
     void GunOnMove()
     {
         UIManager.Instance.aim.SetActive(isGunOn);
-        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun)
+        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun && hasWeapons[lastSwapWeaponIndex])
         {
             isGunOn = !isGunOn;
             weapon.gameObject.SetActive(isGunOn);
@@ -328,6 +340,7 @@ public class Player : MonoBehaviour
             }
             else
             {
+                //if()
                 equipWeaponIndex = lastSwapWeaponIndex;
             }
 
@@ -396,6 +409,7 @@ public class Player : MonoBehaviour
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
             Vector3 playerShotPos = ShootPos.position;
+
             if (!weapon.isShotGun)
             {
                 if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy") | LayerMask.GetMask("Enemy")))
@@ -406,7 +420,7 @@ public class Player : MonoBehaviour
                     {
                         case 9://Enemy
                             SpawnHitEffect(hit.point, 1);
-                            enemy.HitEffect(hit.point);
+                            //enemy.HitEffect(hit.point);
                             break;
 
                         case 6: //Enviroment
@@ -610,13 +624,13 @@ public class Player : MonoBehaviour
         if (Physics.Raycast(borderPos.position, targetDirection, 0.7f, layerMask))
         {
             isBorder = true;
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         }
         else
         {
             isBorder = false;
-            GetComponent<Rigidbody>().constraints = ~RigidbodyConstraints.FreezeAll;
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            //GetComponent<Rigidbody>().constraints = ~RigidbodyConstraints.FreezeAll;
+            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         }
     }
 
@@ -668,14 +682,20 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         Interaction interactionObj;
 
-        if (Physics.Raycast(ShootPos.position, transform.forward, out hit, 1, LayerMask.GetMask("Interaction")))
+        if (Physics.Raycast(ShootPos.position, _mainCamera.transform.forward, out hit, 1, LayerMask.GetMask("Interaction")))
         {
             interactionObj = hit.transform.GetComponent<Interaction>();
-
-            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun)
+            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled)
             {
-                isInteraction = true;
-                isZoom = false;
+                if(interactionObj.isNonCharging)
+                {
+                    interactionObj.InteractionResult();
+                }
+                else
+                {
+                    isInteraction = true;
+                    isZoom = false;
+                }
             }
             else
             {
@@ -686,7 +706,7 @@ public class Player : MonoBehaviour
                 //    Debug.Log("CoolTime");
             }
 
-            if (isInteraction)
+            if (isInteraction && !interactionObj.isNonCharging)
             {
                 interactionTime += Time.deltaTime;
 
@@ -709,7 +729,10 @@ public class Player : MonoBehaviour
                 }
             }
 
-            UIManager.Instance.InteractionGauge.value = interactionTime / interactionObj.interactionTime;
+            if (!interactionObj.isNonCharging)
+            {
+                UIManager.Instance.InteractionGauge.value = interactionTime / interactionObj.interactionTime;
+            }
         }
     }
 
@@ -735,7 +758,10 @@ public class Player : MonoBehaviour
         if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun)
         {
             qToggle = !qToggle;
+            if (rendererFeatures == null || rendererFeatures.Count <= 0) return;
+            rendererFeatures[0].SetActive(qToggle);
         }
+
 
         if (qToggle && fDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn)
         {
@@ -901,9 +927,20 @@ public class Player : MonoBehaviour
 
     void SubdueCancel()
     {
-        if(isSubdue && aDown && phase1ESN08.curSubdueProgress > 0.4f)
+        if(isSubdue && aDown )
         {
-            phase1ESN08.curSubdueProgress -= 0.3f;
+            if (SubdueObject.GetComponent<ESN08Phase1>() != null)
+            {
+                ESN08Phase1 eSN08Phase1 = SubdueObject.GetComponent<ESN08Phase1>();
+                if (eSN08Phase1.curSubdueProgress > 0.4f)
+                    eSN08Phase1.curSubdueProgress -= 0.3f;
+            }
+            else if(SubdueObject.GetComponent<TutSubdueEnemy>() != null)
+            {
+                TutSubdueEnemy tutSubdue = SubdueObject.GetComponent<TutSubdueEnemy>();
+                if (tutSubdue.curSubdueProgress > 0.4f)
+                    tutSubdue.curSubdueProgress -= 0.3f;
+            }
         }
     }
 
@@ -939,7 +976,43 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, 5);
 
-        //Gizmos.DrawRay(_mainCamera.transform.position, _mainCamera.transform.forward * 20);
+        Gizmos.DrawRay(ShootPos.transform.position, _mainCamera.transform.forward * 20);
         
+    }
+
+    public void SetActiveRendererFeature<T>(bool active) where T : ScriptableRendererFeature
+    {
+        // URP Asset의 Renderer List에서 0번 인덱스 RendererData 참조
+        ScriptableRendererData rendererData = GetRendererData(0);
+        if (rendererData == null) return;
+
+        List<ScriptableRendererFeature> rendererFeatures = rendererData.rendererFeatures;
+        if (rendererFeatures == null || rendererFeatures.Count <= 0) return;
+
+        for (int i = 0; i < rendererFeatures.Count; i++)
+        {
+            ScriptableRendererFeature rendererFeature = rendererFeatures[i];
+            if (!rendererFeature) continue;
+            if (rendererFeature is T) rendererFeature.SetActive(active);
+        }
+#if UNITY_EDITOR
+        rendererData.SetDirty();
+#endif
+    }
+
+
+    public ScriptableRendererData GetRendererData(int rendererIndex = 0)
+    {
+        // 현재 Quality 옵션에 세팅된 URP Asset 참조
+        UniversalRenderPipelineAsset pipelineAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+        if (!pipelineAsset) return null;
+
+        // URP Renderer List 리플렉션 참조 (Internal 변수라서 그냥 참조 불가능)
+        FieldInfo propertyInfo = pipelineAsset.GetType().GetField("m_RendererDataList", BindingFlags.Instance | BindingFlags.NonPublic);
+        ScriptableRendererData[] rendererDatas = (ScriptableRendererData[])propertyInfo.GetValue(pipelineAsset);
+        if (rendererDatas == null || rendererDatas.Length <= 0) return null;
+        if (rendererIndex < 0 || rendererDatas.Length <= rendererIndex) return null;
+
+        return rendererDatas[rendererIndex];
     }
 }

@@ -89,7 +89,8 @@ public class CameraMove : MonoBehaviour
             x = Mathf.Clamp(x, 325f, 361f);
         }
 
-        cameraArm.rotation = Quaternion.Euler(x, camAngle.y + mouseDelta.x, camAngle.z);
+        if(!player.isInteraction)
+            cameraArm.rotation = Quaternion.Euler(x, camAngle.y + mouseDelta.x, camAngle.z);
     }
 
     private void followCam()

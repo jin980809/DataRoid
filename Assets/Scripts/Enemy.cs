@@ -20,7 +20,6 @@ public class Enemy : MonoBehaviour
     public Material oLight;
     public Material rLight;
     public SkinnedMeshRenderer headLight;
-    public string fileName = "Enemy";
 
     [Space(10f)]
     public bool isAttack = false;
@@ -59,12 +58,6 @@ public class Enemy : MonoBehaviour
     }
     public dropItem[] dropItems;
 
-    public List<Dictionary<string, object>> enemyInfo = new List<Dictionary<string, object>>();
-
-    [Space(10f)]
-    List<string[]> data = new List<string[]>();
-    string[] tempData;
-    public string wfileName = "Enemy.csv";
 
     [Space(10f)]
     public GameObject enemyPrefab; // 프리팹으로 사용할 적 UI
@@ -85,13 +78,6 @@ public class Enemy : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        LoadCSVFile();
-
-        enemyInfo.Clear();
-
-        enemyInfo = CSVReader.Read(fileName);
-
-        EnemyInitialization();
     }
 
     public enum Type
@@ -110,6 +96,7 @@ public class Enemy : MonoBehaviour
     { 
         //curHealth = maxHealth;
         rectTransform = enemyPrefab.GetComponent<RectTransform>();
+        EnemyInitialization();
     }
 
     public void Stun(bool isSkill)
@@ -149,15 +136,15 @@ public class Enemy : MonoBehaviour
 
     void EnemyInitialization()
     {
-        if (int.Parse(enemyInfo[ID]["isDead"] + "") == 1)
+        if (int.Parse(EnemyManager.Instance.enemyInfo[ID]["isDead"] + "") == 1)
         {
             this.gameObject.SetActive(false);
             isDeath = true;
         }
 
-        maxHealth = float.Parse(enemyInfo[ID]["HP"] + "");
+        maxHealth = float.Parse(EnemyManager.Instance.enemyInfo[ID]["HP"] + "");
         curHealth = maxHealth;
-        maxSheild = float.Parse(enemyInfo[ID]["Sheild"] + "");
+        maxSheild = float.Parse(EnemyManager.Instance.enemyInfo[ID]["Sheild"] + "");
         sheild = maxSheild;
     }
 
@@ -198,13 +185,13 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            UpdateCSVFile(ID + 1);
+            EnemyManager.Instance.enemyInfo[ID]["isDead"] = "1";
             this.gameObject.layer = 10;
             isDeath = true;
             nav.isStopped = true;
             anim.SetTrigger("doDie");
             Invoke("DropItems", 4);
-            Destroy(gameObject, 4);
+            transform.gameObject.SetActive(false);
         }
     }
 
@@ -370,76 +357,6 @@ public class Enemy : MonoBehaviour
 
         if(enemyUI != null)
             enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
-    }
-
-    void LoadCSVFile()
-    {
-        data.Clear(); // 기존 데이터 초기화
-
-        string filepath = SystemPath.GetPath() + wfileName;
-
-        if (File.Exists(filepath))
-        {
-            string[] lines = File.ReadAllLines(filepath);
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                string[] values = lines[i].Split(',');
-                data.Add(values);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("CSV file not found: " + filepath);
-        }
-    }
-
-    public void UpdateCSVFile(int rowIndex)
-    {
-        if (rowIndex >= 0 && rowIndex < data.Count)
-        {
-            tempData = new string[5];
-            tempData[0] = ID.ToString();
-            tempData[1] = maxHealth.ToString();
-            tempData[2] = maxSheild.ToString();
-            tempData[3] =  "10";
-            tempData[4] = "1";
-  
-
-            data[rowIndex] = tempData; // 특정 줄 업데이트
-
-            string[][] output = new string[data.Count][];
-
-            for (int i = 0; i < output.Length; i++)
-            {
-                output[i] = data[i];
-            }
-
-            int length = output.GetLength(0);
-            string delimiter = ",";
-
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < length; i++)
-            {
-                sb.AppendLine(string.Join(delimiter, output[i]));
-            }
-
-            string filepath = SystemPath.GetPath();
-
-            if (!Directory.Exists(filepath))
-            {
-                Directory.CreateDirectory(filepath);
-            }
-
-            StreamWriter outStream = System.IO.File.CreateText(filepath + wfileName);
-            outStream.Write(sb);
-            outStream.Close();
-        }
-        else
-        {
-            Debug.LogWarning("Invalid row index for updating CSV file.");
-        }
     }
 
     public void RotationSpeedUp()

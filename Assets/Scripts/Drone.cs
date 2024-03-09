@@ -11,6 +11,18 @@ public class Drone : MonoBehaviour
     float hoverOffset;
     float hoverSpeed = 3;
 
+    void Start()
+    {
+        if(ObjectManager.Instance.saveObjects[0] == false)
+        {
+            transform.gameObject.SetActive(true);
+        }
+        else
+        {
+            transform.gameObject.SetActive(false);
+        }
+    }
+
     void Update()
     {
         hoverOffset = Mathf.Sin(Time.time * hoverSpeed) * hoverHeight;

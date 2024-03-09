@@ -8,6 +8,9 @@ public class EnemyA : Enemy
     public int aroundTargetIndex = 0;
     public Transform[] aroundTarget;
     [SerializeField] private bool aroundIndexIncre;
+    [SerializeField] bool isNotAround;
+    public bool isStop = false;
+
     void Update()
     {
         Around();
@@ -35,6 +38,8 @@ public class EnemyA : Enemy
         if (hit.Length > 0)
         {
             Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
+            isStop = false;
+            isShotChase = false;
 
             if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment")))
             {
@@ -42,7 +47,6 @@ public class EnemyA : Enemy
                 {
                     //Debug.Log("target " + hit[0].transform.name);
                     nav.speed = runSpeed;
-                    isShotChase = false;
                     isChase = true;
                 }
             }
@@ -73,11 +77,19 @@ public class EnemyA : Enemy
             {
                 nav.speed = walkSpeed;
                 isChase = false;
+
+                if(isStop && isNotAround)
+                {
+                    nav.speed = 0;
+                }
+
             }
             else if(!isAttack && isShotChase)
             {
                 nav.SetDestination(playerShotPos);
-
+                if (nav.remainingDistance <= 0.5f)
+                    isShotChase = false;
+                isStop = false;
                 nav.speed = runSpeed;
             }
         }
@@ -121,7 +133,7 @@ public class EnemyA : Enemy
 
     void Around()
     {
-        if (!isChase && !isDeath && !isStun)
+        if (!isChase && !isDeath && !isStun && !isNotAround)
         {
             if (nav.remainingDistance <= 0.5f)
             {
@@ -155,6 +167,22 @@ public class EnemyA : Enemy
                 }
 
                 nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+            }
+        }
+
+        if(!isChase && !isDeath && !isStun && isNotAround)
+        {
+            nav.SetDestination(aroundTarget[0].position);
+
+            if (nav.remainingDistance <= 0.5f)
+            {
+                nav.speed = 0;
+                isStop = true;
+            }
+            else
+            {
+                //nav.isStopped = true;
+                nav.speed = walkSpeed;
             }
         }
     }

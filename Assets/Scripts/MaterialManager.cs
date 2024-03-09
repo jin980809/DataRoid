@@ -24,4 +24,5 @@ public class MaterialManager : MonoBehaviour
     public int Ammo;
     public int SpecialAmmo;
     public int ExpCapsule;
+    public int UFSData;
 }

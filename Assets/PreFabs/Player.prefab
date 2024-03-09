@@ -214,13 +214,14 @@ MonoBehaviour:
   qSkillOn: 0
   isSubdue: 0
   isStun: 0
+  anim: {fileID: 0}
   _mainCamera: {fileID: 0}
   cameraArm: {fileID: 0}
   hackingCoolTime: 10
   hackingNum: 10
   stunDistance: 5
   stunCoolTime: 20
-  phase1ESN08: {fileID: 0}
+  SubdueObject: {fileID: 0}
 --- !u!114 &1787424607244344720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,7 +471,7 @@ Transform:
   - {fileID: 8171254879615058517}
   - {fileID: 8569391832311254105}
   m_Father: {fileID: 8023502151166218450}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: -77.59, y: -94.006, z: -152.614}
 --- !u!114 &8569391833831643311
 MonoBehaviour:
@@ -527,7 +528,7 @@ Transform:
   - {fileID: 8171254880234151904}
   - {fileID: 8569391832337479327}
   m_Father: {fileID: 8023502151166218450}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: -83.059, y: 341.151, z: -251.708}
 --- !u!114 &8569391834026564918
 MonoBehaviour:
