@@ -29,7 +29,7 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   focusDistance:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.1
   aperture:
     m_OverrideState: 0
@@ -160,7 +160,7 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   saturation:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: -100
 --- !u!114 &5443753173821901320
 MonoBehaviour:
