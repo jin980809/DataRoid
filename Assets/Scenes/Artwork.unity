@@ -4188,14 +4188,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0633f8b127c82544a847fe858deca76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1099092104}
   fileName: Save
+  player: {fileID: 1099092104}
+  wfileName: Save
   spawnPoints:
   - {fileID: 2018373719}
   - {fileID: 709071168}
   - {fileID: 1129491238}
   - {fileID: 1118139460}
   spawnPoint: 0
+  handGunObj: {fileID: 0}
+  riffleObj: {fileID: 0}
+  shotGunObj: {fileID: 0}
   ESN08Phase2Diff: 1
 --- !u!1 &903770855
 GameObject:
@@ -6012,6 +6016,7 @@ MonoBehaviour:
   Ammo: 0
   SpecialAmmo: 0
   ExpCapsule: 0
+  UFSData: 0
 --- !u!1001 &1356072614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10371,6 +10376,11 @@ PrefabInstance:
       propertyPath: m_Value
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6226210215222655484, guid: 203a4e6c56b6a7c478479f2bd6b38efb,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 6268132271380932272, guid: 203a4e6c56b6a7c478479f2bd6b38efb,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -12148,7 +12158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2011842366
 MonoBehaviour:
   m_ObjectHideFlags: 0

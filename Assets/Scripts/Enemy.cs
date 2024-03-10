@@ -72,7 +72,7 @@ public class Enemy : MonoBehaviour
     public float hackingDuration;
     public Coroutine attackCoroutine;
     public ParticleSystem cps;
-
+    public bool hasData;
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -146,6 +146,7 @@ public class Enemy : MonoBehaviour
         curHealth = maxHealth;
         maxSheild = float.Parse(EnemyManager.Instance.enemyInfo[ID]["Sheild"] + "");
         sheild = maxSheild;
+        attackCollider.gameObject.GetComponent<Attack>().damage = int.Parse(EnemyManager.Instance.enemyInfo[ID]["Damage"] + "");
     }
 
     public void HitEffect(Vector3 spawnPosition)
@@ -162,7 +163,7 @@ public class Enemy : MonoBehaviour
             curHealth -= damage;
             sheild -= sheildDamage;
 
-            if (sheild <= 0)
+            if (sheild == 0)
             {
                 Destroy(enemyUI);
                 Stun(false);
@@ -191,8 +192,16 @@ public class Enemy : MonoBehaviour
             nav.isStopped = true;
             anim.SetTrigger("doDie");
             Invoke("DropItems", 4);
-            transform.gameObject.SetActive(false);
+            StartCoroutine(Dead());
         }
+    }
+
+    IEnumerator Dead()
+    {
+        yield return new WaitForSeconds(3f);
+        transform.gameObject.SetActive(false);
+        if (hasData)
+            MaterialManager.Instance.UFSData += 1;
     }
 
     IEnumerator OnDamageOut()

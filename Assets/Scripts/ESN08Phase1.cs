@@ -6,9 +6,10 @@ using UnityEngine.AI;
 public class ESN08Phase1 : MonoBehaviour
 {
     public float subdueCoolTime;
-    float curSubdueCoolTime;
+    [SerializeField]float curSubdueCoolTime;
     [SerializeField] bool isPlayerSubdue = false;
-
+    Animator anim;
+    public CapsuleCollider attack;
     public float subdueProgress;
     public float curSubdueProgress;
     NavMeshAgent nav;
@@ -17,6 +18,7 @@ public class ESN08Phase1 : MonoBehaviour
     void Start()
     {
         nav = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -38,9 +40,12 @@ public class ESN08Phase1 : MonoBehaviour
     {
         if (isPlayerSubdue)
         {
+            anim.SetTrigger("doSubdue");
             //플레이어 카메라 제어 및 이동 제한
             UIManager.Instance.SubDueSlider.gameObject.SetActive(true);
+            attack.enabled = false;
             transform.LookAt(player.transform.position);
+            player.transform.LookAt(transform.position);
             player.isSubdue = true;
             nav.isStopped = true;
             nav.velocity = Vector3.zero;
@@ -52,25 +57,30 @@ public class ESN08Phase1 : MonoBehaviour
             if (curSubdueCoolTime > subdueCoolTime)
             {
                 //제압 실패시 (시간이 다 지나갔을때)
-                GetComponentInChildren<BoxCollider>().enabled = false;
-                curSubdueCoolTime = 0;
+                
+                //curSubdueCoolTime = 0;
                 nav.isStopped = false;
-                isPlayerSubdue = false;
-                player.isSubdue = false;
                 UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+                anim.SetTrigger("doSubdueOut");
+                Invoke("SubdueOut", 0.3f);
             }
 
             if(curSubdueProgress > subdueProgress)
             {
                 //제압 성공시
                 GameManager.Instance.ESN08Phase2Diff++;
-                GetComponentInChildren<BoxCollider>().enabled = false;
-                player.isSubdue = false;
-                isPlayerSubdue = false;
                 nav.isStopped = false;
                 UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+                anim.SetTrigger("doSubdueOut");
+                Invoke("SubdueOut", 0.3f);
             }
         }
+    }
+
+    void SubdueOut()
+    {
+        isPlayerSubdue = false;
+        player.isSubdue = false;
     }
 
     void OnFootstep()

@@ -77,8 +77,9 @@ public class EnemyA : Enemy
             {
                 nav.speed = walkSpeed;
                 isChase = false;
-
-                if(isStop && isNotAround)
+                isShotChase = false;
+                nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                if (isStop && isNotAround)
                 {
                     nav.speed = 0;
                 }
@@ -88,7 +89,10 @@ public class EnemyA : Enemy
             {
                 nav.SetDestination(playerShotPos);
                 if (nav.remainingDistance <= 0.5f)
+                {
                     isShotChase = false;
+                    nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                }
                 isStop = false;
                 nav.speed = runSpeed;
             }

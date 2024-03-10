@@ -10,7 +10,13 @@ public class MovePlayer : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            other.gameObject.transform.position = movePos.position;
+            StartCoroutine(PlayerMove(other.gameObject));
         }
+    }
+
+    IEnumerator PlayerMove(GameObject player)
+    {
+        yield return new WaitForSeconds(0.5f);
+        player.transform.position = movePos.position;
     }
 }

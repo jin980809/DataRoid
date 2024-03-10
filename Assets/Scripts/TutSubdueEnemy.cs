@@ -40,6 +40,7 @@ public class TutSubdueEnemy : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            anim.SetTrigger("doSubdue");
             isPlayerSubdue = true;
             player.SubdueObject = transform.gameObject;
         }
@@ -49,7 +50,7 @@ public class TutSubdueEnemy : MonoBehaviour
     {
         if (isPlayerSubdue)
         {
-            UIManager.Instance.SubDueSlider.gameObject.SetActive(true);
+            //UIManager.Instance.SubDueSlider.gameObject.SetActive(true);
             transform.LookAt(player.transform.position);
             player.transform.LookAt(transform.position);
 
@@ -59,7 +60,7 @@ public class TutSubdueEnemy : MonoBehaviour
 
             curSubdueCoolTime += Time.deltaTime;
             curSubdueProgress += Time.deltaTime;
-            UIManager.Instance.SubDueSlider.value = curSubdueProgress / subdueProgress;
+            //UIManager.Instance.SubDueSlider.value = curSubdueProgress / subdueProgress;
 
             if (curSubdueCoolTime > subdueCoolTime)
             {
@@ -69,11 +70,11 @@ public class TutSubdueEnemy : MonoBehaviour
                 curSubdueCoolTime = 0;
                 isPlayerSubdue = false;
                 player.isSubdue = false;
-                UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+                //UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
                 ProgressManager.Instance.curProgress -= 1;
                 isDead = true;
                 Invoke("Dead", 1);
-                //애니메이션
+                anim.SetTrigger("doSubdueOut");
             }
 
             if (curSubdueProgress > subdueProgress)
@@ -82,12 +83,12 @@ public class TutSubdueEnemy : MonoBehaviour
 
                 GetComponent<BoxCollider>().enabled = false;
                 curSubdueCoolTime = 0;
-                player.isSubdue = false;
                 isPlayerSubdue = false;
-                UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+                //UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
                 ProgressManager.Instance.curProgress -= 1;
                 isDead = true;
                 Invoke("Dead", 1);
+                anim.SetTrigger("doSubdueOut");
                 //애니메이션
             }
         }
@@ -96,6 +97,7 @@ public class TutSubdueEnemy : MonoBehaviour
     void Dead()
     {
         transform.gameObject.SetActive(false);
+        player.isSubdue = false;
     }
 
 }

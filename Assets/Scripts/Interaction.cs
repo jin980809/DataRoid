@@ -77,8 +77,10 @@ public class Interaction : MonoBehaviour
 
     [Space(10)]
     [Header("Light On")]
+    public int lightIndex;
     public GameObject offLight;
     public GameObject OnLight;
+    public int needData;
 
     void Awake()
     {
@@ -135,6 +137,8 @@ public class Interaction : MonoBehaviour
                 GameManager.Instance.SaveCSVFile(savePoint);
                 ObjectManager.Instance.SaveObjectFile();
                 EnemyManager.Instance.SaveEnemyData();
+                TextManager.Instance.SaveTextObjectFile();
+                LightManager.Instance.SaveLightObjectFile();
                 break;
 
             case Type.MovePlayer:
@@ -259,8 +263,14 @@ public class Interaction : MonoBehaviour
 
     void LightOn()
     {
-        offLight.SetActive(false);
-        OnLight.SetActive(true);
-        GetComponent<BoxCollider>().enabled = false;
+        if (MaterialManager.Instance.UFSData > needData)
+        {
+            offLight.SetActive(false);
+            OnLight.SetActive(true);
+            GetComponent<BoxCollider>().enabled = false;
+            LightManager.Instance.lightObjects[lightIndex] = true;
+            MaterialManager.Instance.UFSData -= needData;
+        }
+
     }
 }

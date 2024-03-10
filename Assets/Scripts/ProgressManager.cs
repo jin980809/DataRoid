@@ -68,7 +68,7 @@ public class ProgressManager : MonoBehaviour
             player.sheildDamage = 3.7f;
         }
 
-        if (curProgress >= 15f)
+        if (curProgress >= 10f)
         {
             player.qSkillOn = true;
         }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance
@@ -19,9 +19,11 @@ public class UIManager : MonoBehaviour
     }
     private static UIManager m_instance;
 
+    public Animator uiAnim;
     public Player player;
     public GameObject aim;
-    public Slider hpGauge;
+    public Image hpGauge;
+    public TextMeshProUGUI hpText;
 
     [Space(10)]
     [Header("Interaction")]
@@ -65,14 +67,52 @@ public class UIManager : MonoBehaviour
     [Header("Create TextBox")]
     public GameObject textBox;
 
+    [Space(10)]
+    [Header("Fade")]
+    public Image fadeImage;
+
+    [Space(10)]
+    [Header("Skill CoolTime")]
+    public Image hackingCoolTime;
+    public Image stunCoolTime;
+
+    [Space(10)]
+    [Header("Gun State")]
+    public Image handGunImage;
+    public Image rifleImage;
+    public Image shotGunImage;
+    public TextMeshProUGUI ammoText;
+
+    [Space(10)]
+    [Header("DroneTextBox")]
+    public Text DroneText;
+
+
+
+    void Start()
+    {
+
+    }
+
     void Update()
     {
         TextUpdate();
         
         float hp = player.curHp / player.maxHp;
         if (hp < 0) hp = 0;
-        hpGauge.value = hp;
+        hpGauge.fillAmount = hp;
 
+        float hackingCool = player.curHackingCoolTime / player.hackingCoolTime;
+        if (hackingCool <= 0) hackingCoolTime.fillAmount = 0;
+        else
+            hackingCoolTime.fillAmount = 1 - hackingCool;
+
+
+        float stunCool = player.curStunCoolTime / player.stunCoolTime;
+        if (stunCool < 0) stunCool = 0;
+        stunCoolTime.fillAmount = 1 - stunCool;
+
+        GunImageChange(player.equipWeaponIndex);
     }
 
     void TextUpdate()
@@ -83,11 +123,49 @@ public class UIManager : MonoBehaviour
         ammoAmount.text = "Ammo : " + MaterialManager.Instance.Ammo;
         specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.SpecialAmmo;
         ExpCapsuleAmount.text = "ExpCapsule : " + MaterialManager.Instance.ExpCapsule;
+        hpText.text = (int)((player.curHp / player.maxHp) * 100) + "%";
     }
 
     public void CreateTextBox(string text)
     {
         GameObject box = Instantiate(textBox);
         box.GetComponentInChildren<Text>().text = text;
+    }
+
+    void GunImageChange(int gunIndex)
+    {
+        if(gunIndex == -1)
+        {
+            handGunImage.gameObject.SetActive(false);
+            rifleImage.gameObject.SetActive(false);
+            shotGunImage.gameObject.SetActive(false);
+            ammoText.gameObject.SetActive(false);
+        }
+        else
+        {
+            ammoText.gameObject.SetActive(true);
+            ammoText.text = player.weapon.curAmmo + " / " + player.weapon.maxAmmo;
+            switch (gunIndex)
+            {
+                case 0:
+                    handGunImage.gameObject.SetActive(false);
+                    rifleImage.gameObject.SetActive(true);
+                    shotGunImage.gameObject.SetActive(false);
+                    break;
+
+                case 1:
+                    handGunImage.gameObject.SetActive(true);
+                    rifleImage.gameObject.SetActive(false);
+                    shotGunImage.gameObject.SetActive(false);
+                    break;
+
+                case 2:
+                    handGunImage.gameObject.SetActive(false);
+                    rifleImage.gameObject.SetActive(false);
+                    shotGunImage.gameObject.SetActive(true);
+                    break;
+            }
+        }
+        
     }
 }

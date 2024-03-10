@@ -13,7 +13,7 @@ public class SetActiveObj : MonoBehaviour
     public bool ObjActive;
     public bool targetObjActive;
     public GameObject targetObj;
-
+    private bool isDone = false;
     [Space(10)]
     [Header("Interaction")]
     public Interaction interaction;
@@ -25,18 +25,24 @@ public class SetActiveObj : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (targetObj.activeSelf == targetObjActive)
-        { 
-            switch (activeType)
-            {
-                case Type.Interaction:
-                    interaction.enabled = ObjActive;
-                    break;
+        if (targetObj.activeSelf == targetObjActive && !isDone)
+        {
+            ObjectSet();
+            isDone = true;
+        }
+    }
 
-                case Type.Collider:
-                    collider.enabled = ObjActive;
-                    break;
-            }
+    void ObjectSet()
+    {
+        switch (activeType)
+        {
+            case Type.Interaction:
+                interaction.enabled = ObjActive;
+                break;
+
+            case Type.Collider:
+                collider.enabled = ObjActive;
+                break;
         }
     }
 }
