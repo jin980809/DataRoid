@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     [Header("Player Hp")]
     public float maxHp;
     public float curHp;
+    public float decreaseHpRate;
 
     [Space(10)]
     [Header("Player CoolTime")]
@@ -194,6 +195,8 @@ public class Player : MonoBehaviour
         EnemysStun();
 
         SubdueCancel();
+
+        DecreaseHp();
     }
 
     void GetInput()
@@ -217,6 +220,11 @@ public class Player : MonoBehaviour
         skDown1 = Input.GetButtonDown("Skill1");
         skDown2 = Input.GetButtonDown("Skill2");
         mDown = Input.GetButtonDown("Map");
+    }
+
+    void DecreaseHp()
+    {
+        curHp = Time.deltaTime * decreaseHpRate;
     }
 
     void Move()
@@ -331,7 +339,7 @@ public class Player : MonoBehaviour
             dodgeVec = moveVec;
             //targetSpeed *= 4;
             anim.SetTrigger("doDodge");
-            Invoke("DodgeOut", 0.3f);
+            Invoke("DodgeOut", 0.7f);
 
         }
     }

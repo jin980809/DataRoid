@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Interaction : MonoBehaviour
+public class Interaction : FadeController
 {
     public enum Type
     {
@@ -20,11 +20,14 @@ public class Interaction : MonoBehaviour
     public Type interactionType;
 
     public bool isNonCharging;
+    public bool isFade;
     public Player player;
+
 
     [Space(10)]
     [Header("Save Object")]
     public bool isSaveObject;
+
     public int ObjectID;
 
     [Space(10)]
@@ -165,6 +168,11 @@ public class Interaction : MonoBehaviour
         if(isSaveObject)
         {
             ObjectManager.Instance.saveObjects[ObjectID] = false;
+        }
+
+        if(isFade)
+        {
+            FadeInOut();
         }
     }
 

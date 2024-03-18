@@ -18,7 +18,7 @@ public class FadeControllerTrigger : MonoBehaviour
 
     IEnumerator FadeIn()
     {
-        yield return new WaitForSeconds(duration );
+        yield return new WaitForSeconds(duration);
 
         float alpha = 1.0f;
         while (alpha > 0)

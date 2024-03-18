@@ -12,7 +12,7 @@ public class FadeController : MonoBehaviour
 
     private void Start()
     {
-        FadeInOut();
+        //FadeInOut();
     }
 
 
