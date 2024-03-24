@@ -73,6 +73,7 @@ public class Enemy : MonoBehaviour
     public Coroutine attackCoroutine;
     public ParticleSystem cps;
     public bool hasData;
+    public bool isMeleeDamage;
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -93,7 +94,7 @@ public class Enemy : MonoBehaviour
     public Type hitAreaType;
 
     void Start()
-    { 
+    {
         //curHealth = maxHealth;
         rectTransform = enemyPrefab.GetComponent<RectTransform>();
         EnemyInitialization();
@@ -205,11 +206,11 @@ public class Enemy : MonoBehaviour
     }
 
     IEnumerator OnDamageOut()
-     {
+    {
         yield return new WaitForSeconds(0.01f);
         //nav.isStopped = false;
         isHit = false;
-     }
+    }
 
     public void SwitchLight()
     {
@@ -236,14 +237,14 @@ public class Enemy : MonoBehaviour
 
             Vector3 dropPos = new Vector3(dropPosX, transform.position.y, dropPosZ);
 
-            if (DropPercentage(i.percentage))
+            if (RandPercentage(i.percentage))
             {
                 Instantiate(i.item, dropPos, transform.rotation);
             }
         }
     }
 
-    public static bool DropPercentage(float Chance)
+    public static bool RandPercentage(float Chance)
     {
         if (Chance < 0.0000001f)
         {
@@ -270,7 +271,7 @@ public class Enemy : MonoBehaviour
             {
                 UpdateUIPosition();
                 UpdateUIScale();
-                if(enemyUI != null)
+                if (enemyUI != null)
                     enemyUI.SetActive(true);
             }
             else
@@ -290,14 +291,14 @@ public class Enemy : MonoBehaviour
 
     public void HackingCoolDown()
     {
-        if(isHacking)
+        if (isHacking)
         {
             curHackingDuration -= Time.deltaTime;
             hackingDurationUI.value = curHackingDuration / hackingDuration;
             sheildUI.value = sheild / maxSheild;
         }
 
-        if(curHackingDuration <= 0)
+        if (curHackingDuration <= 0)
         {
             isHacking = false;
             curHackingDuration = hackingDuration;
@@ -364,7 +365,7 @@ public class Enemy : MonoBehaviour
         float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
         float scaleFactor = Mathf.Clamp(10f / distance, 0.5f, 2f);
 
-        if(enemyUI != null)
+        if (enemyUI != null)
             enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
     }
 
@@ -373,5 +374,27 @@ public class Enemy : MonoBehaviour
         Vector3 lookrotation = nav.steeringTarget - transform.position;
         if (lookrotation != Vector3.zero)
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Attack"))
+        {
+            if (!isMeleeDamage && !target.GetComponent<Player>().isSubdue)
+            {
+                //UIManager.Instance.SubDueSlider.gameObject.SetActive(true);
+                isMeleeDamage = true;
+                Attack attack = other.GetComponent<Attack>();
+                OnDamage(attack.damage, other.transform.position, -1, other.GetComponentInParent<Player>().sheildDamage);
+                StartCoroutine(MeleeDamageOut());
+                anim.SetTrigger("doSubdueOut");
+            }
+        }
+    }
+
+    IEnumerator MeleeDamageOut()
+    {
+        yield return new WaitForSeconds(0.3f);
+        isMeleeDamage = false;
     }
 }

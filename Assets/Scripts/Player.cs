@@ -100,6 +100,7 @@ public class Player : MonoBehaviour
     public bool isSubdue = false;
     public bool isStun;
     public bool isCommunicate = false;
+    public bool isMeleeAttack = false;
 
     private float rotationVelocity;
     private float _animationBlend;
@@ -113,8 +114,6 @@ public class Player : MonoBehaviour
     Vector3 dodgeVec;
     Vector3 gunOnVec;
     Vector3 targetDirection;
-
-
 
     [Space(10)]
     [Header("Camera")]
@@ -140,11 +139,18 @@ public class Player : MonoBehaviour
     public float curStunCoolTime;
 
     [Space(10)]
+    [Header("MeleeAttack")]
+    public BoxCollider meleeAttackCol;
+    bool isMeleeAttackReady = true;
+
+    [Space(10)]
     private LayerMask enemyLayer;
     public GameObject SubdueObject;
     List<ScriptableRendererFeature> rendererFeatures;
     ScriptableRendererData data;
     Animator anim;
+    ObjectNameUI nameTag;
+    Coroutine meleeAttackCor;
 
     void Awake()
     {
@@ -168,6 +174,8 @@ public class Player : MonoBehaviour
         GunOnMove();
 
         Shot();
+
+        MeleeAttack();
 
         Dodge();
 
@@ -197,6 +205,8 @@ public class Player : MonoBehaviour
         SubdueCancel();
 
         DecreaseHp();
+
+        ObjectNameTag();
     }
 
     void GetInput()
@@ -210,7 +220,7 @@ public class Player : MonoBehaviour
         dDown = Input.GetButton("Dodge");
         gDown = Input.GetButtonDown("GunOn");
         lDown = Input.GetButton("Reload");
-        aDown = isSubdue ? Input.GetButtonDown("Interaction") : Input.GetButton("Interaction");
+        aDown = (isSubdue || isMeleeAttackReady) ? Input.GetButtonDown("Interaction") : Input.GetButton("Interaction");
         iDown = Input.GetButtonDown("Inventory");
         eDown = Input.GetButtonDown("FlashLight");
         qDown = Input.GetButtonDown("Cancel");
@@ -224,7 +234,7 @@ public class Player : MonoBehaviour
 
     void DecreaseHp()
     {
-        curHp = Time.deltaTime * decreaseHpRate;
+        curHp -= Time.deltaTime * decreaseHpRate;
     }
 
     void Move()
@@ -233,7 +243,7 @@ public class Player : MonoBehaviour
         {
             if(isGunOn)
             {
-                if (rDown && !isReload && isShotEnd && !isZoom && !isHacking) targetSpeed = gunRunSpeed;
+                if (rDown && !isReload && isShotEnd && !isZoom && !isHacking && !isShot) targetSpeed = gunRunSpeed;
                 else targetSpeed = gunWalkSpeed;
             }
             else
@@ -252,7 +262,7 @@ public class Player : MonoBehaviour
         }
 
         moveVec = new Vector3(hAxis, 0f, vAxis).normalized;
-        if (moveVec == Vector3.zero && !isDodge || (isInteraction || isSubdue)) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
+        if (moveVec == Vector3.zero && !isDodge || (isInteraction || isSubdue || isMeleeAttack)) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
 
         float targetRotation = Mathf.Atan2(moveVec.x, moveVec.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
 
@@ -264,7 +274,7 @@ public class Player : MonoBehaviour
             {
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, 0.17f);
 
-                transform.rotation = Quaternion.Euler(0.0f, (!isShotEnd || isZoom || isHacking || isSubdue || isStun) ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
+                transform.rotation = Quaternion.Euler(0.0f, (!isShotEnd || isZoom || isHacking || isSubdue || isStun || isShot) ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
             }
             else
             {
@@ -276,7 +286,7 @@ public class Player : MonoBehaviour
         {
             isWalk = false;
 
-            if ((!isShotEnd || isZoom || isHacking) && !isDodge && !isInteraction)
+            if ((!isShotEnd || isZoom || isHacking || isShot) && !isDodge && !isInteraction)
                 transform.rotation = Quaternion.Euler(0.0f, _mainCamera.transform.eulerAngles.y, 0.0f);
         }
 
@@ -305,7 +315,7 @@ public class Player : MonoBehaviour
         anim.SetFloat("speed", _animationBlend);
         anim.SetFloat("UpDown", (float) (aimAngle >= 359.1f ? aimAngle - 359.9f : aimAngle) / 105f);
         anim.SetBool("isGunOn", isGunOn);
-        if (isZoom)
+        if (isZoom || !isShotEnd || isShot)
         {
             anim.SetFloat("Vertical", verBlend);
             anim.SetFloat("Horizental", horBlend);
@@ -322,7 +332,7 @@ public class Player : MonoBehaviour
         culDodgeTime += Time.deltaTime;
         isDodgeReady = dodgeCoolTime < culDodgeTime;
 
-        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate)
+        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             isShotEnd = true;
             isDodge = true;
@@ -348,12 +358,13 @@ public class Player : MonoBehaviour
     {
         //targetSpeed *= 0.25f;
         isDodge = false;
+        anim.SetTrigger("DodgeOut");
     }
 
     void GunOnMove()
     {
         UIManager.Instance.aim.SetActive(isGunOn);
-        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun && hasWeapons[lastSwapWeaponIndex])
+        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun && hasWeapons[lastSwapWeaponIndex] && !isMeleeAttack && !isCommunicate)
         {
             isGunOn = !isGunOn;
             weapon.gameObject.SetActive(isGunOn);
@@ -386,7 +397,7 @@ public class Player : MonoBehaviour
         if (sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
             return;
 
-        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue && !isStun && !isCommunicate)
+        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             isGunOn = true;
             isZoom = false;
@@ -426,9 +437,9 @@ public class Player : MonoBehaviour
             muzzleEffect.SetActive(false);
         }
 
-        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue && !isStun && !isCommunicate;
+        isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack;
 
-        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate)
+        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             isShotEnd = false;
             fireDelay = 0;
@@ -448,7 +459,7 @@ public class Player : MonoBehaviour
                     {
                         case 9://Enemy
                             SpawnHitEffect(hit.point, 1);
-                            //enemy.HitEffect(hit.point);
+                            enemy.HitEffect(hit.point);
                             break;
 
                         case 6: //Enviroment
@@ -525,6 +536,50 @@ public class Player : MonoBehaviour
         anim.SetBool("isShotOut", !isShotEnd && !isDodge);
     }
 
+    void MeleeAttack()
+    {
+        if(aDown && isGunOn && !isMeleeAttack && !isInteraction && !isSwap && !isShot && !isDodge && !isReload && !isHacking && !isInventoryOpen && !isSubdue && !isStun && !isCommunicate && !isZoom && !isSubdue)
+        {
+            //Debug.Log("meleeAttack");
+            //isMeleeAttack = true;
+            anim.SetTrigger("doMeleeAttack");
+            meleeAttackCor = StartCoroutine(DoMeleeAttack());
+        }
+    }
+
+    IEnumerator DoMeleeAttack()
+    {
+        isMeleeAttack = true;
+        yield return new WaitForSeconds(0.2f);
+        meleeAttackCol.enabled = true;
+        yield return new WaitForSeconds(0.2f);
+        meleeAttackCol.enabled = false;
+        isMeleeAttack = false;
+        anim.SetTrigger("doMeleeAttackOut");
+    }
+
+    void ObjectNameTag()
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20))
+        {
+            if(hit.transform.GetComponent<ObjectNameUI>() != null)
+            {
+                nameTag = hit.transform.GetComponent<ObjectNameUI>();
+                nameTag.isNameTagOpen = true;
+            }
+            else
+            {
+                if (nameTag != null)
+                {
+                    nameTag.isNameTagOpen = false;
+                    nameTag = null;
+                }
+            }
+        }
+    }
+
     Vector3 GetShotgunDirecting()
     {
         Vector3 targetPos = _mainCamera.transform.position + _mainCamera.transform.forward * weapon.shotGunRange;
@@ -541,7 +596,7 @@ public class Player : MonoBehaviour
 
     void ZoomInOut()
     {
-        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue && !isStun && !isCommunicate)
+        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             isZoom = true;
         }
@@ -595,7 +650,7 @@ public class Player : MonoBehaviour
     void Reload()
     {
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
-            && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
+            && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
             isReload = true;
             isZoom = false;
@@ -647,7 +702,7 @@ public class Player : MonoBehaviour
     void StopToWall()
     {
         //Debug.DrawLine(ShootPos.position, transform.forward , Color.green);
-        int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("Enemy")) + (1 << LayerMask.NameToLayer("Glass"));
+        int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("PhysicsEnemy")) + (1 << LayerMask.NameToLayer("Glass"));
 
         if (Physics.Raycast(borderPos.position, targetDirection, 0.7f, layerMask))
         {
@@ -684,6 +739,13 @@ public class Player : MonoBehaviour
                     other.transform.GetComponentInParent<EnemyB>().anim.SetTrigger("doMeleeAttack");
                     isStun = false;
                 }
+
+                if(isSubdue)
+                {
+                    StopCoroutine(meleeAttackCor);
+                    meleeAttackCol.enabled = false;
+                    isMeleeAttack = false;
+                }
             }
         }
         
@@ -713,7 +775,8 @@ public class Player : MonoBehaviour
         if (Physics.Raycast(ShootPos.position, _mainCamera.transform.forward, out hit, 2, LayerMask.GetMask("Interaction")))
         {
             interactionObj = hit.transform.GetComponent<Interaction>();
-            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate)
+            isMeleeAttackReady = false;
+            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
             {
                 if(interactionObj.isNonCharging)
                 {
@@ -762,6 +825,10 @@ public class Player : MonoBehaviour
                 UIManager.Instance.InteractionGauge.value = interactionTime / interactionObj.interactionTime;
             }
         }
+        else
+        {
+            isMeleeAttackReady = true;
+        }
     }
 
     void InteractionCheck()
@@ -783,7 +850,7 @@ public class Player : MonoBehaviour
         RaycastHit hit1;
         //RaycastHit hit2;
 
-        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun && !isCommunicate)
+        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             qToggle = !qToggle;
             if (rendererFeatures == null || rendererFeatures.Count <= 0) return;
@@ -791,7 +858,7 @@ public class Player : MonoBehaviour
         }
 
 
-        if (qToggle && fDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn)
+        if (qToggle && fDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit1, 20) && hackingEnemyInfo == null && isEnemyHitArea(hit1.transform.gameObject))
             {
@@ -865,7 +932,7 @@ public class Player : MonoBehaviour
         enemyLayer = LayerMask.GetMask("Enemy");
         StunCoolDown();
 
-        if (skDown2 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && curStunCoolTime >= stunCoolTime && !isSubdue && !isStun && !isCommunicate && eSkillOn)
+        if (skDown2 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && curStunCoolTime >= stunCoolTime && !isSubdue && !isStun && !isCommunicate && eSkillOn && !isMeleeAttack)
         {
             //Debug.Log("sk2");
             curStunCoolTime = 0;
@@ -900,7 +967,7 @@ public class Player : MonoBehaviour
 
     void OCInventory()
     {
-        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue && !isStun && !isCommunicate)
+        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
 
             if (iDown)
@@ -923,7 +990,7 @@ public class Player : MonoBehaviour
 
     void newOCInventory()
     {
-        if (qDown && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue && !isStun && !isCommunicate)
+        if (qDown && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             if (!isInventoryOpen)
             {
@@ -995,6 +1062,12 @@ public class Player : MonoBehaviour
                     if (tutSubdue.curSubdueProgress > 0.4f)
                         tutSubdue.curSubdueProgress -= 0.3f;
                 }
+                else
+                {
+                    EnemyA enemyA = SubdueObject.GetComponent<EnemyA>();
+                    if (enemyA.curSubdueProgress > 0.4f)
+                        enemyA.curSubdueProgress -= 0.3f;
+                }
             }
         }
         else
@@ -1007,7 +1080,7 @@ public class Player : MonoBehaviour
     {
         if (!isStun)
         {
-            Debug.Log("aaa");
+            //Debug.Log("aaa");
             isStun = true;
             //기절 애니메이션 실행
             StartCoroutine(StunOut(stunTime));
