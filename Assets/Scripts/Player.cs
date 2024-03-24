@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     [Space(10)]
     [Header("Player State Speed")]
     public float walkSpeed;
+    public float zoomSpeed;
     public float runSpeed;
     public float crouchSpeed;
     public float dodgeSpeed;
@@ -244,6 +245,7 @@ public class Player : MonoBehaviour
             if(isGunOn)
             {
                 if (rDown && !isReload && isShotEnd && !isZoom && !isHacking && !isShot) targetSpeed = gunRunSpeed;
+                else if (isZoom) targetSpeed = zoomSpeed;
                 else targetSpeed = gunWalkSpeed;
             }
             else

@@ -174,6 +174,11 @@ public class Interaction : FadeController
         {
             FadeInOut();
         }
+
+        if(GetComponent<ObjectNameUI>() != null)
+        {
+            GetComponent<ObjectNameUI>().nameUI.SetActive(false);
+        }
     }
 
     void ElecCharge()

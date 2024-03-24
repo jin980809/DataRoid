@@ -100,18 +100,26 @@ public class Enemy : MonoBehaviour
         EnemyInitialization();
     }
 
-    public void Stun(bool isSkill)
+    public void Stun(bool parrying)
     {
         //애니메이션 실행
         isStun = true;
-        anim.SetBool("isStun", true);
+        if(parrying)
+        {
+            anim.SetTrigger("doParryingDown");
+        }
+        else
+        {
+            anim.SetBool("isStun", true);
+        }
+        
         anim.SetBool("isAttack", false);
         nav.isStopped = true;
         isAttack = false;
         isChase = false;
         isShotChase = false;
         attackCollider.enabled = false;
-        StartCoroutine(StunOut());
+        StartCoroutine(StunOut(parrying));
         if (attackCoroutine != null)
         {
             StopCoroutine(attackCoroutine);
@@ -126,11 +134,18 @@ public class Enemy : MonoBehaviour
         //}
     }
 
-    IEnumerator StunOut()
+    IEnumerator StunOut(bool parrying)
     {
+        if (parrying)
+        {
+            anim.SetTrigger("doParryingDownOut");
+        }
         //애니메이션 실행
-        yield return new WaitForSeconds(3f);
-        anim.SetBool("isStun", false);
+        yield return new WaitForSeconds(5f);
+        if (!parrying)
+        {
+            anim.SetBool("isStun", false);
+        }
         nav.isStopped = false;
         isStun = false;
     }

@@ -310,7 +310,7 @@ public class EnemyA : Enemy
             isParryingPossible = false;
             nav.isStopped = false;
             isSubdueReady = true;
-            Stun(false);
+            Stun(true);
         }
     }
 
@@ -331,4 +331,5 @@ public class EnemyA : Enemy
             }
         }
     }
+
 }

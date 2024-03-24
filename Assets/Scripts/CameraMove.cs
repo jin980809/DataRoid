@@ -33,6 +33,16 @@ public class CameraMove : MonoBehaviour
     public float followSpeed;
     public float Sensitivity;
     private Vector3 smoothCamera;
+    public float zoomSpeed;
+
+    [Space(10)]
+    public float walkHeight;
+    public float runHeight;
+    public float zoomHeight;
+    float hoverOffset;
+    public float walkHeightSpeed;
+    public float runHeightSpeed;
+    public float zoomHeightSpeed;
 
     Vector3 valo;
     void Awake()
@@ -57,17 +67,17 @@ public class CameraMove : MonoBehaviour
 
         if(player.isZoom)
         {
-            cine3rd.ShoulderOffset = Vector3.SmoothDamp(cineVirCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().ShoulderOffset, shotCameraOffset, ref valo, 0.1f);
+            cine3rd.ShoulderOffset = Vector3.SmoothDamp(currCameraOffset, shotCameraOffset, ref valo, zoomSpeed);
         }
         else
         {
             if(player.isRun && !player.isReload)
             {
-                cine3rd.ShoulderOffset = Vector3.SmoothDamp(cineVirCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().ShoulderOffset,runCameraOffset, ref valo, 0.1f);
+                cine3rd.ShoulderOffset = Vector3.SmoothDamp(currCameraOffset, runCameraOffset, ref valo, 0.1f);
             }
             else
             {
-                cine3rd.ShoulderOffset = Vector3.SmoothDamp(cineVirCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().ShoulderOffset, walkCameraOffset, ref valo, 0.1f);
+                cine3rd.ShoulderOffset = Vector3.SmoothDamp(currCameraOffset, walkCameraOffset, ref valo, 0.1f);
             }
         }
     }
@@ -95,6 +105,26 @@ public class CameraMove : MonoBehaviour
 
     private void followCam()
     {
-        transform.position = Vector3.MoveTowards(transform.position, target.position, followSpeed * Time.deltaTime);
+        if(player.isWalk)
+        {
+            hoverOffset = Mathf.Sin(Time.time * walkHeightSpeed) * walkHeight;
+        }
+        if(player.isRun)
+        {
+            hoverOffset = Mathf.Sin(Time.time * runHeightSpeed) * runHeight;
+        }
+        if(player.isZoom)
+        {
+            hoverOffset = Mathf.Sin(Time.time * zoomHeightSpeed) * zoomHeight;
+        }
+
+        if(!player.isWalk)
+        {
+            hoverOffset = Mathf.Sin(Time.time * 0) * 0;
+        }
+
+
+        float a = Mathf.Lerp(transform.position.y, target.position.y + hoverOffset, Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, new Vector3(target.position.x, a, target.position.z), followSpeed * Time.deltaTime);
     }
 }

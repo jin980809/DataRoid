@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ObjectNameUI : MonoBehaviour
 {
-    GameObject nameUI; // 积己等 利 UI
+    public GameObject nameUI; // 积己等 利 UI
     public bool isNameTagOpen;
     public GameObject nameUIPrefab;
     public Canvas canvas;
@@ -12,10 +12,10 @@ public class ObjectNameUI : MonoBehaviour
 
     void Update()
     {
-        HackingUI();
+        ObjectUI();
     }
 
-    public void HackingUI()
+    public void ObjectUI()
     {
         if (isNameTagOpen)
         {
@@ -42,6 +42,7 @@ public class ObjectNameUI : MonoBehaviour
                 nameUI.SetActive(false);
             }
         }
+
     }
 
 
