@@ -68,6 +68,7 @@ public class Player : MonoBehaviour
     bool skDown1; // 스킬1 Q
     bool skDown2; // 스킬2 E
     bool mDown; // 맵 크기
+    bool vDown; // 오브젝트 찾기
 
     bool sDown1;
     bool sDown2;
@@ -143,6 +144,11 @@ public class Player : MonoBehaviour
     [Header("MeleeAttack")]
     public BoxCollider meleeAttackCol;
     bool isMeleeAttackReady = true;
+
+    [Space(10)]
+    [Header("Search")]
+    public float searchDistance;
+    public float nameTagDisappearSeconds;
 
     [Space(10)]
     private LayerMask enemyLayer;
@@ -231,6 +237,7 @@ public class Player : MonoBehaviour
         skDown1 = Input.GetButtonDown("Skill1");
         skDown2 = Input.GetButtonDown("Skill2");
         mDown = Input.GetButtonDown("Map");
+        vDown = Input.GetButtonDown("Search");
     }
 
     void DecreaseHp()
@@ -562,24 +569,46 @@ public class Player : MonoBehaviour
 
     void ObjectNameTag()
     {
-        RaycastHit hit;
-
-        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20))
+        //RaycastHit hit;
+        if (vDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
-            if(hit.transform.GetComponent<ObjectNameUI>() != null)
+            RaycastHit[] hits = Physics.SphereCastAll(ShootPos.position, searchDistance, Vector3.up, 0f, LayerMask.GetMask("Interaction"));
+            Debug.Log("aa");
+            //if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20))
+            //{
+            //    if(hit.transform.GetComponent<ObjectNameUI>() != null)
+            //    {
+            //        nameTag = hit.transform.GetComponent<ObjectNameUI>();
+            //        nameTag.isNameTagOpen = true;
+            //    }
+            //    else
+            //    {
+            //        if (nameTag != null)
+            //        {
+            //            nameTag.isNameTagOpen = false;
+            //            nameTag = null;
+            //        }
+            //    }
+            //}
+            for (int i = 0; i < hits.Length; i++)
             {
-                nameTag = hit.transform.GetComponent<ObjectNameUI>();
-                nameTag.isNameTagOpen = true;
-            }
-            else
-            {
-                if (nameTag != null)
+                if (hits[i].transform.GetComponent<ObjectNameUI>() != null)
                 {
-                    nameTag.isNameTagOpen = false;
-                    nameTag = null;
+                    if (!IsObstacleBetween(transform.position, hits[i].transform.position, LayerMask.GetMask("Enviroment")))
+                    {
+                        nameTag = hits[i].transform.GetComponent<ObjectNameUI>();
+                        nameTag.isNameTagOpen = true;
+                        StartCoroutine(NameTagOut());
+                    }
                 }
             }
         }
+    }
+
+    IEnumerator NameTagOut()
+    {
+        yield return new WaitForSeconds(nameTagDisappearSeconds);
+        nameTag.isNameTagOpen = false;
     }
 
     Vector3 GetShotgunDirecting()

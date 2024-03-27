@@ -71,28 +71,6 @@ public class ObjectNameUI : MonoBehaviour
     {
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
 
-        //switch (hitAreaType)
-        //{
-        //    case Type.Head:
-        //        screenPos = Camera.main.WorldToScreenPoint(parts[0].position);
-        //        break;
-        //    case Type.Body:
-        //        screenPos = Camera.main.WorldToScreenPoint(parts[1].position);
-        //        break;
-        //    case Type.LeftArm:
-        //        screenPos = Camera.main.WorldToScreenPoint(parts[2].position);
-        //        break;
-        //    case Type.RightArm:
-        //        screenPos = Camera.main.WorldToScreenPoint(parts[3].position);
-        //        break;
-        //    case Type.LeftLeg:
-        //        screenPos = Camera.main.WorldToScreenPoint(parts[4].position);
-        //        break;
-        //    case Type.RightLeg:
-        //        screenPos = Camera.main.WorldToScreenPoint(parts[5].position);
-        //        break;
-        //}
-
         if (nameUI != null)
         {
             Vector3 canvasPos = screenPos / canvas.scaleFactor;
