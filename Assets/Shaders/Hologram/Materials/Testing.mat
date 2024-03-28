@@ -229,7 +229,7 @@ Material:
     - _LineColor1: {r: 0.620945, g: 1.420074, b: 3.953349, a: 1}
     - _LineColor2: {r: 0.620945, g: 1.420074, b: 3.953349, a: 1}
     - _LineGlitchOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _MainColor: {r: 0.3513666, g: 0.54957336, b: 1.7207954, a: 0.011764706}
+    - _MainColor: {r: 0, g: 1.2383956, b: 2.297397, a: 0.011764706}
     - _MaskCenter: {r: 0, g: 0, b: 0, a: 0}
     - _MaskSize: {r: 0, g: 0, b: 0, a: 0}
     - _RandomGlitchOffset: {r: 0, g: 0, b: 0, a: 0}

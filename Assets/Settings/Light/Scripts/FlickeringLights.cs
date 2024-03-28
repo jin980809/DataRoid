@@ -7,21 +7,39 @@ public class FlickeringLights : MonoBehaviour
     public Light spotLight;
     public Light pointLight;
 
-    public GameObject Target;
+    public GameObject Target_1;
+    public GameObject Target_2;
 
     public float maxWait = 1;
     public float maxFlicker = 0.2f;
 
     float timer;
     float interval;
+    float Curtime;
 
     void Update()
     {
         timer += Time.deltaTime;
+        Curtime += Time.deltaTime;
+
         if (timer > interval)
         {
-            ToggleLightSetup();
+            if (Curtime < 5)
+            {
+                ToggleLightSetup();
+            }
+
+            else
+            {
+                spotLight.intensity = 5f;
+                pointLight.intensity = 0.1f;
+                Target_1.SetActive(false);
+                Target_2.SetActive(false);
+
+            }
         }
+
+
     }
 
     void ToggleLightSetup()
@@ -33,7 +51,8 @@ public class FlickeringLights : MonoBehaviour
         {
             interval = Random.Range(0, maxWait);
 
-            Target.SetActive(false);
+            Target_1.SetActive(false);
+            Target_2.SetActive(false);
         }
         else if (pointLight.enabled)
         {
@@ -41,9 +60,10 @@ public class FlickeringLights : MonoBehaviour
         }
         else if (!spotLight.enabled)
         {
-            interval = Random.Range(0, maxFlicker);
+            interval = Random.Range(0 ,maxFlicker);
 
-            Target.SetActive(true);
+            Target_1.SetActive(true);
+            Target_2.SetActive(true);
         }
         else if (!pointLight.enabled)
         {
