@@ -88,6 +88,15 @@ public class EnemyB : Enemy
         if(isDeath)
         {
             p2EndInter.enabled = true;
+
+            if (cSpecialAttack != null)
+                StopCoroutine(cSpecialAttack);
+
+            if (cNormalAttack != null)
+                StopCoroutine(cNormalAttack);
+
+            if (cMeleeAttack != null)
+                StopCoroutine(cMeleeAttack);
         }
     }
 
@@ -97,7 +106,7 @@ public class EnemyB : Enemy
         Vector3 enemyPos = new Vector3(transform.position.x, 0, transform.position.z);
         
         float distance = Vector3.Distance(enemyPos, playerTargeting);
-        if (!isAimming && !isStun)
+        if (!isAimming && !isStun && !isDeath)
         {
             if (distance <= stopDistance) // 플레이어와 멀어짐
             {
@@ -159,7 +168,7 @@ public class EnemyB : Enemy
 
         RaycastHit hit;
 
-        if(isMoveFar && !isNAttackReady && !isSAttackReady && !isNormalAttack && !isSpecialAttack && !isMeleeAttack & !isDashAttack && !isStun && Physics.Raycast(attackPos.position, -attackPos.forward, out hit, 1.5f, LayerMask.GetMask("Enviroment")))
+        if(isMoveFar && !isNAttackReady && !isSAttackReady && !isNormalAttack && !isSpecialAttack && !isMeleeAttack & !isDashAttack && !isStun && !isDeath && Physics.Raycast(attackPos.position, -attackPos.forward, out hit, 1.5f, LayerMask.GetMask("Enviroment")))
         {
             //isDashAttack = true;
             isAimming = true;
@@ -168,7 +177,7 @@ public class EnemyB : Enemy
             MeleeAttack();
             //Debug.Log("DashAttackReady");
         }
-        else if ((isMoveStop || isMoveFar) && !isNormalAttack && !isSpecialAttack && !isMeleeAttack && curSAttack1CoolTime > sAttackCoolTime && !isSAttackReady && !isNAttackReady && !isDashAttack && !isStun)
+        else if ((isMoveStop || isMoveFar) && !isNormalAttack && !isSpecialAttack && !isMeleeAttack && curSAttack1CoolTime > sAttackCoolTime && !isSAttackReady && !isNAttackReady && !isDashAttack && !isStun && !isDeath)
         {
             isSAttackReady = true;
             isSCoolDown = false;
@@ -178,7 +187,7 @@ public class EnemyB : Enemy
             cSpecialAttack = SpecialAttackReady();
             StartCoroutine(cSpecialAttack);
         }
-        else if(!isNormalAttack && !isSpecialAttack && !isMeleeAttack && curNAttackCoolTime > nAttackCoolTime && !isNAttackReady && !isSAttackReady && !isDashAttack && !isStun)
+        else if(!isNormalAttack && !isSpecialAttack && !isMeleeAttack && curNAttackCoolTime > nAttackCoolTime && !isNAttackReady && !isSAttackReady && !isDashAttack && !isStun && !isDeath)
         {
             isNAttackReady = true;
             isNCoolDown = false;

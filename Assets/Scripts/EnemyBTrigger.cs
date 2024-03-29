@@ -33,6 +33,8 @@ public class EnemyBTrigger : MonoBehaviour
 
             if (eventNum == 2)
                 movePhase2.SetActive(true);
+
+            transform.gameObject.SetActive(false);
         }
     }
 }

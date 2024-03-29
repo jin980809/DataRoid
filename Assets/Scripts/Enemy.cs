@@ -207,7 +207,7 @@ public class Enemy : MonoBehaviour
             isDeath = true;
             nav.isStopped = true;
             anim.SetTrigger("doDie");
-            Invoke("DropItems", 4);
+            //Invoke("DropItems", 4);
             StartCoroutine(Dead());
         }
     }

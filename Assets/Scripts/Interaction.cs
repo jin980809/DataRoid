@@ -175,10 +175,10 @@ public class Interaction : FadeController
             FadeInOut();
         }
 
-        if(GetComponent<ObjectNameUI>() != null)
-        {
-            GetComponent<ObjectNameUI>().nameUI.SetActive(false);
-        }
+        //if(GetComponent<ObjectNameUI>() != null )
+        //{
+        //    GetComponent<ObjectNameUI>().nameUI.SetActive(false);
+        //}
     }
 
     void ElecCharge()
@@ -250,6 +250,12 @@ public class Interaction : FadeController
 
     void MovePlayer()
     {
+        StartCoroutine(MovePlayer(1.5f));
+    }
+
+    IEnumerator MovePlayer(float second)
+    {
+        yield return new WaitForSeconds(second);
         player.transform.position = movePoint.position;
     }
 

@@ -47,6 +47,6 @@ public class ExpManager : MonoBehaviour
 
     void ExpGauge()
     {
-        UIManager.Instance.ExpGauge.value = (curExp + 0.001f) / requireExp;
+        /*UIManager.Instance.ExpGauge.value = (curExp + 0.001f) / requireExp;*/
     }
 }

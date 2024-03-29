@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
     public Player player;
     public GameObject aim;
     public Image hpGauge;
-    public TextMeshProUGUI hpText;
+    public Text hpText;
 
     [Space(10)]
     [Header("Interaction")]
@@ -47,7 +47,8 @@ public class UIManager : MonoBehaviour
 
     [Space(10)]
     [Header("EXP")]
-    public Slider ExpGauge;
+    public Image DataGauge;
+    public Text Datatext;
 
     [Space(10)]
     [Header("HackingUI")]
@@ -81,7 +82,8 @@ public class UIManager : MonoBehaviour
     public Image handGunImage;
     public Image rifleImage;
     public Image shotGunImage;
-    public TextMeshProUGUI ammoText;
+    public Text curAmmoText;
+    public Text maxAmmoText;
 
     [Space(10)]
     [Header("DroneTextBox")]
@@ -139,12 +141,15 @@ public class UIManager : MonoBehaviour
             handGunImage.gameObject.SetActive(false);
             rifleImage.gameObject.SetActive(false);
             shotGunImage.gameObject.SetActive(false);
-            ammoText.gameObject.SetActive(false);
+            curAmmoText.gameObject.SetActive(false);
+            maxAmmoText.gameObject.SetActive(false);
         }
         else
         {
-            ammoText.gameObject.SetActive(true);
-            ammoText.text = player.weapon.curAmmo + " / " + player.weapon.maxAmmo;
+            curAmmoText.gameObject.SetActive(true);
+            maxAmmoText.gameObject.SetActive(true);
+            curAmmoText.text = player.weapon.curAmmo + "";
+            maxAmmoText.text = player.weapon.maxAmmo + "";
             switch (gunIndex)
             {
                 case 0:

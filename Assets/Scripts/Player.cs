@@ -468,7 +468,7 @@ public class Player : MonoBehaviour
                     {
                         case 9://Enemy
                             SpawnHitEffect(hit.point, 1);
-                            enemy.HitEffect(hit.point);
+                            //enemy.HitEffect(hit.point);
                             break;
 
                         case 6: //Enviroment
@@ -563,8 +563,10 @@ public class Player : MonoBehaviour
         meleeAttackCol.enabled = true;
         yield return new WaitForSeconds(0.2f);
         meleeAttackCol.enabled = false;
-        isMeleeAttack = false;
         anim.SetTrigger("doMeleeAttackOut");
+        yield return new WaitForSeconds(0.2f);
+        isMeleeAttack = false;
+
     }
 
     void ObjectNameTag()
