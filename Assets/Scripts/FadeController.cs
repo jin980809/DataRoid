@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class FadeController : MonoBehaviour
 {
+
+    [Space(10)]
+    [Header("Fade")]
     public Image fadeImage;
     private bool isFadingout;
     public float fadeSpeed;
