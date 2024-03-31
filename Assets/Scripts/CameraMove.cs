@@ -82,8 +82,6 @@ public class CameraMove : MonoBehaviour
         }
     }
 
-        
-
     private void LookAround()
     {
         Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * Sensitivity;
@@ -124,7 +122,8 @@ public class CameraMove : MonoBehaviour
         }
 
 
-        float a = Mathf.Lerp(transform.position.y, target.position.y + hoverOffset, Time.deltaTime);
-        transform.position = Vector3.MoveTowards(transform.position, new Vector3(target.position.x, target.position.y, target.position.z), followSpeed * Time.deltaTime);
+        //float a = Mathf.Lerp(transform.position.y, target.position.y + hoverOffset, Time.deltaTime);
+        //transform.position = Vector3.MoveTowards(transform.position, new Vector3(target.position.x, target.position.y, target.position.z), followSpeed * Time.deltaTime);
+        transform.position = new Vector3(target.position.x, target.position.y + hoverOffset, target.position.z);
     }
 }

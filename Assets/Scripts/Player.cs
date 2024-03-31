@@ -158,6 +158,7 @@ public class Player : MonoBehaviour
     Animator anim;
     ObjectNameUI nameTag;
     Coroutine meleeAttackCor;
+    public AimMovement aimMove;
 
     void Awake()
     {
@@ -451,6 +452,7 @@ public class Player : MonoBehaviour
         if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             isShotEnd = false;
+            //aimMove.MoveAim();
             fireDelay = 0;
             RaycastHit hit;
             muzzleEffect.SetActive(true);
