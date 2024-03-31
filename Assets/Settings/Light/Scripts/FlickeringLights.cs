@@ -15,31 +15,15 @@ public class FlickeringLights : MonoBehaviour
 
     float timer;
     float interval;
-    float Curtime;
 
     void Update()
     {
         timer += Time.deltaTime;
-        Curtime += Time.deltaTime;
 
         if (timer > interval)
         {
-            if (Curtime < 5)
-            {
-                ToggleLightSetup();
-            }
-
-            else
-            {
-                spotLight.intensity = 5f;
-                pointLight.intensity = 0.1f;
-                Target_1.SetActive(false);
-                Target_2.SetActive(false);
-
-            }
+            ToggleLightSetup();
         }
-
-
     }
 
     void ToggleLightSetup()

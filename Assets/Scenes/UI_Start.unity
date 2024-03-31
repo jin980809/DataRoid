@@ -4308,7 +4308,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2a2d6a013eef62b4c972b1cf274f6392, type: 2}
+  - {fileID: 2100000, guid: 7552b1005ea63ba418822131d7deb34f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4346,7 +4346,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510983292}
   m_LocalRotation: {x: -0.091361076, y: 0.70117986, z: 0.70117986, w: -0.091361076}
-  m_LocalPosition: {x: -0.19754791, y: 0.7056047, z: -0.6246042}
+  m_LocalPosition: {x: -0.2458, y: 0.7363, z: -0.6246}
   m_LocalScale: {x: 100.00016, y: 100, z: 100.00015}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11525,7 +11525,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 26b0e89b507df4e43a90554ec7ea27d4, type: 2}
+  - {fileID: 2100000, guid: 2a2d6a013eef62b4c972b1cf274f6392, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13331,7 +13331,7 @@ MonoBehaviour:
   drawingMode: 1
   outlineLayer: 0
   outlineTargets:
-  - IsVisible: 1
+  - IsVisible: 0
     CutoutMask: 8
     edgeDilateAmount: 5
     frontEdgeDilateAmount: 5
@@ -13347,7 +13347,7 @@ MonoBehaviour:
     cutoutTextureName: 
     DilateRenderingMode: 0
     cutoutTextureIndex: 0
-  - IsVisible: 1
+  - IsVisible: 0
     CutoutMask: 8
     edgeDilateAmount: 5
     frontEdgeDilateAmount: 5
@@ -13363,7 +13363,7 @@ MonoBehaviour:
     cutoutTextureName: 
     DilateRenderingMode: 0
     cutoutTextureIndex: 0
-  - IsVisible: 1
+  - IsVisible: 0
     CutoutMask: 8
     edgeDilateAmount: 5
     frontEdgeDilateAmount: 5
