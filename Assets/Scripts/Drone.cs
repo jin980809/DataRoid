@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Drone : MonoBehaviour
 {
+    public Player player;
     public Transform targetPosition;
     public float followSpeed = 5f;
     public Transform playerPos;
@@ -16,11 +17,15 @@ public class Drone : MonoBehaviour
         if(ObjectManager.Instance.saveObjects[0] == false)
         {
             transform.gameObject.SetActive(true);
+            player.droneOn = true;
+
         }
         else
         {
             transform.gameObject.SetActive(false);
+            player.droneOn = false;
         }
+
     }
 
     void Update()

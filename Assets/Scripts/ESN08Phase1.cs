@@ -5,8 +5,6 @@ using UnityEngine.AI;
 
 public class ESN08Phase1 : MonoBehaviour
 {
-    public float subdueCoolTime;
-    [SerializeField]float curSubdueCoolTime;
     [SerializeField] bool isPlayerSubdue = false;
     Animator anim;
     public CapsuleCollider attack;
@@ -17,6 +15,7 @@ public class ESN08Phase1 : MonoBehaviour
 
     void Start()
     {
+        curSubdueProgress = subdueProgress;
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
     }
@@ -50,22 +49,20 @@ public class ESN08Phase1 : MonoBehaviour
             nav.isStopped = true;
             nav.velocity = Vector3.zero;
 
-            curSubdueCoolTime += Time.deltaTime;
-            curSubdueProgress += Time.deltaTime;
             UIManager.Instance.SubDueSlider.value = curSubdueProgress / subdueProgress;
 
-            if (curSubdueCoolTime > subdueCoolTime)
-            {
-                //제압 실패시 (시간이 다 지나갔을때)
+            //if (curSubdueCoolTime > subdueCoolTime)
+            //{
+            //    //제압 실패시 (시간이 다 지나갔을때)
                 
-                //curSubdueCoolTime = 0;
-                nav.isStopped = false;
-                UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
-                anim.SetTrigger("doSubdueOut");
-                Invoke("SubdueOut", 0.3f);
-            }
+            //    //curSubdueCoolTime = 0;
+            //    nav.isStopped = false;
+            //    UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+            //    anim.SetTrigger("doSubdueOut");
+            //    Invoke("SubdueOut", 0.3f);
+            //}
 
-            if(curSubdueProgress > subdueProgress)
+            if(curSubdueProgress <= 0)
             {
                 //제압 성공시
                 GameManager.Instance.ESN08Phase2Diff++;

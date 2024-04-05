@@ -33,7 +33,7 @@ public class CameraMove : MonoBehaviour
     public float followSpeed;
     public float Sensitivity;
     private Vector3 smoothCamera;
-    public float zoomSpeed;
+    public float zoomInSpeed;
 
     [Space(10)]
     public float walkHeight;
@@ -44,10 +44,21 @@ public class CameraMove : MonoBehaviour
     public float runHeightSpeed;
     public float zoomHeightSpeed;
 
+    private float walkSpeed;
+    private float runSpeed;
+    private float zoomSpeed;
+
     Vector3 valo;
     void Awake()
     {
         player = target.gameObject.GetComponentInParent<Player>();
+    }
+
+    void Start()
+    {
+        walkSpeed = player.walkSpeed;
+        runSpeed = player.runSpeed;
+        zoomSpeed = player.zoomSpeed;
     }
 
     void Update()
@@ -67,7 +78,7 @@ public class CameraMove : MonoBehaviour
 
         if(player.isZoom)
         {
-            cine3rd.ShoulderOffset = Vector3.SmoothDamp(currCameraOffset, shotCameraOffset, ref valo, zoomSpeed);
+            cine3rd.ShoulderOffset = Vector3.SmoothDamp(currCameraOffset, shotCameraOffset, ref valo, zoomInSpeed);
         }
         else
         {
@@ -103,20 +114,19 @@ public class CameraMove : MonoBehaviour
 
     private void followCam()
     {
-        if(player.isWalk)
+        if (player.targetSpeed == walkSpeed)
         {
             hoverOffset = Mathf.Sin(Time.time * walkHeightSpeed) * walkHeight;
         }
-        if(player.isRun)
+        else if(player.targetSpeed == runSpeed)
         {
             hoverOffset = Mathf.Sin(Time.time * runHeightSpeed) * runHeight;
         }
-        if(player.isZoom)
+        else if(player.targetSpeed == zoomSpeed)
         {
             hoverOffset = Mathf.Sin(Time.time * zoomHeightSpeed) * zoomHeight;
         }
-
-        if(!player.isWalk)
+        else if(player.targetSpeed == 0f)
         {
             hoverOffset = Mathf.Sin(Time.time * 0) * 0;
         }

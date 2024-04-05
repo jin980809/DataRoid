@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
     [Header("Player CoolTime")]
     public float dodgeCoolTime;
 
-    private float targetSpeed;
+    public float targetSpeed;
     private float culDodgeTime;
 
     float hAxis;
@@ -124,14 +124,13 @@ public class Player : MonoBehaviour
     Rigidbody rigid;
     RectTransform miniMap;
 
-
     [Space(10)]
     [Header("Hacking Skill")]
     public float hackingCoolTime;
     public int hackingNum;
     public float curHackingCoolTime;
     public float curHackingNum;
-    private GameObject hackingEnemyInfo;
+    public GameObject hackingEnemyInfo;
     public float hackingTime;
 
     [Space(10)]
@@ -139,6 +138,7 @@ public class Player : MonoBehaviour
     public float stunDistance;
     public float stunCoolTime;
     public float curStunCoolTime;
+    public float stunTime;
 
     [Space(10)]
     [Header("MeleeAttack")]
@@ -147,18 +147,24 @@ public class Player : MonoBehaviour
 
     [Space(10)]
     [Header("Search")]
+    private bool isScan = false;
+    public bool droneOn;
     public float searchDistance;
     public float nameTagDisappearSeconds;
+    public GameObject scanEffect;
+    ObjectNameUI nameTag;
 
     [Space(10)]
+    [Header("Else")]
     private LayerMask enemyLayer;
     public GameObject SubdueObject;
     List<ScriptableRendererFeature> rendererFeatures;
     ScriptableRendererData data;
     Animator anim;
-    ObjectNameUI nameTag;
+
     Coroutine meleeAttackCor;
-    public AimMovement aimMove;
+
+    //public AimMovement aimMove;
 
     void Awake()
     {
@@ -223,7 +229,7 @@ public class Player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         rDown = Input.GetButton("Run");
         sDown = Input.GetButton("Crouch");
-        fDown = Input.GetButton("Fire1");
+        fDown = (qSkillOn) ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1");
         f2Down = Input.GetButton("Fire2");
         dDown = Input.GetButton("Dodge");
         gDown = Input.GetButtonDown("GunOn");
@@ -248,18 +254,18 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        if (!isDodge && !isSubdue && !isStun && !isInteraction && !isCommunicate && !isInventoryOpen)
+        if (!isDodge && !isSubdue && !isInteraction && !isCommunicate && !isInventoryOpen)
         {
             if(isGunOn)
             {
-                if (rDown && !isReload && isShotEnd && !isZoom && !isHacking && !isShot) targetSpeed = gunRunSpeed;
-                else if (isZoom) targetSpeed = zoomSpeed;
+                if (rDown && !isReload && isShotEnd && !isZoom && !isHacking && !isShot && !isStun) targetSpeed = gunRunSpeed;
+                else if (isZoom && isStun) targetSpeed = zoomSpeed;
                 else targetSpeed = gunWalkSpeed;
             }
             else
             {
-                if (sDown) targetSpeed = crouchSpeed;
-                else if (rDown) targetSpeed = runSpeed;
+                if (sDown && !isStun) targetSpeed = crouchSpeed;
+                else if (rDown && !isStun) targetSpeed = runSpeed;
                 else targetSpeed = walkSpeed;
             }
 
@@ -280,15 +286,15 @@ public class Player : MonoBehaviour
         {
             isWalk = true;
 
-            if (!isDodge && !isInteraction && !isCommunicate && !isInventoryOpen)
+            if (!isDodge && !isInteraction && !isCommunicate && !isInventoryOpen && !isMeleeAttack)
             {
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, 0.17f);
 
-                transform.rotation = Quaternion.Euler(0.0f, (!isShotEnd || isZoom || isHacking || isSubdue || isStun || isShot) ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
+                transform.rotation = Quaternion.Euler(0.0f, (!isShotEnd || isZoom || isHacking || isSubdue || isShot) ? _mainCamera.transform.eulerAngles.y : rotation, 0.0f);
             }
             else
             {
-                if (isDodgeReady && !isInteraction && !isCommunicate && !isInventoryOpen)
+                if (isDodgeReady && !isInteraction && !isCommunicate && !isInventoryOpen && !isMeleeAttack)
                     transform.rotation = Quaternion.Euler(0.0f, targetRotation, 0.0f); //도약할때 바로 캐릭터가 회전하게
             }
         }
@@ -296,7 +302,7 @@ public class Player : MonoBehaviour
         {
             isWalk = false;
 
-            if ((!isShotEnd || isZoom || isHacking || isShot) && !isDodge && !isInteraction)
+            if ((!isShotEnd || isZoom || isHacking || isShot) && !isDodge && !isInteraction && !isMeleeAttack)
                 transform.rotation = Quaternion.Euler(0.0f, _mainCamera.transform.eulerAngles.y, 0.0f);
         }
 
@@ -470,7 +476,7 @@ public class Player : MonoBehaviour
                     {
                         case 9://Enemy
                             SpawnHitEffect(hit.point, 1);
-                            //enemy.HitEffect(hit.point);
+                            enemy.HitEffect(hit.point);
                             break;
 
                         case 6: //Enviroment
@@ -521,6 +527,8 @@ public class Player : MonoBehaviour
 
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                         {
+                            Debug.Log(hitArea(hit.collider.transform.gameObject));
+
                             if (enemy.sheild <= 0)
                             {
                                 enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
@@ -566,7 +574,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         meleeAttackCol.enabled = false;
         anim.SetTrigger("doMeleeAttackOut");
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.4f);
         isMeleeAttack = false;
 
     }
@@ -574,26 +582,12 @@ public class Player : MonoBehaviour
     void ObjectNameTag()
     {
         //RaycastHit hit;
-        if (vDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if (vDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn && !isScan)
         {
+            scanEffect.SetActive(true);
             RaycastHit[] hits = Physics.SphereCastAll(ShootPos.position, searchDistance, Vector3.up, 0f, LayerMask.GetMask("Interaction"));
             Debug.Log("aa");
-            //if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20))
-            //{
-            //    if(hit.transform.GetComponent<ObjectNameUI>() != null)
-            //    {
-            //        nameTag = hit.transform.GetComponent<ObjectNameUI>();
-            //        nameTag.isNameTagOpen = true;
-            //    }
-            //    else
-            //    {
-            //        if (nameTag != null)
-            //        {
-            //            nameTag.isNameTagOpen = false;
-            //            nameTag = null;
-            //        }
-            //    }
-            //}
+
             for (int i = 0; i < hits.Length; i++)
             {
                 if (hits[i].transform.GetComponent<ObjectNameUI>() != null)
@@ -606,13 +600,24 @@ public class Player : MonoBehaviour
                     }
                 }
             }
+
+            StartCoroutine(ScanEffectOut());
         }
     }
 
     IEnumerator NameTagOut()
     {
+
         yield return new WaitForSeconds(nameTagDisappearSeconds);
         nameTag.isNameTagOpen = false;
+    }
+
+    IEnumerator ScanEffectOut()
+    {
+        isScan = true;
+        yield return new WaitForSeconds(nameTagDisappearSeconds + 1);
+        scanEffect.SetActive(false);
+        isScan = false;
     }
 
     Vector3 GetShotgunDirecting()
@@ -698,7 +703,7 @@ public class Player : MonoBehaviour
 
     IEnumerator ReloadOut()
     {
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(1.5f);
 
         if (isReload)
         {
@@ -765,14 +770,14 @@ public class Player : MonoBehaviour
                 StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z), attack.damage));
                 if(other.transform.GetComponentInParent<EnemyB>() != null)
                 {
-                    other.transform.GetComponentInParent<EnemyB>().isAimming = false;
-                    other.enabled = false;
-                    other.transform.GetComponentInParent<EnemyB>().isMeleeAttack = false;
-                    other.transform.GetComponentInParent<EnemyB>().isSCoolDown = true;
-                    other.transform.GetComponentInParent<EnemyB>().isSpecialAttack = false;
+                    //other.transform.GetComponentInParent<EnemyB>().isAimming = false;
+                    //other.enabled = false;
+                    //other.transform.GetComponentInParent<EnemyB>().isMeleeAttack = false;
+                    //other.transform.GetComponentInParent<EnemyB>().isSCoolDown = true;
+                    //other.transform.GetComponentInParent<EnemyB>().isSpecialAttack = false;
 
-                    other.transform.GetComponentInParent<EnemyB>().anim.SetTrigger("doMeleeAttack");
-                    isStun = false;
+                    //other.transform.GetComponentInParent<EnemyB>().anim.SetTrigger("doMeleeAttack");
+                    //isStun = false;
                 }
 
                 if(isSubdue)
@@ -899,6 +904,7 @@ public class Player : MonoBehaviour
             {
                 if (hit1.transform.GetComponent<Enemy>().sheild > 0 && !hit1.transform.GetComponent<Enemy>().isHacking && curHackingNum > 0)
                 {
+                    //Debug.Log(hit1.transform.tag);
                     hackingEnemyInfo = hit1.transform.gameObject;
                     isHacking = true;
                 }
@@ -977,7 +983,7 @@ public class Player : MonoBehaviour
             foreach (RaycastHit hit in hits)
             {
                 GameObject enemyObject = hit.transform.gameObject;
-                enemyObject.GetComponentInParent<Enemy>().Stun(true);
+                enemyObject.GetComponentInParent<Enemy>().Stun(false, stunTime);
             }
         }
     }
@@ -1088,20 +1094,27 @@ public class Player : MonoBehaviour
                 if (SubdueObject.GetComponent<ESN08Phase1>() != null)
                 {
                     ESN08Phase1 eSN08Phase1 = SubdueObject.GetComponent<ESN08Phase1>();
-                    if (eSN08Phase1.curSubdueProgress > 0.4f)
+                    //if (eSN08Phase1.curSubdueProgress > 0.4f)
                         eSN08Phase1.curSubdueProgress -= 0.3f;
                 }
                 else if (SubdueObject.GetComponent<TutSubdueEnemy>() != null)
                 {
                     TutSubdueEnemy tutSubdue = SubdueObject.GetComponent<TutSubdueEnemy>();
-                    if (tutSubdue.curSubdueProgress > 0.4f)
-                        tutSubdue.curSubdueProgress -= 0.3f;
+                    //if (tutSubdue.curSubdueProgress > 0.4f)
+                    tutSubdue.curSubdueProgress -= 0.3f;
                 }
+                else if(SubdueObject.GetComponent<EnemyB>() != null)
+                {
+                    EnemyB enemy = SubdueObject.GetComponent<EnemyB>();
+                    //if (enemyA.curSubdueProgress > 0.4f)
+                    enemy.curSubdueProgress -= 0.3f;
+                }
+
                 else
                 {
-                    EnemyA enemyA = SubdueObject.GetComponent<EnemyA>();
-                    if (enemyA.curSubdueProgress > 0.4f)
-                        enemyA.curSubdueProgress -= 0.3f;
+                    EnemyA enemy = SubdueObject.GetComponent<EnemyA>();
+                    //if (enemyA.curSubdueProgress > 0.4f)
+                        enemy.curSubdueProgress -= 0.3f;
                 }
             }
         }

@@ -22,6 +22,7 @@ public class TutSubdueEnemy : MonoBehaviour
         nav = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         nav.speed = 10f;
+        curSubdueProgress = subdueProgress;
     }
 
     void Update()
@@ -58,33 +59,15 @@ public class TutSubdueEnemy : MonoBehaviour
             nav.isStopped = true;
             nav.velocity = Vector3.zero;
 
-            curSubdueCoolTime += Time.deltaTime;
-            curSubdueProgress += Time.deltaTime;
-            //UIManager.Instance.SubDueSlider.value = curSubdueProgress / subdueProgress;
+            UIManager.Instance.SubDueSlider.value = curSubdueProgress / subdueProgress;
 
-            if (curSubdueCoolTime > subdueCoolTime)
-            {
-                //제압 실패시 (시간이 다 지나갔을때)
-
-                GetComponent<BoxCollider>().enabled = false;
-                curSubdueCoolTime = 0;
-                isPlayerSubdue = false;
-                player.isSubdue = false;
-                //UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
-                ProgressManager.Instance.curProgress -= 1;
-                isDead = true;
-                Invoke("Dead", 1);
-                anim.SetTrigger("doSubdueOut");
-            }
-
-            if (curSubdueProgress > subdueProgress)
+            if (curSubdueProgress <= 0)
             {
                 //제압 성공시
-
                 GetComponent<BoxCollider>().enabled = false;
                 curSubdueCoolTime = 0;
                 isPlayerSubdue = false;
-                //UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+                UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
                 ProgressManager.Instance.curProgress -= 1;
                 isDead = true;
                 Invoke("Dead", 1);

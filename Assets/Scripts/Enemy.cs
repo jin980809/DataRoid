@@ -74,6 +74,21 @@ public class Enemy : MonoBehaviour
     public ParticleSystem cps;
     public bool hasData;
     public bool isMeleeDamage;
+
+    [Space(10f)]
+    [Header("Subdue")]
+    public bool isPlayerSubdue = false;
+    public BoxCollider subdueCol;
+    protected bool isParryingPossible = false;
+    public float parryingTime;
+    protected bool isSubdueReady = true;
+
+    public Coroutine DoSubdue = null;
+    public float subdueCoolTime;
+    float curSubdueCoolTime;
+    public float subdueProgress;
+    public float curSubdueProgress;
+
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -98,9 +113,10 @@ public class Enemy : MonoBehaviour
         //curHealth = maxHealth;
         rectTransform = enemyPrefab.GetComponent<RectTransform>();
         EnemyInitialization();
+        curSubdueProgress = subdueProgress;
     }
 
-    public void Stun(bool parrying)
+    public void Stun(bool parrying, float time)
     {
         //애니메이션 실행
         isStun = true;
@@ -119,7 +135,7 @@ public class Enemy : MonoBehaviour
         isChase = false;
         isShotChase = false;
         attackCollider.enabled = false;
-        StartCoroutine(StunOut(parrying));
+        StartCoroutine(StunOut(parrying, time));
         if (attackCoroutine != null)
         {
             StopCoroutine(attackCoroutine);
@@ -134,14 +150,14 @@ public class Enemy : MonoBehaviour
         //}
     }
 
-    IEnumerator StunOut(bool parrying)
+    IEnumerator StunOut(bool parrying, float time)
     {
         if (parrying)
         {
             anim.SetTrigger("doParryingDownOut");
         }
         //애니메이션 실행
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(time);
         if (!parrying)
         {
             anim.SetBool("isStun", false);
@@ -167,22 +183,24 @@ public class Enemy : MonoBehaviour
 
     public void HitEffect(Vector3 spawnPosition)
     {
-        cps.transform.position = spawnPosition;
-        cps.Emit(1);
+        //cps.transform.position = spawnPosition;
+        //cps.Emit(1);
     }
 
     public void OnDamage(float damage, Vector3 playerShotPos, int hitArea, float sheildDamage)
     {
+        //Debug.Log(hitArea);
+
         if (isHacking && hitArea == (int)hitAreaType)
         {
             Debug.Log("Critical Hit");
             curHealth -= damage;
             sheild -= sheildDamage;
 
-            if (sheild == 0)
+            if (sheild <= 0)
             {
                 Destroy(enemyUI);
-                Stun(false);
+                Stun(false, 3f);
                 isHacking = false;
             }
         }
@@ -193,11 +211,13 @@ public class Enemy : MonoBehaviour
 
         if (curHealth > 0)
         {
-            isHit = true;
+            //isHit = true;
             //anim.SetTrigger("doHit");
             //nav.isStopped = true;
+
             this.playerShotPos = playerShotPos;
             isShotChase = true;
+            
             StartCoroutine(OnDamageOut());
         }
         else
@@ -402,14 +422,115 @@ public class Enemy : MonoBehaviour
                 Attack attack = other.GetComponent<Attack>();
                 OnDamage(attack.damage, other.transform.position, -1, other.GetComponentInParent<Player>().sheildDamage);
                 StartCoroutine(MeleeDamageOut());
-                anim.SetTrigger("doSubdueOut");
+                //anim.SetTrigger("doSubdueOut");
             }
         }
     }
 
-    IEnumerator MeleeDamageOut()
+    protected IEnumerator MeleeDamageOut()
     {
         yield return new WaitForSeconds(0.3f);
         isMeleeDamage = false;
+    }
+
+    public void DoSubdueCor()
+    {
+        DoSubdue = StartCoroutine(SubdueReady());
+    }
+
+    IEnumerator SubdueReady()
+    {
+        anim.SetTrigger("doSubdueReady");
+        isSubdueReady = false;
+        isParryingPossible = true;
+        nav.isStopped = true;
+
+        yield return new WaitForSeconds(parryingTime);
+        subdueCol.enabled = true;
+        //Debug.Log("SubdueAttack");
+        isParryingPossible = false;
+
+        yield return new WaitForSeconds(0.2f);
+        Debug.Log("AA");
+        anim.SetTrigger("doSubdueOut");
+        subdueCol.enabled = false;
+        yield return new WaitForSeconds(0.7f);
+        isSubdueReady = true;
+        nav.isStopped = false;
+    }
+
+    public void Subdue()
+    {
+        if (isPlayerSubdue)
+        {
+            subdueCol.enabled = false;
+            target.GetComponent<Player>().SubdueObject = transform.gameObject;
+            isShotChase = false;
+            anim.SetTrigger("doSubdue");
+            if (DoSubdue != null)
+            {
+                StopCoroutine(DoSubdue);
+                DoSubdue = null;
+            }
+            //isPlayerSubdue = true;
+
+            transform.LookAt(target.transform.position);
+            //player.transform.LookAt(transform.position);
+            //isSubdueReady = true;
+
+            nav.isStopped = true;
+            nav.velocity = Vector3.zero;
+
+            //curSubdueCoolTime += Time.deltaTime;
+            //curSubdueProgress += Time.deltaTime;
+            UIManager.Instance.SubDueSlider.value = curSubdueProgress / subdueProgress;
+
+            //if (curSubdueCoolTime > subdueCoolTime)
+            //{
+            //    //제압 실패시 (시간이 다 지나갔을때)
+            //    target.GetComponent<Player>().isSubdue = false;
+            //    //UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+            //    //ProgressManager.Instance.curProgress -= 1;
+            //    anim.SetTrigger("doSubdueOut");
+            //    curSubdueCoolTime = 0;
+            //    curSubdueProgress = 0;
+            //    Invoke("SubdueOut", 1.5f);
+            //    isPlayerSubdue = false;
+            //}
+
+            if (curSubdueProgress <= 0)
+            {
+                anim.SetTrigger("doSubdueOut");
+                //UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+                //ProgressManager.Instance.curProgress -= 1;
+                target.GetComponent<Player>().isSubdue = false;
+                //curSubdueCoolTime = 0;
+                Invoke("SubdueOut", 1.5f);
+                isPlayerSubdue = false;
+                curSubdueProgress = subdueProgress;
+            }
+        }
+    }
+
+    public void Parrying()
+    {
+        if (isParryingPossible && isMeleeDamage)
+        {
+            Debug.Log("Parrying");
+            StopCoroutine(DoSubdue);
+            isParryingPossible = false;
+            nav.isStopped = false;
+            isSubdueReady = true;
+            Stun(true, 5f);
+        }
+    }
+
+    public void SubdueOut()
+    {
+        //UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
+
+        UIManager.Instance.SubDueSlider.value = 0;
+        nav.isStopped = false;
+        isSubdueReady = true;
     }
 }
