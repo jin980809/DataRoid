@@ -23,7 +23,7 @@ public class UI_FlickeringLights : MonoBehaviour
 
         if (timer > interval)
         {
-            if (Curtime < 5)
+            if (Curtime < 3)
             {
                 ToggleLightSetup();
             }
@@ -68,7 +68,7 @@ public class UI_FlickeringLights : MonoBehaviour
 
     void LightSwitch()
     {
-        if (Curtime < 6.5)
+        if (Curtime < 4.5)
             {
             spotLight.intensity = 0f;
             pointLight.intensity = 0f;
