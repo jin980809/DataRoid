@@ -88,7 +88,7 @@ public class DroneTextTrigger : MonoBehaviour
         {
             curTextCount += 1;
 
-            StartCoroutine(StartTextBox(durationTime));
+            StartCoroutine(StartTextBox(textBox[curTextCount].duration));
         }
         else
         {
