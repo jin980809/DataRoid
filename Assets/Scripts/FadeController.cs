@@ -15,7 +15,8 @@ public class FadeController : MonoBehaviour
 
     private void Start()
     {
-        //FadeInOut();
+        fadeImage.color = new Color(0, 0, 0, 1);
+        StartCoroutine(FadeIn());
     }
 
 

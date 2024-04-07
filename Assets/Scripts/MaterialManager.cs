@@ -18,11 +18,11 @@ public class MaterialManager : MonoBehaviour
     }
     private static MaterialManager m_instance;
 
-    public int Steel;
+    public int ShotgunAmmo;
     public int GunPowder;
     public int ExpPiece;
-    public int Ammo;
-    public int SpecialAmmo;
+    public int HandgunAmmo;
+    public int RifleAmmo;
     public int ExpCapsule;
     public int UFSData;
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class Interaction : FadeController
 {
@@ -16,6 +17,7 @@ public class Interaction : FadeController
         GunActive = 7,
         GetUSFData = 8,
         LightOn = 9,
+        TextBox = 10,
     };
     public Type interactionType;
 
@@ -85,6 +87,25 @@ public class Interaction : FadeController
     public GameObject OnLight;
     public int needData;
 
+
+    [Space(10)]
+    [Header("TextBox")]
+
+    public TextBox[] textBox;
+    public int curTextCount = 0;
+    public bool isClick;
+    bool isCommunicate = false;
+    bool isNextReady = false;
+    bool fDown; // АјАн
+
+    [Serializable]
+    public struct TextBox
+    {
+        [TextArea]
+        public string droneText;
+        public float duration;
+    }
+
     void Awake()
     {
         if (isSaveObject)
@@ -101,6 +122,14 @@ public class Interaction : FadeController
     void Update()
     {
         CoolDown();
+
+        fDown = Input.GetButtonDown("Fire1");
+
+        if (fDown && isCommunicate && isClick && isNextReady)
+        {
+            isNextReady = false;
+            StartCoroutine(TextBoxOut(textBox[curTextCount].duration));
+        }
     }
 
     void CoolDown()
@@ -162,6 +191,10 @@ public class Interaction : FadeController
 
             case Type.LightOn:
                 LightOn();
+                break;
+
+            case Type.TextBox:
+                TextOn();
                 break;
         }
 
@@ -278,6 +311,7 @@ public class Interaction : FadeController
         MaterialManager.Instance.UFSData += DataCount;
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
+        UIManager.Instance.OpenObjectGetText("Get Data");
     }
 
     void LightOn()
@@ -291,5 +325,52 @@ public class Interaction : FadeController
             MaterialManager.Instance.UFSData -= needData;
         }
 
+    }
+
+    void TextOn()
+    {
+        StartCoroutine(StartTextBox(textBox[curTextCount].duration));
+        GetComponent<BoxCollider>().enabled = false;
+        if (isClick)
+        {
+            player.isCommunicate = true;
+            isCommunicate = true;
+        }
+    }
+
+    IEnumerator StartTextBox(float durationTime)
+    {
+        UIManager.Instance.uiAnim.SetTrigger("Text_Open");
+        UIManager.Instance.DroneText.text = textBox[curTextCount].droneText;
+
+        if (!isClick)
+        {
+            yield return new WaitForSeconds(durationTime);
+            StartCoroutine(TextBoxOut(textBox[curTextCount].duration));
+        }
+        isNextReady = true;
+        yield return null;
+    }
+    IEnumerator TextBoxOut(float durationTime)
+    {
+        UIManager.Instance.uiAnim.SetTrigger("Text_Out");
+
+        yield return new WaitForSeconds(1f);
+        if (curTextCount < textBox.Length - 1)
+        {
+            curTextCount += 1;
+
+            StartCoroutine(StartTextBox(durationTime));
+        }
+        else
+        {
+            if (isClick)
+            {
+                player.isCommunicate = false;
+                isCommunicate = false;
+                isNextReady = false;
+            }
+        }
+        yield return null;
     }
 }

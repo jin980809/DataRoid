@@ -65,7 +65,7 @@ public class CreateManager : MonoBehaviour
     {
         yield return new WaitForSeconds(creats[ID].creatingTime);
 
-        MaterialManager.Instance.Steel -= creats[ID].steel;
+        /*MaterialManager.Instance.Steel -= creats[ID].steel;
         MaterialManager.Instance.GunPowder -= creats[ID].gunPowder;
         MaterialManager.Instance.ExpPiece -= creats[ID].expPiece;
 
@@ -84,7 +84,7 @@ public class CreateManager : MonoBehaviour
                 break;
         }
 
-        UIManager.Instance.CreatingText.SetActive(false);
+        UIManager.Instance.CreatingText.SetActive(false);*/
     }
 
     public void CreatingStart(int ID)

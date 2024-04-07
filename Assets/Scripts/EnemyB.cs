@@ -7,8 +7,6 @@ public class EnemyB : Enemy
     int diff = 1;
     [Space(10f)]
     [Header("ESN08")]
-    private bool isMoveStop = false;
-    private bool isMoveFar = false;
 
     [Space(10f)]
     [Header("Move")]
@@ -27,9 +25,6 @@ public class EnemyB : Enemy
 
     public bool isNAttackReady = false;
     public bool isSAttackReady = false;
-
-    bool isNCoolDown = true;
-    bool isSCoolDown = true;
 
     [Space(10f)]
     [Header("Flash")]
@@ -136,8 +131,7 @@ public class EnemyB : Enemy
                 anim.SetFloat("Vertical", -1f);
                 anim.SetFloat("speed", nav.speed);
                 nav.isStopped = false;
-                isMoveFar = true;
-                isMoveStop = false;
+
                 Vector3 oppositeDirection = (transform.position - target.transform.position).normalized;
                 nav.SetDestination(transform.position + oppositeDirection * stopDistance);
             }
@@ -146,16 +140,14 @@ public class EnemyB : Enemy
             {
                 anim.SetFloat("speed", 0);
                 nav.isStopped = true;
-                isMoveStop = true;
-                isMoveFar = false;
+
             }
 
             else if (distance >= moveDistance) //플레이어에게 이동
             {
                 anim.SetFloat("Vertical", 1f);
                 anim.SetFloat("speed", nav.speed);
-                isMoveStop = false;
-                isMoveFar = false;
+
                 nav.isStopped = false;
                 nav.SetDestination(target.transform.position);
             }

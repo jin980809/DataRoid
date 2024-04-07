@@ -89,7 +89,13 @@ public class UIManager : MonoBehaviour
     [Header("DroneTextBox")]
     public Text DroneText;
 
+    [Space(10)]
+    [Header("PlayerDead UI")]
+    public GameObject endPanel;
 
+    [Space(10)]
+    [Header("PlayerDead UI")]
+    public GameObject objectGetText;
 
     void Start()
     {
@@ -119,11 +125,11 @@ public class UIManager : MonoBehaviour
 
     void TextUpdate()
     {
-        steelAmount.text = "Steel : " + MaterialManager.Instance.Steel;
+        steelAmount.text = "Steel : " + MaterialManager.Instance.ShotgunAmmo;
         gunPowderAmount.text = "GunPowder : " + MaterialManager.Instance.GunPowder;
         ExpPieceAmount.text = "ExpPiece : " + MaterialManager.Instance.ExpPiece;
-        ammoAmount.text = "Ammo : " + MaterialManager.Instance.Ammo;
-        specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.SpecialAmmo;
+        ammoAmount.text = "Ammo : " + MaterialManager.Instance.HandgunAmmo;
+        specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.RifleAmmo;
         ExpCapsuleAmount.text = "ExpCapsule : " + MaterialManager.Instance.ExpCapsule;
         hpText.text = (int)((player.curHp / player.maxHp) * 100) + "%";
     }
@@ -132,6 +138,19 @@ public class UIManager : MonoBehaviour
     {
         GameObject box = Instantiate(textBox);
         box.GetComponentInChildren<Text>().text = text;
+    }
+
+    public void OpenObjectGetText(string s)
+    {
+        objectGetText.SetActive(true);
+        objectGetText.GetComponentInChildren<Text>().text = s;
+        StartCoroutine(ObjectTextOut());
+    }
+
+    IEnumerator ObjectTextOut()
+    {
+        yield return new WaitForSeconds(1f);
+        objectGetText.SetActive(false);
     }
 
     void GunImageChange(int gunIndex)

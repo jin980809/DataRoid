@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class LightManager : MonoBehaviour
 {
@@ -26,6 +28,8 @@ public class LightManager : MonoBehaviour
     string[] tempData;
     public string wfileName = "Light.csv";
     public string fileName = "Light";
+
+    public Volume[] volumes;
 
     [Space(10)]
     [Header("ID : 0, Tut Light")]
@@ -72,6 +76,34 @@ public class LightManager : MonoBehaviour
             tutLightOn.SetActive(false);
             tutLightOff.SetActive(true);
         }
+    }
+
+    public void SetDeadVolume()
+    {
+        ColorAdjustments cA;
+        for(int i = 0; i < volumes.Length; i++)
+        {
+            if(volumes[i].profile.TryGet<ColorAdjustments>(out cA))
+            {
+                StartCoroutine(SetSaturation(cA, 4f));
+            }
+        }
+    }
+
+    IEnumerator SetSaturation(ColorAdjustments cA, float time)
+    {
+        float etime = 0;
+
+        while(etime < time)
+        {
+            etime += Time.deltaTime;
+
+            cA.saturation.value = Mathf.Lerp(0, -100, etime/time);
+
+            yield return null;
+        }
+
+        yield return null;
     }
 
     void LoadCSVFile()

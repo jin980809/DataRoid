@@ -9,9 +9,11 @@ public class DroneTextTrigger : MonoBehaviour
     [Serializable]
     public struct TextBox
     {
+        [TextArea]
         public string droneText;
         public float duration;
     }
+
 
     public TextBox[] textBox;
     public int curTextCount = 0;
