@@ -7,11 +7,27 @@ public class CinemachineEvent : FadeController
 
     [Space(10)]
     [Header("Player transform")]
-    public GameObject player;
+    public GameObject gPlayer;
     public Transform spawnPoint;
+    Player player;
+
+    void Start()
+    {
+        player = gPlayer.GetComponent<Player>();
+    }
 
     public void TransformPlayer()
     {
-        player.transform.position = spawnPoint.position;
+        gPlayer.transform.position = spawnPoint.position;
+    }
+
+    public void DontPlayerMove()
+    {
+        player.isCommunicate = true;
+    }
+
+    public void PlayerMove()
+    {
+        player.isCommunicate = false;
     }
 }

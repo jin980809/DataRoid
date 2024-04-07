@@ -237,7 +237,10 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(3f);
         transform.gameObject.SetActive(false);
         if (hasData)
+        {
+            UIManager.Instance.OpenObjectGetText("Get Data");
             MaterialManager.Instance.UFSData += 1;
+        }
     }
 
     IEnumerator OnDamageOut()

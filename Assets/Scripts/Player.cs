@@ -250,6 +250,11 @@ public class Player : MonoBehaviour
     void DecreaseHp()
     {
         curHp -= Time.deltaTime * decreaseHpRate;
+
+        if (curHp <= 0)
+        {
+            GameManager.Instance.PlayerDead();
+        }
     }
 
     void Move()
@@ -690,8 +695,15 @@ public class Player : MonoBehaviour
     void Reload()
     {
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
-            && MaterialManager.Instance.Ammo > 0 && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
+            && /*MaterialManager.Instance.Ammo > 0 &&*/ !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
+            if (equipWeaponIndex == 0 && MaterialManager.Instance.RifleAmmo < 0)
+                return;
+            if (equipWeaponIndex == 1 && MaterialManager.Instance.HandgunAmmo < 0)
+                return;
+            if (equipWeaponIndex == 2 && MaterialManager.Instance.ShotgunAmmo < 0)
+                return;
+
             isReload = true;
             isZoom = false;
             isShotEnd = true;
@@ -707,18 +719,50 @@ public class Player : MonoBehaviour
 
         if (isReload)
         {
-            if (MaterialManager.Instance.Ammo < weapon.maxAmmo - weapon.curAmmo)
-            {
-                weapon.curAmmo += MaterialManager.Instance.Ammo;
-                MaterialManager.Instance.Ammo = 0;
-            }
-            else
-            {
-                MaterialManager.Instance.Ammo -= (weapon.maxAmmo - weapon.curAmmo);
-                weapon.curAmmo = weapon.maxAmmo;
+            if (equipWeaponIndex == 0)
+            { 
+                if (MaterialManager.Instance.RifleAmmo < weapon.maxAmmo - weapon.curAmmo)
+                {
+                    weapon.curAmmo += MaterialManager.Instance.RifleAmmo;
+                    MaterialManager.Instance.RifleAmmo = 0;
+                }
+                else
+                {
+                    MaterialManager.Instance.RifleAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+                    weapon.curAmmo = weapon.maxAmmo;
 
+                }
+            }
+            else if (equipWeaponIndex == 1)
+            {
+                if (MaterialManager.Instance.HandgunAmmo < weapon.maxAmmo - weapon.curAmmo)
+                {
+                    weapon.curAmmo += MaterialManager.Instance.HandgunAmmo;
+                    MaterialManager.Instance.HandgunAmmo = 0;
+                }
+                else
+                {
+                    MaterialManager.Instance.HandgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+                    weapon.curAmmo = weapon.maxAmmo;
+
+                }
+            }
+            else if (equipWeaponIndex == 2)
+            {
+                if (MaterialManager.Instance.ShotgunAmmo < weapon.maxAmmo - weapon.curAmmo)
+                {
+                    weapon.curAmmo += MaterialManager.Instance.ShotgunAmmo;
+                    MaterialManager.Instance.ShotgunAmmo = 0;
+                }
+                else
+                {
+                    MaterialManager.Instance.ShotgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+                    weapon.curAmmo = weapon.maxAmmo;
+
+                }
             }
         }
+
         //가지고 있는 총알개수가 maxAmmo보다 적으면 가지고 있는 총알 개수만 curAmmo에 장전
         yield return new WaitForSeconds(0.5f);
         if (isReload)
@@ -1179,7 +1223,6 @@ public class Player : MonoBehaviour
         rendererData.SetDirty();
 #endif
     }
-
 
     public ScriptableRendererData GetRendererData(int rendererIndex = 0)
     {

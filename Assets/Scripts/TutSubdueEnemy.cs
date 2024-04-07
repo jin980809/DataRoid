@@ -12,7 +12,6 @@ public class TutSubdueEnemy : MonoBehaviour
     bool isDead = false;
 
     public float subdueCoolTime;
-    float curSubdueCoolTime;
 
     public float subdueProgress;
     public float curSubdueProgress;
@@ -65,7 +64,7 @@ public class TutSubdueEnemy : MonoBehaviour
             {
                 //제압 성공시
                 GetComponent<BoxCollider>().enabled = false;
-                curSubdueCoolTime = 0;
+                //curSubdueCoolTime = 0;
                 isPlayerSubdue = false;
                 UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
                 ProgressManager.Instance.curProgress -= 1;

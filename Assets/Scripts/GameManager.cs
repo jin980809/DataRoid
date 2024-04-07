@@ -43,6 +43,9 @@ public class GameManager : MonoBehaviour
 
     List<Dictionary<string, object>> dicList = new List<Dictionary<string, object>>();
 
+    public bool isPlayerDead = false;
+
+    public CameraMove cameraArm;
     void Awake()
     {
         data.Clear();
@@ -67,9 +70,9 @@ public class GameManager : MonoBehaviour
 
         ProgressManager.Instance.curProgress = int.Parse(dicList[0]["Progress"] + "");
         ProgressManager.Instance.saveProgress = int.Parse(dicList[0]["MaxProgress"] + "");
-        MaterialManager.Instance.Ammo = int.Parse(dicList[0]["Ammo"] + "");
-        MaterialManager.Instance.SpecialAmmo = int.Parse(dicList[0]["SpecialAmmo"] + "");
-        MaterialManager.Instance.Steel = int.Parse(dicList[0]["Steel"] + "");
+        MaterialManager.Instance.HandgunAmmo = int.Parse(dicList[0]["HandgunAmmo"] + "");
+        MaterialManager.Instance.RifleAmmo = int.Parse(dicList[0]["RifleAmmo"] + "");
+        MaterialManager.Instance.ShotgunAmmo = int.Parse(dicList[0]["ShotgunAmmo"] + "");
         MaterialManager.Instance.GunPowder = int.Parse(dicList[0]["GunPowder"] + "");
         MaterialManager.Instance.UFSData = int.Parse(dicList[0]["UFSData"] + "");
 
@@ -90,9 +93,13 @@ public class GameManager : MonoBehaviour
         player.transform.position = spawnPoints[spawnPoint].position;
     }
 
-    void PlayerDead()
+    public void PlayerDead()
     {
-
+        player.enabled = false;
+        isPlayerDead = true;
+        UIManager.Instance.endPanel.SetActive(true);
+        LightManager.Instance.SetDeadVolume();
+        cameraArm.enabled = false;
     }
 
     void Update()
@@ -106,9 +113,9 @@ public class GameManager : MonoBehaviour
         tempData[0] = savePointIndex.ToString();
         tempData[1] = ProgressManager.Instance.curProgress.ToString();
         tempData[2] = ProgressManager.Instance.saveProgress.ToString();
-        tempData[3] = MaterialManager.Instance.Ammo.ToString();
-        tempData[4] = MaterialManager.Instance.SpecialAmmo.ToString();
-        tempData[5] = MaterialManager.Instance.Steel.ToString();
+        tempData[3] = MaterialManager.Instance.HandgunAmmo.ToString();
+        tempData[4] = MaterialManager.Instance.RifleAmmo.ToString();
+        tempData[5] = MaterialManager.Instance.ShotgunAmmo.ToString();
         tempData[6] = MaterialManager.Instance.GunPowder.ToString();
         tempData[7] = MaterialManager.Instance.UFSData.ToString();
         data.Add(tempData);

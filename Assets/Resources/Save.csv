@@ -1,2 +1,2 @@
-SavePoint,Progress,MaxProgress,Ammo,SpecialAmmo,Steel,GunPowder,UFSData
-3,10,10,100,0,0,0,0
+SavePoint,Progress,MaxProgress,HandgunAmmo,RifleAmmo,ShotgunAmmo,GunPowder,UFSData
+1,10,10,50,50,0,0,0

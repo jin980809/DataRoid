@@ -34,7 +34,7 @@ public class CreateButton : MonoBehaviour
 
     void ButtonEnabled()
     {
-        if (MaterialManager.Instance.Steel >= create.steel && 
+        /*if (MaterialManager.Instance.Steel >= create.steel && 
             MaterialManager.Instance.GunPowder >= create.gunPowder &&
             MaterialManager.Instance.ExpPiece >= create.expPiece &&
             !CreateManager.Instance.isCreating)
@@ -44,7 +44,7 @@ public class CreateButton : MonoBehaviour
         else
         {
             this.GetComponent<Button>().interactable = false;
-        }
+        }*/
     }
 
 }

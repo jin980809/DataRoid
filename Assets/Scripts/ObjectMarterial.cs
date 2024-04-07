@@ -18,7 +18,7 @@ public class ObjectMarterial : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        /*if (other.CompareTag("Player"))
         {
             switch(MarterialType)
             {
@@ -44,6 +44,6 @@ public class ObjectMarterial : MonoBehaviour
             }
             
             Destroy(this.gameObject);
-        }
+        }*/
     }
 }
