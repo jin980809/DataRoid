@@ -56,7 +56,7 @@ public class ProgressManager : MonoBehaviour
 
     void DataGauge()
     {
-        UIManager.Instance.DataGauge.fillAmount = 1 - ((curProgress + 0.001f) / maxProgress);
+        UIManager.Instance.DataGauge.fillAmount = ((curProgress / 100f) * 0.45f) + 0.18f;
         UIManager.Instance.Datatext.text = (int)curProgress + "%";
     }
 

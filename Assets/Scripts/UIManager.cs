@@ -22,12 +22,13 @@ public class UIManager : MonoBehaviour
     public Animator uiAnim;
     public Player player;
     public GameObject aim;
-    public Image hpGauge;
-    public Text hpText;
+    public GameObject[] hpGauges;
+    public TextMeshProUGUI hpText;
 
     [Space(10)]
     [Header("Interaction")]
-    public Slider InteractionGauge;
+    public Image InteractionGauge;
+    public Image InteractionGaugeGlow;
     public Text detectCount;
 
     [Space(10)]
@@ -46,9 +47,9 @@ public class UIManager : MonoBehaviour
     public GameObject CreatingText;
 
     [Space(10)]
-    [Header("EXP")]
+    [Header("Data")]
     public Image DataGauge;
-    public Text Datatext;
+    public TextMeshProUGUI Datatext;
 
     [Space(10)]
     [Header("HackingUI")]
@@ -82,8 +83,7 @@ public class UIManager : MonoBehaviour
     public Image handGunImage;
     public Image rifleImage;
     public Image shotGunImage;
-    public Text curAmmoText;
-    public Text maxAmmoText;
+    public TextMeshProUGUI AmmoText;
 
     [Space(10)]
     [Header("DroneTextBox")]
@@ -105,10 +105,19 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         TextUpdate();
-        
-        float hp = player.curHp / player.maxHp;
-        if (hp < 0) hp = 0;
-        hpGauge.fillAmount = hp;
+        InteractionGaugeGlow.fillAmount = InteractionGauge.fillAmount;
+
+        //float hp = player.curHp / player.maxHp;
+        //if (hp < 0) hp = 0;
+        //hpGauge.fillAmount = hp;
+
+        for(int i = 0; i < hpGauges.Length; i++)
+        {
+            if((int)(player.curHp / 10) > i)
+                hpGauges[i].SetActive(true);
+            else
+                hpGauges[i].SetActive(false);
+        }
 
         float hackingCool = player.curHackingCoolTime / player.hackingCoolTime;
         if (hackingCool <= 0) hackingCoolTime.fillAmount = 0;
@@ -160,15 +169,12 @@ public class UIManager : MonoBehaviour
             handGunImage.gameObject.SetActive(false);
             rifleImage.gameObject.SetActive(false);
             shotGunImage.gameObject.SetActive(false);
-            curAmmoText.gameObject.SetActive(false);
-            maxAmmoText.gameObject.SetActive(false);
+            AmmoText.gameObject.SetActive(false);
         }
         else
         {
-            curAmmoText.gameObject.SetActive(true);
-            maxAmmoText.gameObject.SetActive(true);
-            curAmmoText.text = player.weapon.curAmmo + "";
-            maxAmmoText.text = player.weapon.maxAmmo + "";
+            AmmoText.gameObject.SetActive(true);
+            AmmoText.text = player.weapon.curAmmo + " / " + player.weapon.maxAmmo;
             switch (gunIndex)
             {
                 case 0:

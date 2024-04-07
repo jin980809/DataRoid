@@ -62,7 +62,6 @@ public class Interaction : FadeController
     [Header("SavePoint")]
     public int savePoint;
 
-
     [Space(10)]
     [Header("MovePlayer")]
     public Transform movePoint;
@@ -71,6 +70,8 @@ public class Interaction : FadeController
     [Header("ObjectActive")]
     public bool activeTrue;
     public GameObject activeObj;
+    public bool isDecreaseHp;
+    public float decreaseHp;
 
     [Space(10)]
     [Header("GetGun")]
@@ -85,8 +86,8 @@ public class Interaction : FadeController
     public int lightIndex;
     public GameObject offLight;
     public GameObject OnLight;
-    public int needData;
-
+    public int needUFSData;
+    public float getData;
 
     [Space(10)]
     [Header("TextBox")]
@@ -171,6 +172,7 @@ public class Interaction : FadeController
                 EnemyManager.Instance.SaveEnemyData();
                 TextManager.Instance.SaveTextObjectFile();
                 LightManager.Instance.SaveLightObjectFile();
+                player.curHp = player.maxHp;
                 break;
 
             case Type.MovePlayer:
@@ -279,8 +281,6 @@ public class Interaction : FadeController
         isOpen = false;
     }
 
- 
-
     void MovePlayer()
     {
         StartCoroutine(MovePlayer(1.5f));
@@ -297,6 +297,11 @@ public class Interaction : FadeController
         activeObj.SetActive(activeTrue);
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
+
+        if(isDecreaseHp)
+        {
+            player.curHp -= decreaseHp;
+        }
     }
 
     void GunActive()
@@ -316,13 +321,14 @@ public class Interaction : FadeController
 
     void LightOn()
     {
-        if (MaterialManager.Instance.UFSData > needData)
+        if (MaterialManager.Instance.UFSData > needUFSData)
         {
             offLight.SetActive(false);
             OnLight.SetActive(true);
             GetComponent<BoxCollider>().enabled = false;
             LightManager.Instance.lightObjects[lightIndex] = true;
-            MaterialManager.Instance.UFSData -= needData;
+            MaterialManager.Instance.UFSData -= needUFSData;
+            ProgressManager.Instance.curProgress += getData;
         }
 
     }

@@ -16,7 +16,7 @@ public class ExchageHpForProgress : MonoBehaviour
 
     void Interactable()
     {
-        if (ProgressManager.Instance.curProgress + increaseProgress >= ProgressManager.Instance.saveProgress)
+        if (ProgressManager.Instance.curProgress + increaseProgress > ProgressManager.Instance.saveProgress)
         {
             GetComponent<Button>().interactable = false;
         }

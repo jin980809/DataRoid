@@ -72,7 +72,7 @@ public class Enemy : MonoBehaviour
     public float hackingDuration;
     public Coroutine attackCoroutine;
     public ParticleSystem cps;
-    public bool hasData;
+    public bool hasUSFData;
     public bool isMeleeDamage;
 
     [Space(10f)]
@@ -82,6 +82,11 @@ public class Enemy : MonoBehaviour
     protected bool isParryingPossible = false;
     public float parryingTime;
     protected bool isSubdueReady = true;
+
+    [Space(10f)]
+    [Header("Data")]
+    public bool hasData;
+    public int getDataAmount;
 
     public Coroutine DoSubdue = null;
     public float subdueCoolTime;
@@ -217,17 +222,23 @@ public class Enemy : MonoBehaviour
 
             this.playerShotPos = playerShotPos;
             isShotChase = true;
-            
+
+
+
             StartCoroutine(OnDamageOut());
         }
         else
         {
             EnemyManager.Instance.enemyInfo[ID]["isDead"] = "1";
+
+            if (hasData)
+                ProgressManager.Instance.curProgress += getDataAmount;
+
             this.gameObject.layer = 10;
             isDeath = true;
             nav.isStopped = true;
             anim.SetTrigger("doDie");
-            //Invoke("DropItems", 4);
+            DropItems();
             StartCoroutine(Dead());
         }
     }
@@ -236,7 +247,7 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         transform.gameObject.SetActive(false);
-        if (hasData)
+        if (hasUSFData)
         {
             UIManager.Instance.OpenObjectGetText("Get Data");
             MaterialManager.Instance.UFSData += 1;
@@ -268,16 +279,13 @@ public class Enemy : MonoBehaviour
 
     public void DropItems()
     {
-        foreach (dropItem i in dropItems)
+        for(int i = 0; i < dropItems.Length; i++)
         {
-            float dropPosX = UnityEngine.Random.Range(transform.position.x - 0.5f, transform.position.x + 0.5f);
-            float dropPosZ = UnityEngine.Random.Range(transform.position.z - 0.5f, transform.position.z + 0.5f);
+            Vector3 dropPos = transform.position;
 
-            Vector3 dropPos = new Vector3(dropPosX, transform.position.y, dropPosZ);
-
-            if (RandPercentage(i.percentage))
+            if (RandPercentage(dropItems[i].percentage))
             {
-                Instantiate(i.item, dropPos, transform.rotation);
+                Instantiate(dropItems[i].item, dropPos, transform.rotation);
             }
         }
     }
@@ -454,7 +462,7 @@ public class Enemy : MonoBehaviour
         isParryingPossible = false;
 
         yield return new WaitForSeconds(0.2f);
-        Debug.Log("AA");
+        //Debug.Log("AA");
         anim.SetTrigger("doSubdueOut");
         subdueCol.enabled = false;
         yield return new WaitForSeconds(0.7f);

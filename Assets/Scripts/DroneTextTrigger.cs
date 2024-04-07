@@ -88,7 +88,7 @@ public class DroneTextTrigger : MonoBehaviour
         {
             curTextCount += 1;
 
-            StartCoroutine(StartTextBox(durationTime));
+            StartCoroutine(StartTextBox(textBox[curTextCount].duration));
         }
         else
         {
@@ -98,7 +98,8 @@ public class DroneTextTrigger : MonoBehaviour
                 isCommunicate = false;
                 isNextReady = false;
             }
+            yield return null;
         }
-        yield return null;
+       
     }
 }

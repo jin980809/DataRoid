@@ -473,7 +473,7 @@ public class Player : MonoBehaviour
 
             if (!weapon.isShotGun)
             {
-                if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy") | LayerMask.GetMask("Enemy")))
+                if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy") ))
                 {
                     Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
 
@@ -906,7 +906,7 @@ public class Player : MonoBehaviour
 
             if (!interactionObj.isNonCharging)
             {
-                UIManager.Instance.InteractionGauge.value = interactionTime / interactionObj.interactionTime;
+                UIManager.Instance.InteractionGauge.fillAmount = interactionTime / interactionObj.interactionTime;
             }
         }
         else
@@ -1082,7 +1082,7 @@ public class Player : MonoBehaviour
                 isInventoryOpen = true;
                 //Time.timeScale = 0f;
                 cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.uiAnim.SetTrigger("Menu_Open");
+                UIManager.Instance.uiAnim.SetTrigger("Menu_In");
             }
 
             else
@@ -1090,7 +1090,7 @@ public class Player : MonoBehaviour
                 isInventoryOpen = false;
                 //Time.timeScale = 1.0f;
                 cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.uiAnim.SetTrigger("Menu_Close");
+                UIManager.Instance.uiAnim.SetTrigger("Menu_Out");
             }
         }
     }
