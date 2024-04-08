@@ -321,7 +321,7 @@ public class Interaction : FadeController
 
     void LightOn()
     {
-        if (MaterialManager.Instance.UFSData > needUFSData)
+        if (MaterialManager.Instance.UFSData >= needUFSData)
         {
             offLight.SetActive(false);
             OnLight.SetActive(true);
