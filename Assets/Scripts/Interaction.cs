@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 using System;
 
 public class Interaction : FadeController
@@ -18,6 +19,7 @@ public class Interaction : FadeController
         GetUSFData = 8,
         LightOn = 9,
         TextBox = 10,
+        PassWord = 11,
     };
     public Type interactionType;
 
@@ -99,6 +101,19 @@ public class Interaction : FadeController
     bool isNextReady = false;
     bool fDown; // 공격
 
+    [Space(10)]
+    [Header("PassWord")]
+    public bool isActive = false;
+    public Transform cameraPos;
+    public GameObject passWordUI;
+    private PassWord passWord;
+    public GameObject canvas;
+    public CameraMove p_cameraMove;
+    public GameObject v_Cam;
+    private GameObject insPassWordUI;
+    public float smoothSpeed;
+    public GameObject m_camera;
+
     [Serializable]
     public struct TextBox
     {
@@ -118,6 +133,11 @@ public class Interaction : FadeController
     void Start()
     {
         curCoolTime = coolTime;
+
+        if (interactionType == Type.PassWord)
+        {
+            passWord = passWordUI.GetComponent<PassWord>();
+        }
     }
 
     void Update()
@@ -126,11 +146,30 @@ public class Interaction : FadeController
 
         fDown = Input.GetButtonDown("Fire1");
 
-        if (fDown && isCommunicate && isClick && isNextReady)
+        if (fDown && isCommunicate && isClick && isNextReady && interactionType == Type.TextBox)
         {
             isNextReady = false;
             StartCoroutine(TextBoxOut(textBox[curTextCount].duration));
         }
+
+        if(interactionType == Type.PassWord)
+        {
+            if (passWord.isDone)
+            {
+                transform.gameObject.SetActive(false);
+            }
+
+            if (insPassWordUI != null)
+            {
+                if (!insPassWordUI.activeSelf && !isActive)
+                {
+                    player.isCommunicate = false;
+                    v_Cam.SetActive(true);
+                    p_cameraMove.enabled = true;
+                }
+            }
+        }
+
     }
 
     void CoolDown()
@@ -197,6 +236,10 @@ public class Interaction : FadeController
 
             case Type.TextBox:
                 TextOn();
+                break;
+
+            case Type.PassWord:
+                PassWordOn();
                 break;
         }
 
@@ -377,6 +420,44 @@ public class Interaction : FadeController
                 isNextReady = false;
             }
         }
+        yield return null;
+    }
+
+
+    void PassWordOn()
+    {
+        isActive = true;
+        player.isCommunicate = true;
+        v_Cam.SetActive(false);
+        p_cameraMove.enabled = false;
+        StartCoroutine(MoveCameraCoroutine(cameraPos.position, cameraPos.rotation));
+    }
+
+    private IEnumerator MoveCameraCoroutine(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        while (Vector3.Distance(m_camera.transform.position, targetPosition) > 0.01f || Quaternion.Angle(m_camera.transform.rotation, targetRotation) > 0.01f)
+        {
+            // 현재 위치와 목표 위치 사이의 보간
+            Vector3 desiredPosition = Vector3.Lerp(m_camera.transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+            Quaternion desiredRotation = Quaternion.Lerp(m_camera.transform.rotation, targetRotation, smoothSpeed * Time.deltaTime);
+
+            // 부드럽게 이동
+            m_camera.transform.position = desiredPosition;
+            m_camera.transform.rotation = desiredRotation;
+
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        if (insPassWordUI == null)
+        {
+            insPassWordUI = Instantiate(passWordUI, canvas.transform);
+            passWord.interaction = transform.GetComponent<Interaction>();
+        }
+        else
+        {
+            insPassWordUI.SetActive(true);
+        }
+
         yield return null;
     }
 }

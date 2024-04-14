@@ -786,7 +786,7 @@ public class Player : MonoBehaviour
     void StopToWall()
     {
         //Debug.DrawLine(ShootPos.position, transform.forward , Color.green);
-        int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("PhysicsEnemy")) + (1 << LayerMask.NameToLayer("Glass"));
+        int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("PhysicsEnemy")) + (1 << LayerMask.NameToLayer("Glass")) + (1 << LayerMask.NameToLayer("Object"));
 
         if (Physics.Raycast(borderPos.position, targetDirection, 0.7f, layerMask))
         {
@@ -856,7 +856,7 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         Interaction interactionObj;
 
-        if (Physics.Raycast(ShootPos.position, _mainCamera.transform.forward, out hit, 2, LayerMask.GetMask("Interaction")))
+        if (Physics.Raycast(_mainCamera.transform.position + (_mainCamera.transform.forward * Vector3.Distance(ShootPos.transform.position, _mainCamera.transform.position)), _mainCamera.transform.forward, out hit, 2, LayerMask.GetMask("Interaction")))
         {
             interactionObj = hit.transform.GetComponent<Interaction>();
             isMeleeAttackReady = false;
@@ -1200,7 +1200,7 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, 5);
 
-        Gizmos.DrawRay(ShootPos.transform.position, _mainCamera.transform.forward * 20);
+        Gizmos.DrawRay(_mainCamera.transform.position + (_mainCamera.transform.forward * Vector3.Distance(ShootPos.transform.position, _mainCamera.transform.position)), _mainCamera.transform.forward * 20);
         
     }
 

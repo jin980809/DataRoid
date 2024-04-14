@@ -119,7 +119,7 @@ public class CameraMove : MonoBehaviour
             x = Mathf.Clamp(x, 325f, 361f);
         }
 
-        if(!player.isInteraction)
+        if (!player.isInteraction && !player.isCommunicate)
             cameraArm.rotation = Quaternion.Euler(x, camAngle.y + mouseDelta.x, camAngle.z);
     }
 
