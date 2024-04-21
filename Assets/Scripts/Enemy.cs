@@ -59,17 +59,24 @@ public class Enemy : MonoBehaviour
     public dropItem[] dropItems;
 
 
-    [Space(10f)]
+
     public GameObject enemyPrefab; // 프리팹으로 사용할 적 UI
     public Canvas canvas; // UI가 속한 캔버스
     public GameObject enemyUI; // 생성된 적 UI
     RectTransform rectTransform; // RectTransform 컴포넌트
     public Camera mainCamera;
+
+    [Space(10f)]
+    [Header("Hacking")]
     public Transform[] parts;
+    private bool[] isHitStackDone = new bool[6]; // 0:head 1:Body 2:Arm 3:Leg
+    private int[] partsHitStack = new int[6];
     private Slider sheildUI;
     private Slider hackingDurationUI;
     private float curHackingDuration;
     public float hackingDuration;
+
+    [Space(10f)]
     public Coroutine attackCoroutine;
     public ParticleSystem cps;
     public bool hasUSFData;
@@ -93,7 +100,7 @@ public class Enemy : MonoBehaviour
     float curSubdueCoolTime;
     public float subdueProgress;
     public float curSubdueProgress;
-
+    public float speedDiscountRate = 1;
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -192,26 +199,74 @@ public class Enemy : MonoBehaviour
         //cps.Emit(1);
     }
 
+    void StackHitArea(int hitArea, float damage)
+    {
+        switch(hitArea)
+        {
+            case -1:
+                break;
+
+
+            case 0:
+                curHealth /= 2f;
+                Debug.Log("Head 5");
+                break;
+            case 1:
+                curHealth -= damage * 4;
+                Debug.Log("Body 5");
+                break;
+            case 2:
+                GetComponentInChildren<Attack>().curDamage -= GetComponentInChildren<Attack>().damage * 0.25f;
+                Debug.Log("L Arm 5");
+                break;
+            case 3:
+                GetComponentInChildren<Attack>().curDamage -= GetComponentInChildren<Attack>().damage * 0.25f;
+                Debug.Log("R Arm 5");
+                break;
+            case 4:
+                speedDiscountRate -= 0.25f;
+                Debug.Log("L Leg 5");
+                break;
+            case 5:
+                speedDiscountRate -= 0.25f;
+                Debug.Log("R Leg 5");
+                break;
+        }
+    }
+
     public void OnDamage(float damage, Vector3 playerShotPos, int hitArea, float sheildDamage)
     {
-        //Debug.Log(hitArea);
+        Debug.Log(hitArea);
 
-        if (isHacking && hitArea == (int)hitAreaType)
+        //if (isHacking && hitArea == (int)hitAreaType)
+        //{
+        //    Debug.Log("Critical Hit");
+        //    curHealth -= damage;
+        //    sheild -= sheildDamage;
+
+        //    if (sheild <= 0)
+        //    {
+        //        Destroy(enemyUI);
+        //        Stun(false, 3f);
+        //        isHacking = false;
+        //    }
+        //}
+        //else
+        //{
+        //    curHealth -= damage;
+        //}
+        curHealth -= damage;
+
+
+        if (!isHitStackDone[hitArea])
         {
-            Debug.Log("Critical Hit");
-            curHealth -= damage;
-            sheild -= sheildDamage;
+            partsHitStack[hitArea]++;
 
-            if (sheild <= 0)
+            if(partsHitStack[hitArea] >= 5)
             {
-                Destroy(enemyUI);
-                Stun(false, 3f);
-                isHacking = false;
+                isHitStackDone[hitArea] = true;
+                StackHitArea(hitArea, damage);
             }
-        }
-        else
-        {
-            curHealth -= damage;
         }
 
         if (curHealth > 0)
@@ -231,8 +286,8 @@ public class Enemy : MonoBehaviour
         {
             EnemyManager.Instance.enemyInfo[ID]["isDead"] = "1";
 
-            if (hasData)
-                ProgressManager.Instance.curProgress += getDataAmount;
+            //if (hasData)
+            //    ProgressManager.Instance.curData += getDataAmount;
 
             this.gameObject.layer = 10;
             isDeath = true;
@@ -431,7 +486,7 @@ public class Enemy : MonoBehaviour
                 //UIManager.Instance.SubDueSlider.gameObject.SetActive(true);
                 isMeleeDamage = true;
                 Attack attack = other.GetComponent<Attack>();
-                OnDamage(attack.damage, other.transform.position, -1, other.GetComponentInParent<Player>().sheildDamage);
+                OnDamage(attack.curDamage, other.transform.position, -1, other.GetComponentInParent<Player>().sheildDamage);
                 StartCoroutine(MeleeDamageOut());
                 //anim.SetTrigger("doSubdueOut");
             }

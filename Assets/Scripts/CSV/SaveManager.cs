@@ -38,8 +38,8 @@ public class SaveManager : MonoBehaviour
     {
         tempData = new string[7];
         tempData[0] = savePointIndex.ToString();
-        tempData[1] = ProgressManager.Instance.curProgress.ToString();
-        tempData[2] = ProgressManager.Instance.saveProgress.ToString();
+        tempData[1] = ProgressManager.Instance.curData.ToString();
+        tempData[2] = ProgressManager.Instance.saveData.ToString();
         tempData[3] = MaterialManager.Instance.HandgunAmmo.ToString();
         tempData[4] = MaterialManager.Instance.RifleAmmo.ToString();
         tempData[5] = MaterialManager.Instance.ShotgunAmmo.ToString();

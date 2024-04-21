@@ -9,6 +9,7 @@ public class DiscriptionImage : MonoBehaviour
     public Sprite[] sprites;
     public Button nextButton;
     public Button preButton;
+    public Player player;
     int curImageIndex = 0;
     bool qDown;
 
@@ -57,6 +58,7 @@ public class DiscriptionImage : MonoBehaviour
 
     public void ExitImage()
     {
+        player.isCommunicate = false;
         transform.gameObject.SetActive(false);
     }
 }

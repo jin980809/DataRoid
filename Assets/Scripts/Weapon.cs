@@ -6,6 +6,7 @@ using UnityEngine.VFX;
 public class Weapon : MonoBehaviour
 {
     public int damage;
+    public float bulletSpeed;
     public float delay;
     public int maxAmmo;
     public int curAmmo;

@@ -51,7 +51,7 @@ public class EnemyA : Enemy
                 if (!isAttack && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue && isSubdueReady)
                 {
                     //Debug.Log("target " + hit[0].transform.name);
-                    nav.speed = runSpeed;
+                    nav.speed = runSpeed * speedDiscountRate;
                     isChase = true;
                 }
             }
@@ -96,7 +96,7 @@ public class EnemyA : Enemy
         {
             if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
             {
-                nav.speed = walkSpeed;
+                nav.speed = walkSpeed * speedDiscountRate;
                 isChase = false;
                 isShotChase = false;
                 nav.SetDestination(aroundTarget[aroundTargetIndex].position);
@@ -115,7 +115,7 @@ public class EnemyA : Enemy
                     nav.SetDestination(aroundTarget[aroundTargetIndex].position);
                 }
                 isStop = false;
-                nav.speed = runSpeed;
+                nav.speed = runSpeed * speedDiscountRate;
             }
         }
     }
@@ -207,7 +207,7 @@ public class EnemyA : Enemy
             else
             {
                 //nav.isStopped = true;
-                nav.speed = walkSpeed;
+                nav.speed = walkSpeed * speedDiscountRate;
             }
         }
     }

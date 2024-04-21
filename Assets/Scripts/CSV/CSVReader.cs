@@ -16,31 +16,47 @@ public class CSVReader
         var list = new List<Dictionary<string, object>>();
         string[] lines;
 
-        if (File.Exists(Application.persistentDataPath + file + ".csv"))
+        //if (File.Exists(Application.persistentDataPath + file + ".csv"))
+        //{
+        //    string source;
+        //    StreamReader sr = new StreamReader(Application.persistentDataPath + file + ".csv");
+        //    source = sr.ReadToEnd();
+        //    sr.Close();
+
+        //    lines = Regex.Split(source, LINE_SPLIT_RE);
+
+        //    Debug.Log("Load " + file + ".csv");
+        //    //Debug.Log(SystemPath.GetPath() + file + ".csv");
+        //}
+        //else
+        //{
+        //    string filePath = Path.Combine(Application.persistentDataPath, file + ".csv");
+        //    //File.WriteAllText(filePath);
+
+        //    string source;
+        //    StreamReader sr = new StreamReader(Application.persistentDataPath + "/" + file + ".csv");
+        //    source = sr.ReadToEnd();
+        //    sr.Close();
+
+        //    lines = Regex.Split(source, LINE_SPLIT_RE);
+
+        //    Debug.Log("Load " + file + ".csv");
+        //}
+        if (File.Exists(SystemPath.GetPath() + file + ".csv"))
         {
             string source;
-            StreamReader sr = new StreamReader(Application.persistentDataPath + file + ".csv");
+            StreamReader sr = new StreamReader(SystemPath.GetPath() + file + ".csv");
             source = sr.ReadToEnd();
             sr.Close();
 
             lines = Regex.Split(source, LINE_SPLIT_RE);
 
             Debug.Log("Load " + file + ".csv");
-            //Debug.Log(SystemPath.GetPath() + file + ".csv");
         }
         else
         {
-            string filePath = Path.Combine(Application.persistentDataPath, file + ".csv");
-            //File.WriteAllText(filePath);
-
-            string source;
-            StreamReader sr = new StreamReader(Application.persistentDataPath + "/" + file + ".csv");
-            source = sr.ReadToEnd();
-            sr.Close();
-
-            lines = Regex.Split(source, LINE_SPLIT_RE);
-
-            Debug.Log("Load " + file + ".csv");
+            Debug.Log("Load fail");
+            return null;
         }
 
         if (lines.Length <= 1) return list;

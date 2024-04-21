@@ -21,16 +21,6 @@ public class ImageTrigger : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (inst_Obj != null)
-        {
-            if (!inst_Obj.activeSelf)
-            {
-                player.isCommunicate = false;
-            }
-        }
-    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -38,6 +28,7 @@ public class ImageTrigger : MonoBehaviour
         {
             player.isCommunicate = true;
             inst_Obj = Instantiate(p_Obj, canvas.transform);
+            inst_Obj.GetComponent<DiscriptionImage>().player = other.GetComponent<Player>();
             GetComponent<BoxCollider>().enabled = false;
 
             if (isSave)

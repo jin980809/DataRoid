@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     [Header("Player Weapon")]
     [SerializeField]
     private Transform ShootPos;
+    public GameObject bullet;
     public Weapon weapon; //초기 총기 설정(권총)
     public GameObject muzzleEffect;
     public GameObject[] hitEffect;
@@ -469,6 +470,7 @@ public class Player : MonoBehaviour
             muzzleEffect.SetActive(true);
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
+           
             Vector3 playerShotPos = ShootPos.position;
 
             if (!weapon.isShotGun)
@@ -476,6 +478,7 @@ public class Player : MonoBehaviour
                 if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy") ))
                 {
                     Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
+                    BulletInstance((hit.point - muzzleEffect.transform.position).normalized);
 
                     switch (hit.transform.gameObject.layer)
                     {
@@ -692,16 +695,22 @@ public class Player : MonoBehaviour
         //hitObj.GetComponent<>().Play();
     }
 
+    void BulletInstance(Vector3 direction)
+    {
+        GameObject inst_bullet = Instantiate(bullet);
+        inst_bullet.transform.position = muzzleEffect.transform.position;
+        inst_bullet.GetComponent<Bullet>().direction = direction;
+    }
     void Reload()
     {
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
             && /*MaterialManager.Instance.Ammo > 0 &&*/ !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
-            if (equipWeaponIndex == 0 && MaterialManager.Instance.RifleAmmo < 0)
+            if (equipWeaponIndex == 0 && MaterialManager.Instance.RifleAmmo <= 0)
                 return;
-            if (equipWeaponIndex == 1 && MaterialManager.Instance.HandgunAmmo < 0)
+            if (equipWeaponIndex == 1 && MaterialManager.Instance.HandgunAmmo <= 0)
                 return;
-            if (equipWeaponIndex == 2 && MaterialManager.Instance.ShotgunAmmo < 0)
+            if (equipWeaponIndex == 2 && MaterialManager.Instance.ShotgunAmmo <= 0)
                 return;
 
             isReload = true;
@@ -811,7 +820,7 @@ public class Player : MonoBehaviour
 
                 //Debug.Log(curHp);
 
-                StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z), attack.damage));
+                StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z), attack.curDamage));
                 if(other.transform.GetComponentInParent<EnemyB>() != null)
                 {
                     //other.transform.GetComponentInParent<EnemyB>().isAimming = false;

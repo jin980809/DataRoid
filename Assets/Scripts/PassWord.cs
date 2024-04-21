@@ -10,6 +10,7 @@ public class PassWord : MonoBehaviour
     public bool isDone = false;
     public TMP_InputField[] passWordInput;
     public string[] passWord;
+    public Player player;
 
     [Space(10)]
     [Header("Active")]
@@ -83,7 +84,14 @@ public class PassWord : MonoBehaviour
 
     void ExitPassWord()
     {
-        transform.gameObject.SetActive(false);
         interaction.isActive = false;
+        player.isCommunicate = false;
+        StartCoroutine(ActiveFalse());
+    }
+
+    IEnumerator ActiveFalse()
+    {
+        yield return new WaitForSeconds(0.01f);
+        transform.gameObject.SetActive(false);
     }
 }

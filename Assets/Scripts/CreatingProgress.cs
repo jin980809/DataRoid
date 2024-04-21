@@ -11,6 +11,6 @@ public class CreatingProgress : MonoBehaviour
     public void OnClick()
     {
         GameManager.Instance.player.curHp -= decreaseHp;
-        ProgressManager.Instance.curProgress += progressAmount;
+        ProgressManager.Instance.curData += progressAmount;
     }
 }

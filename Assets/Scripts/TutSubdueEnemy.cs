@@ -67,7 +67,7 @@ public class TutSubdueEnemy : MonoBehaviour
                 //curSubdueCoolTime = 0;
                 isPlayerSubdue = false;
                 UIManager.Instance.SubDueSlider.gameObject.SetActive(false);
-                ProgressManager.Instance.curProgress -= 1;
+                ProgressManager.Instance.curData -= 1;
                 isDead = true;
                 Invoke("Dead", 1);
                 anim.SetTrigger("doSubdueOut");

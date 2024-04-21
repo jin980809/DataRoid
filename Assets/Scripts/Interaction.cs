@@ -20,6 +20,7 @@ public class Interaction : FadeController
         LightOn = 9,
         TextBox = 10,
         PassWord = 11,
+        ObjectRotater = 12,
     };
     public Type interactionType;
 
@@ -50,7 +51,6 @@ public class Interaction : FadeController
     public Camera mainCamera;
     public GameObject CCTV;
     public CameraMove cameraMove;
-
 
     [Space(10)]
     [Header("Door")]
@@ -112,7 +112,16 @@ public class Interaction : FadeController
     public GameObject v_Cam;
     private GameObject insPassWordUI;
     public float smoothSpeed;
-    public GameObject m_camera;
+    public GameObject m_Camera;
+
+    [Space(10)]
+    [Header("ObjectRotater")]
+    public GameObject p_Object;
+    private GameObject inst_Object;
+    public Transform ObjectPos;
+    public GameObject main_Camera;
+    public GameObject rotate_Camera;
+    private ObjectRotater objRotater;
 
     [Serializable]
     public struct TextBox
@@ -137,6 +146,14 @@ public class Interaction : FadeController
         if (interactionType == Type.PassWord)
         {
             passWord = passWordUI.GetComponent<PassWord>();
+            passWord.player = player;
+        }
+
+        if (interactionType == Type.ObjectRotater)
+        {
+            objRotater = p_Object.GetComponent<ObjectRotater>();
+            objRotater.player = player;
+            objRotater.rotation_Camera = rotate_Camera.GetComponent<Camera>();
         }
     }
 
@@ -152,7 +169,7 @@ public class Interaction : FadeController
             StartCoroutine(TextBoxOut(textBox[curTextCount].duration));
         }
 
-        if(interactionType == Type.PassWord)
+        if (interactionType == Type.PassWord)
         {
             if (passWord.isDone)
             {
@@ -163,13 +180,23 @@ public class Interaction : FadeController
             {
                 if (!insPassWordUI.activeSelf && !isActive)
                 {
-                    player.isCommunicate = false;
                     v_Cam.SetActive(true);
                     p_cameraMove.enabled = true;
                 }
             }
         }
 
+        if (interactionType == Type.ObjectRotater)
+        {
+            if (inst_Object != null)
+            {
+                if(!inst_Object.activeSelf)
+                {
+                    rotate_Camera.SetActive(false);
+                    main_Camera.SetActive(true);
+                }
+            }
+        }
     }
 
     void CoolDown()
@@ -240,6 +267,10 @@ public class Interaction : FadeController
 
             case Type.PassWord:
                 PassWordOn();
+                break;
+
+            case Type.ObjectRotater:
+                ObjectRotaterOpen();
                 break;
         }
 
@@ -371,7 +402,7 @@ public class Interaction : FadeController
             GetComponent<BoxCollider>().enabled = false;
             LightManager.Instance.lightObjects[lightIndex] = true;
             MaterialManager.Instance.UFSData -= needUFSData;
-            ProgressManager.Instance.curProgress += getData;
+            ProgressManager.Instance.curData += getData;
         }
 
     }
@@ -426,24 +457,27 @@ public class Interaction : FadeController
 
     void PassWordOn()
     {
-        isActive = true;
-        player.isCommunicate = true;
-        v_Cam.SetActive(false);
-        p_cameraMove.enabled = false;
-        StartCoroutine(MoveCameraCoroutine(cameraPos.position, cameraPos.rotation));
+        if(!passWord.isDone)
+        { 
+            isActive = true;
+            player.isCommunicate = true;
+            v_Cam.SetActive(false);
+            p_cameraMove.enabled = false;
+            StartCoroutine(MoveCameraCoroutine(cameraPos.position, cameraPos.rotation));
+        }
     }
 
     private IEnumerator MoveCameraCoroutine(Vector3 targetPosition, Quaternion targetRotation)
     {
-        while (Vector3.Distance(m_camera.transform.position, targetPosition) > 0.01f || Quaternion.Angle(m_camera.transform.rotation, targetRotation) > 0.01f)
+        while (Vector3.Distance(m_Camera.transform.position, targetPosition) > 0.01f || Quaternion.Angle(m_Camera.transform.rotation, targetRotation) > 0.01f)
         {
             // 현재 위치와 목표 위치 사이의 보간
-            Vector3 desiredPosition = Vector3.Lerp(m_camera.transform.position, targetPosition, smoothSpeed * Time.deltaTime);
-            Quaternion desiredRotation = Quaternion.Lerp(m_camera.transform.rotation, targetRotation, smoothSpeed * Time.deltaTime);
+            Vector3 desiredPosition = Vector3.Lerp(m_Camera.transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+            Quaternion desiredRotation = Quaternion.Lerp(m_Camera.transform.rotation, targetRotation, smoothSpeed * Time.deltaTime);
 
             // 부드럽게 이동
-            m_camera.transform.position = desiredPosition;
-            m_camera.transform.rotation = desiredRotation;
+            m_Camera.transform.position = desiredPosition;
+            m_Camera.transform.rotation = desiredRotation;
 
             yield return null; // 다음 프레임까지 대기
         }
@@ -459,5 +493,23 @@ public class Interaction : FadeController
         }
 
         yield return null;
+    }
+
+    void ObjectRotaterOpen()
+    {
+        player.isCommunicate = true;
+        main_Camera.SetActive(false);
+        rotate_Camera.SetActive(true);
+
+        if (inst_Object == null)
+        {
+            inst_Object = Instantiate(p_Object, ObjectPos.position, ObjectPos.rotation);
+        }
+        else
+        {
+            inst_Object.SetActive(true);
+        }
+
+        
     }
 }

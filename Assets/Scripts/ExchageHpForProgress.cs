@@ -16,7 +16,7 @@ public class ExchageHpForProgress : MonoBehaviour
 
     void Interactable()
     {
-        if (ProgressManager.Instance.curProgress + increaseProgress > ProgressManager.Instance.saveProgress)
+        if (ProgressManager.Instance.curData + increaseProgress > ProgressManager.Instance.saveData)
         {
             GetComponent<Button>().interactable = false;
         }
@@ -29,6 +29,6 @@ public class ExchageHpForProgress : MonoBehaviour
     public void OnClick()
     {
         player.curHp -= decreaseHP;
-        ProgressManager.Instance.curProgress += increaseProgress;
+        ProgressManager.Instance.curData += increaseProgress;
     }
 }

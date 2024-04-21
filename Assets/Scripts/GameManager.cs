@@ -52,11 +52,11 @@ public class GameManager : MonoBehaviour
 
         tempData = new string[8];
         tempData[0] = "SavePoint";
-        tempData[1] = "Progress";
-        tempData[2] = "MaxProgress";
-        tempData[3] = "Ammo";
-        tempData[4] = "SpecialAmmo";
-        tempData[5] = "Steel";
+        tempData[1] = "Data";
+        tempData[2] = "MaxData";
+        tempData[3] = "HandgunAmmo";
+        tempData[4] = "RifleAmmo";
+        tempData[5] = "ShotgunAmmo";
         tempData[6] = "GunPowder";
         tempData[7] = "UFSData";
         data.Add(tempData);
@@ -68,8 +68,8 @@ public class GameManager : MonoBehaviour
 
         dicList = CSVReader.Read(fileName);
 
-        ProgressManager.Instance.curProgress = int.Parse(dicList[0]["Progress"] + "");
-        ProgressManager.Instance.saveProgress = int.Parse(dicList[0]["MaxProgress"] + "");
+        ProgressManager.Instance.curData = int.Parse(dicList[0]["Data"] + "");
+        ProgressManager.Instance.saveData = int.Parse(dicList[0]["MaxData"] + "");
         MaterialManager.Instance.HandgunAmmo = int.Parse(dicList[0]["HandgunAmmo"] + "");
         MaterialManager.Instance.RifleAmmo = int.Parse(dicList[0]["RifleAmmo"] + "");
         MaterialManager.Instance.ShotgunAmmo = int.Parse(dicList[0]["ShotgunAmmo"] + "");
@@ -111,8 +111,8 @@ public class GameManager : MonoBehaviour
     {
         tempData = new string[8];
         tempData[0] = savePointIndex.ToString();
-        tempData[1] = ProgressManager.Instance.curProgress.ToString();
-        tempData[2] = ProgressManager.Instance.saveProgress.ToString();
+        tempData[1] = ProgressManager.Instance.curData.ToString();
+        tempData[2] = ProgressManager.Instance.saveData.ToString();
         tempData[3] = MaterialManager.Instance.HandgunAmmo.ToString();
         tempData[4] = MaterialManager.Instance.RifleAmmo.ToString();
         tempData[5] = MaterialManager.Instance.ShotgunAmmo.ToString();

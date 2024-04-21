@@ -4,5 +4,11 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
-    public int damage;
+    public float curDamage;
+    public float damage;
+
+    void Start()
+    {
+        curDamage = damage;
+    }
 }
