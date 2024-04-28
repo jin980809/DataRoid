@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyA : Enemy
 {
@@ -12,11 +13,35 @@ public class EnemyA : Enemy
     [SerializeField] bool isNotAround;
     public bool isStop = false;
     public float subduePercentage;
+
+    [Space(10f)]
+    [Header("Ranged")]
+    public bool isRanged; //원거리 공격
+    public float LazerDamange;
+    public float rangedDistance;
+    public float rangedAttackCoolTime;
+    float curRangedAttackCoolTime = 0;
+    public float rangedAttackChargingTime;
+    public float rangedAttackTime;
+    Coroutine rangeAttack;
+    public bool isRangedAttackReady;
+    public bool isRangedAttack;
+    public Transform rangedPos;
+    Hovl_DemoLasers Lazers;
+    float stunTime = 0;
+
     void Update()
     {
         Around();
 
-        TargetPlayer();
+        if (!isRanged)
+            TargetPlayer();
+        else
+        {
+            Lazers = GetComponentInChildren<Hovl_DemoLasers>();
+            RangeTargetPlayer();
+            RangedAttack();
+        }
 
         Chase();
 
@@ -94,6 +119,7 @@ public class EnemyA : Enemy
         }
         else
         {
+
             if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
             {
                 nav.speed = walkSpeed * speedDiscountRate;
@@ -104,7 +130,6 @@ public class EnemyA : Enemy
                 {
                     nav.speed = 0;
                 }
-
             }
             else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
             {
@@ -119,6 +144,111 @@ public class EnemyA : Enemy
             }
         }
     }
+
+    void RangeTargetPlayer()
+    {
+        RaycastHit[] hit = Physics.SphereCastAll(transform.position, rangedDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
+        Vector3 thisPos = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+
+        if (curRangedAttackCoolTime < rangedAttackCoolTime && !isRangedAttackReady)
+        {
+            curRangedAttackCoolTime += Time.deltaTime;
+        }
+        else
+        {
+            curRangedAttackCoolTime = rangedAttackCoolTime;
+        }
+
+        if (hit.Length > 0) //플레이어 감지
+        {
+            Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
+            if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment")))
+            {
+                nav.speed = 0;
+                isChase = true;
+                if (rangedAttackCoolTime <= curRangedAttackCoolTime && !isRangedAttack && !isRangedAttackReady)
+                {
+                    rangeAttack = StartCoroutine(RangeAttackReady());
+                }
+            }
+        }
+        else // 플레이어 감지 x
+        {
+            if(isRangedAttack)
+            {
+                Lazers.LazerOff();
+                isRangedAttackReady = false;
+                curRangedAttackCoolTime = 0;
+                rotateRate = 1f;
+                isRangedAttack = false;
+            }
+
+            if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
+            {
+                nav.speed = walkSpeed * speedDiscountRate;
+                isChase = false;
+                isShotChase = false;
+                nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                if (isStop && isNotAround)
+                {
+                    nav.speed = 0;
+                }
+            }
+            else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
+            {
+                nav.SetDestination(playerShotPos);
+                if (nav.remainingDistance <= 0.5f)
+                {
+                    isShotChase = false;
+                    nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                }
+                isStop = false;
+                nav.speed = runSpeed * speedDiscountRate;
+            }
+        }
+    }
+
+    IEnumerator RangeAttackReady()
+    {
+        isRangedAttackReady = true;
+        Debug.Log("RangedAttackReady");
+
+        yield return new WaitForSeconds(rangedAttackChargingTime);
+        rotateRate = 0.75f;
+        isRangedAttack = true;
+        stunTime += Time.deltaTime;
+        Lazers.LazerOn();
+
+        yield return new WaitForSeconds(rangedAttackTime);
+        Lazers.LazerOff();
+        stunTime = 0;
+        isRangedAttackReady = false;
+        isRangedAttack = false;
+        curRangedAttackCoolTime = 0;
+        rotateRate = 1f;
+        Debug.Log("Ranged Attack end");
+    }
+    void RangedAttack()
+    {
+        if(isRangedAttack)
+        {
+            Debug.Log("RangedAttack");
+            RaycastHit hit;
+
+            Vector3 playerPos = new Vector3(target.transform.position.x, target.transform.position.y + 1, target.transform.position.z);
+
+            if (Physics.SphereCast(rangedPos.position, 0.1f, rangedPos.forward, out hit, 100f, LayerMask.GetMask("Player")))
+            {
+                if (!IsObstacleBetween(rangedPos.position, playerPos, LayerMask.GetMask("Enviroment")))
+                {
+                    Debug.Log("player hit");
+                    target.GetComponent<Player>().Damage(transform.position, LazerDamange);
+                    target.GetComponent<Player>().Stun(rangedAttackTime - stunTime + 0.01f);
+                }
+            }
+        }
+    }
+
 
     private bool IsObstacleBetween(Vector3 start, Vector3 end, LayerMask obstacleLayer)
     {
@@ -216,19 +346,22 @@ public class EnemyA : Enemy
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
+        Vector3 playerPos = new Vector3(target.transform.position.x, target.transform.position.y + 1, target.transform.position.z);
+        Gizmos.DrawRay(rangedPos.position, rangedPos.forward * 100);
 
-        Gizmos.DrawWireSphere(transform.position, chasingDistance);
-        Gizmos.DrawWireSphere(transform.position, attackDistance);
+        //Gizmos.DrawWireSphere(transform.position, chasingDistance);
+        //Gizmos.DrawWireSphere(transform.position, attackDistance);
 
-        RaycastHit[] hit = Physics.SphereCastAll(transform.position, chasingDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
+        //RaycastHit[] hit = Physics.SphereCastAll(transform.position, chasingDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
 
-        if (hit.Length > 0)
-        {
-            if (!IsObstacleBetween(transform.position, hit[0].transform.position, LayerMask.GetMask("Enviroment")))
-            {
-                Gizmos.DrawLine(transform.position, hit[0].transform.position);
-            }
-        }
+        //if (hit.Length > 0)
+        //{
+        //    if (!IsObstacleBetween(transform.position, hit[0].transform.position, LayerMask.GetMask("Enviroment")))
+        //    {
+        //        Gizmos.DrawLine(transform.position, hit[0].transform.position);
+        //    }
+        //}
     }
 
 }
+

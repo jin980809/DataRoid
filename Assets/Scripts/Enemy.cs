@@ -65,6 +65,7 @@ public class Enemy : MonoBehaviour
     public GameObject enemyUI; // 积己等 利 UI
     RectTransform rectTransform; // RectTransform 哪器惩飘
     public Camera mainCamera;
+    public float rotateRate = 1;
 
     [Space(10f)]
     [Header("Hacking")]
@@ -474,7 +475,7 @@ public class Enemy : MonoBehaviour
     {
         Vector3 lookrotation = nav.steeringTarget - transform.position;
         if (lookrotation != Vector3.zero)
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), 5 * Time.deltaTime * rotateRate);
     }
 
     void OnTriggerEnter(Collider other)

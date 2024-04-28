@@ -701,6 +701,7 @@ public class Player : MonoBehaviour
         inst_bullet.transform.position = muzzleEffect.transform.position;
         inst_bullet.GetComponent<Bullet>().direction = direction;
     }
+
     void Reload()
     {
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
@@ -844,6 +845,14 @@ public class Player : MonoBehaviour
         
     }
 
+    public void Damage(Vector3 enemyPos, float damage)
+    {
+        if (!isDamage)
+        {
+            StartCoroutine(OnDamage(enemyPos, damage));
+        }
+    }
+
     public IEnumerator OnDamage(Vector3 enemyPos, float damage)
     {
         isDamage = true;
@@ -854,7 +863,7 @@ public class Player : MonoBehaviour
         damageEffect.transform.rotation = Quaternion.LookRotation((EnemyDir - playerDir).normalized);
         damageEffect.SetActive(true);
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.01f);
         isDamage = false;
         damageEffect.SetActive(false);
         yield return null;
