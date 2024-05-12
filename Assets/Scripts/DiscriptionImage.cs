@@ -5,24 +5,18 @@ using UnityEngine.UI;
 
 public class DiscriptionImage : MonoBehaviour
 {
-    public Image image;
-    public Sprite[] sprites;
-    public Button nextButton;
-    public Button preButton;
+
     public Player player;
-    int curImageIndex = 0;
     bool qDown;
 
     void Start()
     {
-        image.sprite = sprites[curImageIndex];
     }
 
     void Update()
     {
         qDown = Input.GetButtonDown("Cancel");
 
-        ButtonInteractable();
 
         if(qDown)
         {
@@ -30,31 +24,6 @@ public class DiscriptionImage : MonoBehaviour
         }
     }
 
-    void ButtonInteractable()
-    {
-        if (curImageIndex == 0)
-            preButton.interactable = false;
-        else
-            preButton.interactable = true;
-
-        if (curImageIndex == sprites.Length - 1)
-            nextButton.interactable = false;
-        else
-            nextButton.interactable = true;
-    }
-
-
-    public void NextClick()
-    {
-        curImageIndex++;
-        image.sprite = sprites[curImageIndex];
-    }
-
-    public void PreClick()
-    {
-        curImageIndex--;
-        image.sprite = sprites[curImageIndex];
-    }
 
     public void ExitImage()
     {

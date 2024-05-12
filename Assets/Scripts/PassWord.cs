@@ -11,6 +11,7 @@ public class PassWord : MonoBehaviour
     public TMP_InputField[] passWordInput;
     public string[] passWord;
     public Player player;
+    public bool isDroneOn;
 
     [Space(10)]
     [Header("Active")]
@@ -53,8 +54,8 @@ public class PassWord : MonoBehaviour
     {
         for(int i = 0; i < passWord.Length; i++)
         {
-            if (passWordInput[i].text != passWord[i])
-                return false;
+            if(!string.Equals(passWord[i], passWordInput[i].text))
+            return false;
         }
 
         return true;
@@ -80,11 +81,15 @@ public class PassWord : MonoBehaviour
         for (int i = 0; i < d_interaction.Length; i++)
             d_interaction[i].enabled = false;
 
+        if (isDroneOn)
+            ObjectManager.Instance.saveObjects[0] = true;
     }
 
     void ExitPassWord()
     {
         interaction.isActive = false;
+        interaction.v_Cam.SetActive(true);
+        interaction.p_cameraMove.enabled = true;
         player.isCommunicate = false;
         StartCoroutine(ActiveFalse());
     }

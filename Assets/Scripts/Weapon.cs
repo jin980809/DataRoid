@@ -11,6 +11,7 @@ public class Weapon : MonoBehaviour
     public int maxAmmo;
     public int curAmmo;
     public float reLoadTime;
+    public float reloadCost;
     public bool isSemiauto;
     public GameObject muzzleFlash;
     public bool isShotGun;

@@ -68,7 +68,7 @@ public class DroneTextTrigger : MonoBehaviour
 
     IEnumerator StartTextBox(float durationTime)
     {
-        UIManager.Instance.uiAnim.SetTrigger("Text_Open");
+        //UIManager.Instance.uiAnim.SetTrigger("Text_Open");
         UIManager.Instance.DroneText.text = textBox[curTextCount].droneText;
 
         if (!isClick)
@@ -81,7 +81,7 @@ public class DroneTextTrigger : MonoBehaviour
     }
     IEnumerator TextBoxOut(float durationTime)
     {
-        UIManager.Instance.uiAnim.SetTrigger("Text_Out");
+        //UIManager.Instance.uiAnim.SetTrigger("Text_Out");
 
         yield return new WaitForSeconds(1f);
         if(curTextCount < textBox.Length - 1)

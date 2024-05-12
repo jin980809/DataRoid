@@ -20,10 +20,10 @@ public class Flash : MonoBehaviour
 
         if (on == true)
         {
-            Time.timeScale = .1f;
+            //Time.timeScale = .1f;
 
-            AplhaController.alpha = AplhaController.alpha - Time.deltaTime * 4;
-            volume.GetComponent<Volume>().weight = volume.GetComponent<Volume>().weight - Time.deltaTime * 2;
+            AplhaController.alpha = AplhaController.alpha - Time.deltaTime;
+            volume.GetComponent<Volume>().weight = volume.GetComponent<Volume>().weight - Time.deltaTime;
 
             if(AplhaController.alpha <= 0)
             {

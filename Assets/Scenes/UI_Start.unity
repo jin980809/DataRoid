@@ -1456,46 +1456,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2046111119}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 1775642832}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1770088576}
-        m_TargetAssemblyTypeName: UnityEngine.Playables.PlayableDirector, UnityEngine
-        m_MethodName: Play
+      - m_Target: {fileID: 5614536818441960417}
+        m_TargetAssemblyTypeName: TitleButton, Assembly-CSharp
+        m_MethodName: StartClick
         m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 5614536819143632922}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7852,7 +7816,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5614536819143632926}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TitleButton, Assembly-CSharp
         m_MethodName: ExitClick
         m_Mode: 1
@@ -14082,7 +14046,7 @@ PlayableDirector:
   - key: {fileID: 8722453701976983854, guid: c8904c8426b7d614bafded951e723b15, type: 2}
     value: {fileID: 1770088577}
   - key: {fileID: 2602280941141907143, guid: c8904c8426b7d614bafded951e723b15, type: 2}
-    value: {fileID: 5614536819143632927}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!95 &1770088577
@@ -14529,12 +14493,12 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1802863089}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5614536819143632926}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TitleButton, Assembly-CSharp
         m_MethodName: LoadClick
         m_Mode: 1
@@ -17325,6 +17289,8 @@ GameObject:
   - component: {fileID: 5614536818441960414}
   - component: {fileID: 5614536818441960415}
   - component: {fileID: 5614536818441960412}
+  - component: {fileID: 5614536818441960417}
+  - component: {fileID: 5614536818441960416}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -17376,6 +17342,62 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &5614536818441960416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5614536818441960413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: 880eab78c36aa3b408b1fb7b1faad809, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5614536818441960417}
+          m_TargetAssemblyTypeName: TitleButton, Assembly-CSharp
+          m_MethodName: StartClick
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &5614536818441960417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5614536818441960413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41cc889063f305b4299086be9441a7aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initSpawn: 1
+  initProgress: 10
+  initMaxProgress: 10
+  initHandgunAmmo: 0
+  initRifleAmmo: 0
+  initShotgunAmmo: 0
+  initGunPowder: 0
+  initUSFData: 0
+  enemyfileName: Enemy.csv
+  lightfileName: Light.csv
+  objectfileName: Object.csv
+  savefileName: Save.csv
+  textBoxfileName: TextBox.csv
+  nextSceneName: BuildScene_MakeAnim
 --- !u!1 &5614536819143632922
 GameObject:
   m_ObjectHideFlags: 0
@@ -17386,8 +17408,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5614536819143632925}
   - component: {fileID: 5614536819143632924}
-  - component: {fileID: 5614536819143632926}
-  - component: {fileID: 5614536819143632927}
   m_Layer: 5
   m_Name: AnimationUI
   m_TagString: Untagged
@@ -17440,62 +17460,6 @@ RectTransform:
   m_AnchoredPosition: {x: -50, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5614536819143632926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5614536819143632922}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41cc889063f305b4299086be9441a7aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initSpawn: 1
-  initProgress: 10
-  initMaxProgress: 10
-  initHandgunAmmo: 0
-  initRifleAmmo: 0
-  initShotgunAmmo: 0
-  initGunPowder: 0
-  initUSFData: 0
-  enemyfileName: Enemy.csv
-  lightfileName: Light.csv
-  objectfileName: Object.csv
-  savefileName: Save.csv
-  textBoxfileName: TextBox.csv
-  nextSceneName: BuildScene_MakeAnim
---- !u!114 &5614536819143632927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5614536819143632922}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Events:
-    m_Signals:
-    - {fileID: 11400000, guid: 880eab78c36aa3b408b1fb7b1faad809, type: 2}
-    m_Events:
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 5614536819143632926}
-          m_TargetAssemblyTypeName: TitleButton, Assembly-CSharp
-          m_MethodName: StartClick
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!224 &5614536819289996858
 RectTransform:
   m_ObjectHideFlags: 0

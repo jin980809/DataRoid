@@ -19,11 +19,16 @@ public class UIManager : MonoBehaviour
     }
     private static UIManager m_instance;
 
-    public Animator uiAnim;
+    public Animator mainUIAnim;
+    public Animator menuUIAnim;
+    public Animator textUIAnim;
+    public Animator skillButtonUIAnim;
     public Player player;
-    public GameObject aim;
-    public GameObject[] hpGauges;
-    public TextMeshProUGUI hpText;
+    public Image hpGauge;
+    public Text hpText;
+    public Slider shaderVolumm;
+
+    public UI_FadeIn[] fade_Ins;
 
     [Space(10)]
     [Header("Interaction")]
@@ -49,7 +54,7 @@ public class UIManager : MonoBehaviour
     [Space(10)]
     [Header("Data")]
     public Image DataGauge;
-    public TextMeshProUGUI Datatext;
+    public Text Datatext;
 
     [Space(10)]
     [Header("HackingUI")]
@@ -73,17 +78,13 @@ public class UIManager : MonoBehaviour
     [Header("Fade")]
     public Image fadeImage;
 
-    [Space(10)]
-    [Header("Skill CoolTime")]
-    public Image hackingCoolTime;
-    public Image stunCoolTime;
 
     [Space(10)]
     [Header("Gun State")]
     public Image handGunImage;
     public Image rifleImage;
     public Image shotGunImage;
-    public TextMeshProUGUI AmmoText;
+    public Text AmmoText;
 
     [Space(10)]
     [Header("DroneTextBox")]
@@ -94,12 +95,16 @@ public class UIManager : MonoBehaviour
     public GameObject endPanel;
 
     [Space(10)]
-    [Header("PlayerDead UI")]
+    [Header("ObjectGet UI")]
     public GameObject objectGetText;
+
+    [Space(10)]
+    [Header("F Button UI")]
+    public Image fButton;
 
     void Start()
     {
-
+        mainUIAnim.SetTrigger("Open");
     }
 
     void Update()
@@ -107,27 +112,26 @@ public class UIManager : MonoBehaviour
         TextUpdate();
         InteractionGaugeGlow.fillAmount = InteractionGauge.fillAmount;
 
-        //float hp = player.curHp / player.maxHp;
-        //if (hp < 0) hp = 0;
-        //hpGauge.fillAmount = hp;
+        float hp = player.curHp / player.maxHp;
+        if (hp < 0) hp = 0;
+        hpGauge.fillAmount = hp;
 
-        for(int i = 0; i < hpGauges.Length; i++)
-        {
-            if((int)(player.curHp / 10) > i)
-                hpGauges[i].SetActive(true);
-            else
-                hpGauges[i].SetActive(false);
-        }
+        float data = ProgressManager.Instance.dataAverage / 100f;
+        if (data < 0) data = 0;
+        DataGauge.fillAmount = 1 - data;
 
-        float hackingCool = player.curHackingCoolTime / player.hackingCoolTime;
-        if (hackingCool <= 0) hackingCoolTime.fillAmount = 0;
-        else
-            hackingCoolTime.fillAmount = 1 - hackingCool;
+        //for(int i = 0; i < hpGauges.Length; i++)
+        //{
+        //    if((int)(player.curHp / 10) > i)
+        //        hpGauges[i].SetActive(true);
+        //    else
+        //        hpGauges[i].SetActive(false);
+        //}
 
-
-        float stunCool = player.curStunCoolTime / player.stunCoolTime;
-        if (stunCool < 0) stunCool = 0;
-        stunCoolTime.fillAmount = 1 - stunCool;
+        //float hackingCool = player.curHackingCoolTime / player.hackingCoolTime;
+        //if (hackingCool <= 0) hackingCoolTime.fillAmount = 0;
+        //else
+        //    hackingCoolTime.fillAmount = 1 - hackingCool;
 
         GunImageChange(player.equipWeaponIndex);
     }
@@ -141,6 +145,7 @@ public class UIManager : MonoBehaviour
         specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.RifleAmmo;
         ExpCapsuleAmount.text = "ExpCapsule : " + MaterialManager.Instance.ExpCapsule;
         hpText.text = (int)((player.curHp / player.maxHp) * 100) + "%";
+        Datatext.text = (int)ProgressManager.Instance.dataAverage + "%";
     }
 
     public void CreateTextBox(string text)
@@ -197,5 +202,10 @@ public class UIManager : MonoBehaviour
             }
         }
         
+    }
+
+    public void InteractionButtonImage(bool isActive)
+    {
+        fButton.gameObject.SetActive(isActive);
     }
 }

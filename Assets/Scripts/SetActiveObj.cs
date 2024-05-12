@@ -8,6 +8,7 @@ public class SetActiveObj : MonoBehaviour
     {
         Interaction = 1,
         Collider = 2,
+        Object = 3,
     };
     public Type activeType;
     public bool ObjActive;
@@ -21,6 +22,10 @@ public class SetActiveObj : MonoBehaviour
     [Space(10)]
     [Header("Collider")]
     public new Collider collider;
+
+    [Space(10)]
+    [Header("Object")]
+    public GameObject gObj;
 
     // Update is called once per frame
     void Update()
@@ -42,6 +47,10 @@ public class SetActiveObj : MonoBehaviour
 
             case Type.Collider:
                 collider.enabled = ObjActive;
+                break;
+
+            case Type.Object:
+                gObj.SetActive(ObjActive);
                 break;
         }
     }

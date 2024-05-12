@@ -14,7 +14,7 @@ public class Drone : MonoBehaviour
 
     void Start()
     {
-        if(ObjectManager.Instance.saveObjects[0] == false)
+        if (ObjectManager.Instance.saveObjects[0] == false)
         {
             transform.gameObject.SetActive(true);
             player.droneOn = true;
@@ -25,7 +25,6 @@ public class Drone : MonoBehaviour
             transform.gameObject.SetActive(false);
             player.droneOn = false;
         }
-
     }
 
     void Update()

@@ -30,6 +30,12 @@ public class EnemyA : Enemy
     Hovl_DemoLasers Lazers;
     float stunTime = 0;
 
+    [Space(10f)]
+    [Header("Melee")]
+    public int attack1Percent;
+    public int attack2Percent;
+    public int attack3Percent;
+
     void Update()
     {
         Around();
@@ -49,15 +55,22 @@ public class EnemyA : Enemy
 
         RotationSpeedUp();
 
-        SwitchLight();
+        //HackingUI();
 
-        HackingUI();
-
-        HackingCoolDown();
+        //HackingCoolDown();
 
         Subdue();
 
         Parrying();
+
+        if (isDeath && !getData)
+        {
+            ProgressManager.Instance.curAlarmData += 1;
+            ProgressManager.Instance.curCameraData += 1;
+            ProgressManager.Instance.curSilentData += 1;
+            ProgressManager.Instance.curNetworkData += 1;
+            getData = true;
+        }
     }
 
     void TargetPlayer()
@@ -107,7 +120,20 @@ public class EnemyA : Enemy
                     }
                     else // 실패(일반공격)
                     {
-                        attackCoroutine = StartCoroutine(DoAttack());
+                        int attackNum = AttackPercentage();
+
+                        switch (attackNum)
+                        {
+                            case 1:
+                                attackCoroutine = StartCoroutine(DoAttack1());
+                                break;
+                            case 2:
+                                attackCoroutine = StartCoroutine(DoAttack2());
+                                break;
+                            case 3:
+                                attackCoroutine = StartCoroutine(DoAttack3());
+                                break;
+                        }
                     }
 
                     
@@ -228,6 +254,7 @@ public class EnemyA : Enemy
         rotateRate = 1f;
         Debug.Log("Ranged Attack end");
     }
+
     void RangedAttack()
     {
         if(isRangedAttack)
@@ -242,13 +269,12 @@ public class EnemyA : Enemy
                 if (!IsObstacleBetween(rangedPos.position, playerPos, LayerMask.GetMask("Enviroment")))
                 {
                     Debug.Log("player hit");
-                    target.GetComponent<Player>().Damage(transform.position, LazerDamange);
+                    target.GetComponent<Player>().Damage(LazerDamange);
                     target.GetComponent<Player>().Stun(rangedAttackTime - stunTime + 0.01f);
                 }
             }
         }
     }
-
 
     private bool IsObstacleBetween(Vector3 start, Vector3 end, LayerMask obstacleLayer)
     {
@@ -260,19 +286,81 @@ public class EnemyA : Enemy
         return false;
     }
 
-    IEnumerator DoAttack()
+    int AttackPercentage()
+    {
+        int rand = Random.Range(1, 101);
+        if(rand >= 1 && rand < attack1Percent)
+        {
+            return 1;
+        }
+        else if (rand >= attack1Percent  && rand < attack1Percent + attack2Percent)
+        {
+            return 2;
+        }
+        else
+        {
+            return 3;
+        }
+    }
+
+    IEnumerator DoAttack1()
     {
         anim.SetBool("isAttack", true);
+        anim.SetFloat("attackIndex", 1f);
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(0.5f);
-        attackCollider.enabled = true;
+        yield return new WaitForSeconds(1.2f);
+        L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(1f);
-        attackCollider.enabled = false;
+        yield return new WaitForSeconds(0.45f);
+        L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(1.15f);
+        nav.isStopped = false;
+        isAttack = false;
+        anim.SetBool("isAttack", false);
+    }
+
+    IEnumerator DoAttack2()
+    {
+        anim.SetBool("isAttack", true);
+        anim.SetFloat("attackIndex", 2f);
+        isAttack = true;
+        nav.isStopped = true;
+
+        yield return new WaitForSeconds(0.45f);
+        R_attackCollider.enabled = true;
+
+        yield return new WaitForSeconds(0.17f);
+        R_attackCollider.enabled = false;
+
+        yield return new WaitForSeconds(0.38f);
+        L_attackCollider.enabled = true;
+
+        yield return new WaitForSeconds(0.6f);
+        L_attackCollider.enabled = false;
+
+        yield return new WaitForSeconds(0.75f);
+        nav.isStopped = false;
+        isAttack = false;
+        anim.SetBool("isAttack", false);
+    }
+
+    IEnumerator DoAttack3()
+    {
+        anim.SetBool("isAttack", true);
+        anim.SetFloat("attackIndex", 3f);
+        isAttack = true;
+        nav.isStopped = true;
+
+        yield return new WaitForSeconds(1.35f);
+        L_attackCollider.enabled = true;
+
+        yield return new WaitForSeconds(0.24f);
+        L_attackCollider.enabled = false;
+
+        yield return new WaitForSeconds(1.125f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -342,7 +430,6 @@ public class EnemyA : Enemy
         }
     }
 
-
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -362,6 +449,5 @@ public class EnemyA : Enemy
         //    }
         //}
     }
-
 }
 

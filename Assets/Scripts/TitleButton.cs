@@ -160,32 +160,32 @@ public class TitleButton : MonoBehaviour
 
     public void StartClick()
     {
-        UpdateCSVFile(1, savedata, savefileName);
+        //UpdateCSVFile(1, savedata, savefileName);
 
-        int a = textBoxInfo.Count;
+        //int a = textBoxInfo.Count;
 
-        for (int i = 0; i < a; i++)
-        {
-            UpdateCSVFile(i + 1, textboxdata, textBoxfileName);
-        }
+        //for (int i = 0; i < a; i++)
+        //{
+        //    UpdateCSVFile(i + 1, textboxdata, textBoxfileName);
+        //}
 
-        a = enemyInfo.Count;
-        for (int i = 0; i < a; i++)
-        {
-            UpdateCSVFile(i + 1, enemydata, enemyfileName);
-        }
+        //a = enemyInfo.Count;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    UpdateCSVFile(i + 1, enemydata, enemyfileName);
+        //}
 
-        a = LightInfo.Count;
-        for (int i = 0; i < a; i++)
-        {
-            UpdateCSVFile(i + 1, lightdata, lightfileName);
-        }
+        //a = LightInfo.Count;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    UpdateCSVFile(i + 1, lightdata, lightfileName);
+        //}
 
-        a = objectInfo.Count;
-        for (int i = 0; i < a; i++)
-        {
-            UpdateCSVFile(i + 1, objectdata, objectfileName);
-        }
+        //a = objectInfo.Count;
+        //for (int i = 0; i < a; i++)
+        //{
+        //    UpdateCSVFile(i + 1, objectdata, objectfileName);
+        //}
 
         SceneManager.LoadScene(nextSceneName);
     }

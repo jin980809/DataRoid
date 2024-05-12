@@ -21,18 +21,19 @@ public class Interaction : FadeController
         TextBox = 10,
         PassWord = 11,
         ObjectRotater = 12,
+        ObjectOn = 13,
     };
     public Type interactionType;
 
+    [Space(10)]
     public bool isNonCharging;
     public bool isFade;
+    public bool isTextOn;
     public Player player;
-
 
     [Space(10)]
     [Header("Save Object")]
     public bool isSaveObject;
-
     public int ObjectID;
 
     [Space(10)]
@@ -54,11 +55,13 @@ public class Interaction : FadeController
 
     [Space(10)]
     [Header("Door")]
+    public int needLV;
     public float openSpeed;
     public bool isOpen;
     public GameObject leftDoor;
     public GameObject rightDoor;
     public float openTime;
+    public bool isNotClose;
 
     [Space(10)]
     [Header("SavePoint")]
@@ -93,13 +96,15 @@ public class Interaction : FadeController
 
     [Space(10)]
     [Header("TextBox")]
-
     public TextBox[] textBox;
     public int curTextCount = 0;
     public bool isClick;
     bool isCommunicate = false;
     bool isNextReady = false;
-    bool fDown; // 공격
+    bool isText;
+    bool fDown;
+    public bool textEndObjectOn;
+    public bool isOnce;
 
     [Space(10)]
     [Header("PassWord")]
@@ -110,18 +115,35 @@ public class Interaction : FadeController
     public GameObject canvas;
     public CameraMove p_cameraMove;
     public GameObject v_Cam;
-    private GameObject insPassWordUI;
     public float smoothSpeed;
     public GameObject m_Camera;
 
     [Space(10)]
     [Header("ObjectRotater")]
     public GameObject p_Object;
+    public GameObject data_p_Object;
     private GameObject inst_Object;
+    private GameObject data_inst_Object;
     public Transform ObjectPos;
     public GameObject main_Camera;
     public GameObject rotate_Camera;
+    public Transform rotate_Camera_Pos;
     private ObjectRotater objRotater;
+    public bool hasData;
+
+    [Space(10)]
+    [Header("ObjectOn")]
+    public int o_needUSFData;
+
+    [Header("Active")]
+    public Collider[] a_col;
+    public GameObject[] a_gameObj;
+    public Interaction[] a_interaction;
+
+    [Header("Disable")]
+    public Collider[] d_col;
+    public GameObject[] d_gameObj;
+    public Interaction[] d_interaction;
 
     [Serializable]
     public struct TextBox
@@ -133,27 +155,33 @@ public class Interaction : FadeController
 
     void Awake()
     {
-        if (isSaveObject)
-        {
-            transform.gameObject.SetActive(ObjectManager.Instance.saveObjects[ObjectID]);
-        }
+
     }
 
     void Start()
     {
+        if (isSaveObject)
+        {
+            if (interactionType == Type.ObjectRotater)
+            {
+                hasData = ObjectManager.Instance.saveObjects[ObjectID]; //true 면 데이터 있음 / false면 데이터 없음(이미 습득)
+            }
+            else if(interactionType == Type.ObjectOn && !ObjectManager.Instance.saveObjects[ObjectID])
+            {
+                ObjectOnOff();
+                transform.gameObject.SetActive(false);
+            }
+            else
+            {
+                transform.gameObject.SetActive(ObjectManager.Instance.saveObjects[ObjectID]);
+            }
+        }
+
         curCoolTime = coolTime;
 
         if (interactionType == Type.PassWord)
         {
             passWord = passWordUI.GetComponent<PassWord>();
-            passWord.player = player;
-        }
-
-        if (interactionType == Type.ObjectRotater)
-        {
-            objRotater = p_Object.GetComponent<ObjectRotater>();
-            objRotater.player = player;
-            objRotater.rotation_Camera = rotate_Camera.GetComponent<Camera>();
         }
     }
 
@@ -173,30 +201,37 @@ public class Interaction : FadeController
         {
             if (passWord.isDone)
             {
+                v_Cam.SetActive(true);
+                p_cameraMove.enabled = true;
+
                 transform.gameObject.SetActive(false);
             }
 
-            if (insPassWordUI != null)
-            {
-                if (!insPassWordUI.activeSelf && !isActive)
-                {
-                    v_Cam.SetActive(true);
-                    p_cameraMove.enabled = true;
-                }
-            }
+            //if (!passWordUI.activeSelf && !isActive)
+            //{
+            //    //v_Cam.SetActive(true);
+            //    //p_cameraMove.enabled = true;
+            //}
         }
 
-        if (interactionType == Type.ObjectRotater)
+        if(interactionType == Type.ObjectRotater)
         {
-            if (inst_Object != null)
+            if (hasData == false && isSaveObject)
             {
-                if(!inst_Object.activeSelf)
-                {
-                    rotate_Camera.SetActive(false);
-                    main_Camera.SetActive(true);
-                }
+                ObjectManager.Instance.saveObjects[ObjectID] = false;
             }
         }
+        //if (interactionType == Type.ObjectRotater)
+        //{
+        //    if (inst_Object != null)
+        //    {
+        //        if(!inst_Object.activeSelf)
+        //        {
+        //            rotate_Camera.SetActive(false);
+        //            main_Camera.SetActive(true);
+        //        }
+        //    }
+        //}
     }
 
     void CoolDown()
@@ -216,9 +251,33 @@ public class Interaction : FadeController
         }
     }
 
+    void SaveObject()
+    {
+        if (interactionType == Type.ObjectRotater)
+        {
+            if (hasData == false && isSaveObject)
+            {
+                ObjectManager.Instance.saveObjects[ObjectID] = false;
+            }
+        }
+        else
+        {
+            if (isSaveObject)
+            {
+                ObjectManager.Instance.saveObjects[ObjectID] = false;
+            }
+        }
+    }
+
     public void InteractionResult()
     {
-        switch(interactionType)
+        if (isFade)
+        {
+            FadeInOut();
+        }
+
+
+        switch (interactionType)
         {
             case Type.ElecCharge:
                 ElecCharge();
@@ -272,17 +331,12 @@ public class Interaction : FadeController
             case Type.ObjectRotater:
                 ObjectRotaterOpen();
                 break;
+
+            case Type.ObjectOn:
+                ObjectOn();
+                break;
         }
 
-        if(isSaveObject)
-        {
-            ObjectManager.Instance.saveObjects[ObjectID] = false;
-        }
-
-        if(isFade)
-        {
-            FadeInOut();
-        }
 
         //if(GetComponent<ObjectNameUI>() != null )
         //{
@@ -292,6 +346,7 @@ public class Interaction : FadeController
 
     void ElecCharge()
     {
+        SaveObject();
         player.curHp += healAmount;
 
         if (player.curHp > player.maxHp)
@@ -300,6 +355,7 @@ public class Interaction : FadeController
 
     void ConnectCCTV()
     {
+        SaveObject();
         mainCamera.enabled = false;
         player.enabled = false;
         cameraMove.enabled = false;
@@ -309,8 +365,16 @@ public class Interaction : FadeController
 
     void DoorOpen()
     {
-        OpenDoor();
-        Invoke("CloseDoor", openTime);
+        if (needLV <= ProgressManager.Instance.dataLevel)
+        {
+            SaveObject();
+
+            OpenDoor();
+
+            if(!isNotClose)
+                Invoke("CloseDoor", openTime);
+        }
+
     }
 
     IEnumerator MoveLeftDoor(GameObject c)
@@ -357,6 +421,7 @@ public class Interaction : FadeController
 
     void MovePlayer()
     {
+        SaveObject();
         StartCoroutine(MovePlayer(1.5f));
     }
 
@@ -368,6 +433,7 @@ public class Interaction : FadeController
 
     void ObjectActive()
     {
+        SaveObject();
         activeObj.SetActive(activeTrue);
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
@@ -380,6 +446,7 @@ public class Interaction : FadeController
 
     void GunActive()
     {
+        SaveObject();
         player.hasWeapons[gunIndex] = true;
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
@@ -387,6 +454,7 @@ public class Interaction : FadeController
 
     void GetData()
     {
+        SaveObject();
         MaterialManager.Instance.UFSData += DataCount;
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
@@ -397,30 +465,48 @@ public class Interaction : FadeController
     {
         if (MaterialManager.Instance.UFSData >= needUFSData)
         {
+            SaveObject();
             offLight.SetActive(false);
             OnLight.SetActive(true);
             GetComponent<BoxCollider>().enabled = false;
             LightManager.Instance.lightObjects[lightIndex] = true;
             MaterialManager.Instance.UFSData -= needUFSData;
             ProgressManager.Instance.curData += getData;
+            ObjectOn();
         }
-
+        else
+        {
+            if (isTextOn)
+            {
+                TextOn();
+            }
+        }
     }
 
     void TextOn()
     {
-        StartCoroutine(StartTextBox(textBox[curTextCount].duration));
-        GetComponent<BoxCollider>().enabled = false;
-        if (isClick)
+        if (!isText)
         {
-            player.isCommunicate = true;
-            isCommunicate = true;
+            isText = true;
+            SaveObject();
+
+            StartCoroutine(StartTextBox(textBox[curTextCount].duration));
+
+            if (interactionType == Type.TextBox && isOnce)
+            {
+                GetComponent<BoxCollider>().enabled = false;
+            }
+            if (isClick)
+            {
+                player.isCommunicate = true;
+                isCommunicate = true;
+            }
         }
     }
 
     IEnumerator StartTextBox(float durationTime)
     {
-        UIManager.Instance.uiAnim.SetTrigger("Text_Open");
+        UIManager.Instance.textUIAnim.SetTrigger("Open");
         UIManager.Instance.DroneText.text = textBox[curTextCount].droneText;
 
         if (!isClick)
@@ -433,7 +519,7 @@ public class Interaction : FadeController
     }
     IEnumerator TextBoxOut(float durationTime)
     {
-        UIManager.Instance.uiAnim.SetTrigger("Text_Out");
+        UIManager.Instance.textUIAnim.SetTrigger("Close");
 
         yield return new WaitForSeconds(1f);
         if (curTextCount < textBox.Length - 1)
@@ -444,11 +530,17 @@ public class Interaction : FadeController
         }
         else
         {
+            curTextCount = 0;
+            isText = false;
             if (isClick)
             {
                 player.isCommunicate = false;
                 isCommunicate = false;
                 isNextReady = false;
+                if(textEndObjectOn)
+                {
+                    ObjectOn();
+                }
             }
         }
         yield return null;
@@ -458,7 +550,8 @@ public class Interaction : FadeController
     void PassWordOn()
     {
         if(!passWord.isDone)
-        { 
+        {
+            SaveObject();
             isActive = true;
             player.isCommunicate = true;
             v_Cam.SetActive(false);
@@ -482,15 +575,9 @@ public class Interaction : FadeController
             yield return null; // 다음 프레임까지 대기
         }
 
-        if (insPassWordUI == null)
-        {
-            insPassWordUI = Instantiate(passWordUI, canvas.transform);
-            passWord.interaction = transform.GetComponent<Interaction>();
-        }
-        else
-        {
-            insPassWordUI.SetActive(true);
-        }
+
+        passWordUI.SetActive(true);
+        
 
         yield return null;
     }
@@ -500,16 +587,82 @@ public class Interaction : FadeController
         player.isCommunicate = true;
         main_Camera.SetActive(false);
         rotate_Camera.SetActive(true);
+        rotate_Camera.transform.position = rotate_Camera_Pos.position;
+        rotate_Camera.transform.rotation = rotate_Camera_Pos.rotation;
 
-        if (inst_Object == null)
+        if (hasData)
         {
-            inst_Object = Instantiate(p_Object, ObjectPos.position, ObjectPos.rotation);
+            if (data_inst_Object == null)
+            {
+                data_inst_Object = Instantiate(data_p_Object, ObjectPos.position, data_p_Object.transform.rotation);
+                objRotater = data_inst_Object.GetComponent<ObjectRotater>();
+                objRotater.player = player;
+                objRotater.interaction = GetComponent<Interaction>();
+                objRotater.mainCamera = main_Camera;
+                objRotater.rotation_Camera = rotate_Camera.GetComponent<Camera>();
+            }
+            else
+            {
+                data_inst_Object.SetActive(true);
+            }
         }
         else
         {
-            inst_Object.SetActive(true);
+            if (inst_Object == null)
+            {
+                inst_Object = Instantiate(p_Object, ObjectPos.position, data_p_Object.transform.rotation);
+                objRotater = inst_Object.GetComponent<ObjectRotater>();
+                objRotater.player = player;
+                objRotater.interaction = GetComponent<Interaction>();
+                objRotater.mainCamera = main_Camera;
+                objRotater.rotation_Camera = rotate_Camera.GetComponent<Camera>();
+            }
+            else
+            {
+                inst_Object.SetActive(true);
+            }
         }
+    }
 
-        
+    void ObjectOn()
+    {
+        if (MaterialManager.Instance.UFSData >= o_needUSFData)
+        {
+            MaterialManager.Instance.UFSData -= o_needUSFData;
+
+            ObjectOnOff();
+
+            SaveObject();
+
+            transform.gameObject.SetActive(false);
+        }
+        else
+        {
+            if (isTextOn)
+            {
+                TextOn();
+            }
+        }
+    }
+
+    void ObjectOnOff()
+    {
+        for (int i = 0; i < a_col.Length; i++)
+            a_col[i].enabled = true;
+
+        for (int i = 0; i < a_gameObj.Length; i++)
+            a_gameObj[i].SetActive(true);
+
+        for (int i = 0; i < a_interaction.Length; i++)
+            a_interaction[i].enabled = true;
+
+        for (int i = 0; i < d_col.Length; i++)
+            d_col[i].enabled = false;
+
+        for (int i = 0; i < d_gameObj.Length; i++)
+            d_gameObj[i].SetActive(false);
+
+        for (int i = 0; i < d_interaction.Length; i++)
+            d_interaction[i].enabled = false;
     }
 }

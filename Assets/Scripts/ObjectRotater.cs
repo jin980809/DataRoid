@@ -8,7 +8,9 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
     public float rotateSpeed = 10;
 
     public Camera rotation_Camera;
+    public GameObject mainCamera;
     public Player player;
+    public Interaction interaction;
     bool qDown;
 
     public void OnDrag(PointerEventData eventData)
@@ -16,7 +18,15 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
         float x = eventData.delta.x * Time.deltaTime * rotateSpeed;
         float y = eventData.delta.y * Time.deltaTime * rotateSpeed;
 
-        transform.Rotate(y, -x, 0, Space.World);
+
+        if(rotation_Camera.transform.rotation.eulerAngles.y == 90)
+            transform.Rotate(0, -x, -y, Space.World);
+        else if(rotation_Camera.transform.rotation.eulerAngles.y == 180)
+            transform.Rotate(-y, -x, 0, Space.World);
+        else if (rotation_Camera.transform.rotation.eulerAngles.y == 0)
+            transform.Rotate(y, -x, 0, Space.World);
+        else if(rotation_Camera.transform.rotation.eulerAngles.y == 270)
+            transform.Rotate(0, -x, y, Space.World);
 
         //Debug.Log("Drag");
     }
@@ -46,6 +56,8 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
                         hit.transform.GetComponent<RotateObjectHasData>().getData = true;
                         MaterialManager.Instance.UFSData += 1;
                         UIManager.Instance.OpenObjectGetText("Get Data");
+                        hit.transform.gameObject.SetActive(false);
+                        interaction.hasData = false;
                     }
                 }
             }
@@ -55,6 +67,8 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
     void ExitImage()
     {
         player.isCommunicate = false;
+        mainCamera.SetActive(true);
+        rotation_Camera.gameObject.SetActive(false);
         transform.gameObject.SetActive(false);
     }
 }

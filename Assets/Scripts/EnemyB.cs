@@ -54,9 +54,9 @@ public class EnemyB : Enemy
     {
         //LookAtTarget();
 
-        HackingUI();
+        //HackingUI();
 
-        HackingCoolDown();
+        //HackingCoolDown();
 
         LookAtTarget();
 
@@ -247,7 +247,7 @@ public class EnemyB : Enemy
             {
                 //Debug.Log("Player Attack");
                 Player player = hit.transform.gameObject.GetComponent<Player>();
-                StartCoroutine(player.OnDamage(attackPos.position, shotDamage));
+                StartCoroutine(player.OnDamage(shotDamage));
             }
             else
             {

@@ -25,24 +25,33 @@ public class ProgressManager : MonoBehaviour
     public float maxData;
     public float saveData;
 
+    [Space(10)]
+    [Header("Alarm Data")]
     public int curAlarmData;
     public int maxAlarmData;
     public int saveAlarmData;
 
+    [Space(10)]
+    [Header("Camera Data")]
     public int curCameraData;
     public int maxCameraData;
     public int saveCameraData;
 
+    [Space(10)]
+    [Header("Slient Data")]
     public int curSilentData;
     public int maxSilentData;
     public int saveSilentData;
 
+    [Space(10)]
+    [Header("Network Data")]
     public int curNetworkData;
     public int maxNetworkData;
     public int saveNetworkData;
 
     public Player player;
-
+    public float dataAverage = 0;
+    public int dataLevel;
     public string fileName = "Data";
     List<string[]> data = new List<string[]>();
     string[] tempData;
@@ -83,94 +92,28 @@ public class ProgressManager : MonoBehaviour
 
     void Update()
     {
-        MaxProgress();
-        UpdateMaxProgress();
-        DataGauge();
-        ProgressUnlock();
-    }
-    void UpdateMaxProgress()
-    {
-        if(curData > saveData)
-        {
-            saveData = curData;
-        }
-
-        if (curAlarmData > saveAlarmData)
-        {
-            saveAlarmData = curAlarmData;
-        }
-        if (curCameraData > saveCameraData)
-        {
-            saveCameraData = curCameraData;
-        }
-        if (curSilentData > saveSilentData)
-        {
-            saveSilentData = curSilentData;
-        }
-        if (curNetworkData > saveNetworkData)
-        {
-            saveNetworkData = curNetworkData;
-        }
+        DataAverage();
     }
 
-    void MaxProgress()
+    void DataAverage()
     {
-        if (maxData < curData)
-        {
-            curData = maxData;
-        }
+        dataAverage = (curAlarmData + curCameraData + curNetworkData + curSilentData) / 4f;
 
-        if (maxAlarmData < curAlarmData)
+        if(dataAverage <= 4f)
         {
-            curAlarmData = maxAlarmData;
+            dataLevel = 0;
         }
-        if (maxCameraData < curCameraData)
+        else if(dataAverage > 4 && dataAverage <= 34f)
         {
-            curCameraData = maxCameraData;
+            dataLevel = 1;
         }
-        if (maxSilentData < curSilentData)
+        else if(dataAverage > 34 && dataAverage <= 69)
         {
-            curSilentData = maxSilentData;
+            dataLevel = 2;
         }
-        if (maxNetworkData < curNetworkData)
+        else
         {
-            curNetworkData = maxNetworkData;
-        }
-    }
-
-    void DataGauge()
-    {
-        UIManager.Instance.DataGauge.fillAmount = ((curData / 100f) * 0.45f) + 0.18f;
-        UIManager.Instance.Datatext.text = (int)curData + "%";
-    }
-
-    void ProgressUnlock()
-    {
-        //player.qSkillOn = curProgress >= 15 ? true : false;
-
-        if (curData >= 10f)
-        {
-            player.sheildDamage = 3.7f;
-        }
-
-        if (curData >= 10f)
-        {
-            player.qSkillOn = true;
-        }
-
-        if (curData >= 33f)
-        {
-            player.sheildDamage = 4f;
-        }
-
-        if (curData >= 66f)
-        {
-            player.sheildDamage = 5.5f;
-        }
-
-        if (curData >= 100f)
-        {
-            player.sheildDamage = 6f;
+            dataLevel = 3;
         }
     }
 

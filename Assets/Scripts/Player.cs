@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
     bool eDown; // 손전등 t
     bool qDown; // esc
     bool skDown1; // 스킬1 Q
-    bool skDown2; // 스킬2 E
+    bool skDown2; // 인벤토리
     bool mDown; // 맵 크기
     bool vDown; // 오브젝트 찾기
 
@@ -111,7 +111,7 @@ public class Player : MonoBehaviour
     private float horBlend;
     private float fireDelay;
     private float interactionTime;
-    private float curHackingTime = 0f;
+    //private float curHackingTime = 0f;
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -125,14 +125,22 @@ public class Player : MonoBehaviour
     Rigidbody rigid;
     RectTransform miniMap;
 
+    //[Space(10)]
+    //[Header("Hacking Skill")]
+    //public float hackingCoolTime;
+    //public int hackingNum;
+    //public float curHackingCoolTime;
+    //public float curHackingNum;
+    //public GameObject hackingEnemyInfo;
+    //public float hackingTime;
+
     [Space(10)]
-    [Header("Hacking Skill")]
-    public float hackingCoolTime;
-    public int hackingNum;
-    public float curHackingCoolTime;
-    public float curHackingNum;
-    public GameObject hackingEnemyInfo;
-    public float hackingTime;
+    [Header("Granade")]
+    public GameObject granade;
+    GameObject instGranade;
+    public float granadeCoolTime;
+    float curGranadeCoolTime = 0;
+    bool isGranade;
 
     [Space(10)]
     [Header("EMP Skill")]
@@ -162,7 +170,7 @@ public class Player : MonoBehaviour
     List<ScriptableRendererFeature> rendererFeatures;
     ScriptableRendererData data;
     Animator anim;
-
+    CrosshairDemoPlayerRecoil recoil;
     Coroutine meleeAttackCor;
 
     //public AimMovement aimMove;
@@ -172,12 +180,8 @@ public class Player : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         miniMap = UIManager.Instance.MiniMap.GetComponent<RectTransform>();
-        curHackingNum = 0;
-
-
-        data = GetRendererData(1);
-        rendererFeatures = data.rendererFeatures;
-        rendererFeatures[0].SetActive(false);
+        recoil = GetComponent<CrosshairDemoPlayerRecoil>();
+        //curHackingNum = 0;
     }
 
     void Update()
@@ -190,7 +194,7 @@ public class Player : MonoBehaviour
 
         Shot();
 
-        MeleeAttack();
+        //MeleeAttack();
 
         Dodge();
 
@@ -205,7 +209,8 @@ public class Player : MonoBehaviour
 
         FlashLightOnOff();
 
-        EnemyHacking();
+        //EnemyHacking();
+        Granade();
 
         Swap();
 
@@ -213,7 +218,7 @@ public class Player : MonoBehaviour
 
         OCMap();
 
-        HackingCoolDown();
+        //HackingCoolDown();
 
         EnemysStun();
 
@@ -235,7 +240,7 @@ public class Player : MonoBehaviour
         dDown = Input.GetButton("Dodge");
         gDown = Input.GetButtonDown("GunOn");
         lDown = Input.GetButton("Reload");
-        aDown = (isSubdue || isMeleeAttackReady) ? Input.GetButtonDown("Interaction") : Input.GetButton("Interaction");
+        aDown = /*(isSubdue || isMeleeAttackReady) ? Input.GetButtonDown("Interaction") :*/ Input.GetButton("Interaction");
         iDown = Input.GetButtonDown("Inventory");
         eDown = Input.GetButtonDown("FlashLight");
         qDown = Input.GetButtonDown("Cancel");
@@ -254,7 +259,7 @@ public class Player : MonoBehaviour
 
         if (curHp <= 0)
         {
-            GameManager.Instance.PlayerDead();
+            //GameManager.Instance.PlayerDead();
         }
     }
 
@@ -284,7 +289,7 @@ public class Player : MonoBehaviour
         }
 
         moveVec = new Vector3(hAxis, 0f, vAxis).normalized;
-        if (moveVec == Vector3.zero && !isDodge || (isInteraction || isSubdue || isMeleeAttack)) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
+        if (moveVec == Vector3.zero && !isDodge || (isInteraction || isSubdue || isMeleeAttack || isCommunicate || isInventoryOpen)) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
 
         float targetRotation = Mathf.Atan2(moveVec.x, moveVec.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
 
@@ -385,7 +390,6 @@ public class Player : MonoBehaviour
 
     void GunOnMove()
     {
-        UIManager.Instance.aim.SetActive(isGunOn);
         if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun && hasWeapons[lastSwapWeaponIndex] && !isMeleeAttack && !isCommunicate)
         {
             isGunOn = !isGunOn;
@@ -463,6 +467,7 @@ public class Player : MonoBehaviour
 
         if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
+            recoil.Shot();
             isShotEnd = false;
             //aimMove.MoveAim();
             fireDelay = 0;
@@ -484,7 +489,7 @@ public class Player : MonoBehaviour
                     {
                         case 9://Enemy
                             SpawnHitEffect(hit.point, 1);
-                            enemy.HitEffect(hit.point);
+                            //enemy.HitEffect(hit.point);
                             break;
 
                         case 6: //Enviroment
@@ -496,16 +501,9 @@ public class Player : MonoBehaviour
                             break;
                     }
 
-                    if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
+                    if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath && hit.transform.gameObject.layer == 9)
                     {
-                        if (enemy.sheild <= 0)
-                        {
-                            enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
-                        }
-                        else
-                        {
-                            enemy.OnDamage(weapon.damage * sheildDiscountRate, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
-                        }
+                        enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
                     }
                 }
             }
@@ -537,14 +535,8 @@ public class Player : MonoBehaviour
                         {
                             Debug.Log(hitArea(hit.collider.transform.gameObject));
 
-                            if (enemy.sheild <= 0)
-                            {
-                                enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
-                            }
-                            else
-                            {
-                                enemy.OnDamage(weapon.damage * sheildDiscountRate, playerShotPos, hitArea(hit.collider.transform.gameObject), sheildDamage);
-                            }
+                            enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+
 
                             Debug.Log(isEnemyHitArea(hit.collider.transform.gameObject));
                         }
@@ -707,12 +699,12 @@ public class Player : MonoBehaviour
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
             && /*MaterialManager.Instance.Ammo > 0 &&*/ !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
-            if (equipWeaponIndex == 0 && MaterialManager.Instance.RifleAmmo <= 0)
-                return;
-            if (equipWeaponIndex == 1 && MaterialManager.Instance.HandgunAmmo <= 0)
-                return;
-            if (equipWeaponIndex == 2 && MaterialManager.Instance.ShotgunAmmo <= 0)
-                return;
+            //if (equipWeaponIndex == 0 /*&& MaterialManager.Instance.RifleAmmo <= 0*/)
+            //    return;
+            //if (equipWeaponIndex == 1 /*&& MaterialManager.Instance.HandgunAmmo <= 0*/)
+            //    return;
+            //if (equipWeaponIndex == 2 /*&& MaterialManager.Instance.ShotgunAmmo <= 0*/)
+            //    return;
 
             isReload = true;
             isZoom = false;
@@ -729,48 +721,50 @@ public class Player : MonoBehaviour
 
         if (isReload)
         {
-            if (equipWeaponIndex == 0)
-            { 
-                if (MaterialManager.Instance.RifleAmmo < weapon.maxAmmo - weapon.curAmmo)
-                {
-                    weapon.curAmmo += MaterialManager.Instance.RifleAmmo;
-                    MaterialManager.Instance.RifleAmmo = 0;
-                }
-                else
-                {
-                    MaterialManager.Instance.RifleAmmo -= (weapon.maxAmmo - weapon.curAmmo);
-                    weapon.curAmmo = weapon.maxAmmo;
+            curHp -= weapon.reloadCost;
+            weapon.curAmmo = weapon.maxAmmo;
+            //if (equipWeaponIndex == 0)
+            //{ 
+            //    if (MaterialManager.Instance.RifleAmmo < weapon.maxAmmo - weapon.curAmmo)
+            //    {
+            //        weapon.curAmmo += MaterialManager.Instance.RifleAmmo;
+            //        MaterialManager.Instance.RifleAmmo = 0;
+            //    }
+            //    else
+            //    {
+            //        MaterialManager.Instance.RifleAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+            //        weapon.curAmmo = weapon.maxAmmo;
 
-                }
-            }
-            else if (equipWeaponIndex == 1)
-            {
-                if (MaterialManager.Instance.HandgunAmmo < weapon.maxAmmo - weapon.curAmmo)
-                {
-                    weapon.curAmmo += MaterialManager.Instance.HandgunAmmo;
-                    MaterialManager.Instance.HandgunAmmo = 0;
-                }
-                else
-                {
-                    MaterialManager.Instance.HandgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
-                    weapon.curAmmo = weapon.maxAmmo;
+            //    }
+            //}
+            //else if (equipWeaponIndex == 1)
+            //{
+            //    if (MaterialManager.Instance.HandgunAmmo < weapon.maxAmmo - weapon.curAmmo)
+            //    {
+            //        weapon.curAmmo += MaterialManager.Instance.HandgunAmmo;
+            //        MaterialManager.Instance.HandgunAmmo = 0;
+            //    }
+            //    else
+            //    {
+            //        MaterialManager.Instance.HandgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+            //        weapon.curAmmo = weapon.maxAmmo;
 
-                }
-            }
-            else if (equipWeaponIndex == 2)
-            {
-                if (MaterialManager.Instance.ShotgunAmmo < weapon.maxAmmo - weapon.curAmmo)
-                {
-                    weapon.curAmmo += MaterialManager.Instance.ShotgunAmmo;
-                    MaterialManager.Instance.ShotgunAmmo = 0;
-                }
-                else
-                {
-                    MaterialManager.Instance.ShotgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
-                    weapon.curAmmo = weapon.maxAmmo;
+            //    }
+            //}
+            //else if (equipWeaponIndex == 2)
+            //{
+            //    if (MaterialManager.Instance.ShotgunAmmo < weapon.maxAmmo - weapon.curAmmo)
+            //    {
+            //        weapon.curAmmo += MaterialManager.Instance.ShotgunAmmo;
+            //        MaterialManager.Instance.ShotgunAmmo = 0;
+            //    }
+            //    else
+            //    {
+            //        MaterialManager.Instance.ShotgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+            //        weapon.curAmmo = weapon.maxAmmo;
 
-                }
-            }
+            //    }
+            //}
         }
 
         //가지고 있는 총알개수가 maxAmmo보다 적으면 가지고 있는 총알 개수만 curAmmo에 장전
@@ -797,8 +791,8 @@ public class Player : MonoBehaviour
     {
         //Debug.DrawLine(ShootPos.position, transform.forward , Color.green);
         int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("PhysicsEnemy")) + (1 << LayerMask.NameToLayer("Glass")) + (1 << LayerMask.NameToLayer("Object"));
-
-        if (Physics.Raycast(borderPos.position, targetDirection, 0.7f, layerMask))
+        RaycastHit hit;
+        if (Physics.SphereCast(borderPos.position, 0.15f, targetDirection, out hit, 0.8f, layerMask))
         {
             isBorder = true;
             //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
@@ -815,13 +809,13 @@ public class Player : MonoBehaviour
     {
         if (other.CompareTag("Attack"))
         {
-            if (!isDamage && !isSubdue)
+            if (!isDamage && !isSubdue && !IsObstacleBetween(transform.position, other.transform.position, LayerMask.GetMask("Enviroment")))
             {
-                Attack attack = other.GetComponent<Attack>();
+                Attack attack = other.transform.GetComponent<Attack>();
 
                 //Debug.Log(curHp);
 
-                StartCoroutine(OnDamage(new Vector3(other.transform.position.x, 0.5f, other.transform.position.z), attack.curDamage));
+                StartCoroutine(OnDamage(attack.curDamage));
                 if(other.transform.GetComponentInParent<EnemyB>() != null)
                 {
                     //other.transform.GetComponentInParent<EnemyB>().isAimming = false;
@@ -845,27 +839,28 @@ public class Player : MonoBehaviour
         
     }
 
-    public void Damage(Vector3 enemyPos, float damage)
+    public void Damage(float damage)
     {
         if (!isDamage)
         {
-            StartCoroutine(OnDamage(enemyPos, damage));
+            StartCoroutine(OnDamage(damage));
         }
     }
 
-    public IEnumerator OnDamage(Vector3 enemyPos, float damage)
+    public IEnumerator OnDamage(float damage)
     {
         isDamage = true;
         isStun = false;
         curHp -= damage;
-        Vector3 playerDir = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-        Vector3 EnemyDir = new Vector3(enemyPos.x, enemyPos.y + 1f, enemyPos.z);
-        damageEffect.transform.rotation = Quaternion.LookRotation((EnemyDir - playerDir).normalized);
-        damageEffect.SetActive(true);
+        anim.SetTrigger("Hit");
+        //Vector3 playerDir = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        //Vector3 EnemyDir = new Vector3(enemyPos.x, enemyPos.y + 1f, enemyPos.z);
+        //damageEffect.transform.rotation = Quaternion.LookRotation((EnemyDir - playerDir).normalized);
+        //damageEffect.SetActive(true);
 
-        yield return new WaitForSeconds(0.01f);
+        yield return new WaitForSeconds(0.1f);
         isDamage = false;
-        damageEffect.SetActive(false);
+        //damageEffect.SetActive(false);
         yield return null;
     }
 
@@ -876,60 +871,70 @@ public class Player : MonoBehaviour
 
         if (Physics.Raycast(_mainCamera.transform.position + (_mainCamera.transform.forward * Vector3.Distance(ShootPos.transform.position, _mainCamera.transform.position)), _mainCamera.transform.forward, out hit, 2, LayerMask.GetMask("Interaction")))
         {
-            interactionObj = hit.transform.GetComponent<Interaction>();
-            isMeleeAttackReady = false;
-            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
+            if (!IsObstacleBetween(ShootPos.transform.position, hit.point, LayerMask.GetMask("Enviroment")))
             {
-                if(interactionObj.isNonCharging)
+                interactionObj = hit.transform.GetComponent<Interaction>();
+                isMeleeAttackReady = false;
+
+
+                UIManager.Instance.InteractionButtonImage(!isCommunicate);
+
+
+                if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
                 {
-                    interactionObj.InteractionResult();
+                    if (interactionObj.isNonCharging)
+                    {
+                        interactionObj.InteractionResult();
+                    }
+                    else
+                    {
+                        isInteraction = true;
+                        isZoom = false;
+                    }
                 }
                 else
                 {
-                    isInteraction = true;
-                    isZoom = false;
-                }
-            }
-            else
-            {
-                interactionTime = 0;
-                isInteraction = false;
-
-                //if (interactionObj.isCoolTime)
-                //    Debug.Log("CoolTime");
-            }
-
-            if (isInteraction && !interactionObj.isNonCharging)
-            {
-                interactionTime += Time.deltaTime;
-
-                moveVec = Vector3.zero;
-                //Debug.Log(interactionObj.name + " " + interactionTime);
-
-                if (interactionTime >= interactionObj.interactionTime)
-                {
-                    interactionObj.InteractionResult();
-                    interactionTime = 0;
-                    interactionObj.isCoolTime = true;
-                    isInteraction = false;
-                    //Debug.Log("end");
-                }
-
-                if (isDamage)
-                {
                     interactionTime = 0;
                     isInteraction = false;
-                }
-            }
 
-            if (!interactionObj.isNonCharging)
-            {
-                UIManager.Instance.InteractionGauge.fillAmount = interactionTime / interactionObj.interactionTime;
+                    //if (interactionObj.isCoolTime)
+                    //    Debug.Log("CoolTime");
+                }
+
+                if (isInteraction && !interactionObj.isNonCharging)
+                {
+                    interactionTime += Time.deltaTime;
+
+                    moveVec = Vector3.zero;
+                    //Debug.Log(interactionObj.name + " " + interactionTime);
+
+                    if (interactionTime >= interactionObj.interactionTime)
+                    {
+                        interactionObj.InteractionResult();
+                        interactionTime = 0;
+                        interactionObj.isCoolTime = true;
+                        isInteraction = false;
+                        //Debug.Log("end");
+                    }
+
+                    if (isDamage)
+                    {
+                        interactionTime = 0;
+                        isInteraction = false;
+                    }
+                }
+
+                if (!interactionObj.isNonCharging)
+                {
+                    UIManager.Instance.InteractionGauge.fillAmount = interactionTime / interactionObj.interactionTime;
+                }
             }
         }
         else
         {
             isMeleeAttackReady = true;
+            UIManager.Instance.InteractionButtonImage(false);
+
         }
     }
 
@@ -947,86 +952,107 @@ public class Player : MonoBehaviour
         UIManager.Instance.detectCount.text = "Interaction Detect : " + count;
     }
 
-    void EnemyHacking()
-    {
-        RaycastHit hit1;
-        //RaycastHit hit2;
+    //void EnemyHacking()
+    //{
+    //    RaycastHit hit1;
+    //    //RaycastHit hit2;
 
-        if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
-        {
-            qToggle = !qToggle;
-            if (rendererFeatures == null || rendererFeatures.Count <= 0) return;
-            rendererFeatures[0].SetActive(qToggle);
-        }
+    //    if(skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+    //    {
+    //        qToggle = !qToggle;
+    //        if (rendererFeatures == null || rendererFeatures.Count <= 0) return;
+    //        rendererFeatures[0].SetActive(qToggle);
+    //    }
 
 
-        if (qToggle && fDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
-        {
-            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit1, 20) && hackingEnemyInfo == null && isEnemyHitArea(hit1.transform.gameObject))
-            {
-                if (hit1.transform.GetComponent<Enemy>().sheild > 0 && !hit1.transform.GetComponent<Enemy>().isHacking && curHackingNum > 0)
-                {
-                    //Debug.Log(hit1.transform.tag);
-                    hackingEnemyInfo = hit1.transform.gameObject;
-                    isHacking = true;
-                }
-                else
-                {
-                    //실드 이미 없다고 하는 이미지나 이팩트 택스트 나타내기
-                }
-            }
+    //    if (qToggle && fDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && qSkillOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+    //    {
+    //        if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit1, 20) && hackingEnemyInfo == null && isEnemyHitArea(hit1.transform.gameObject))
+    //        {
+    //            if (hit1.transform.GetComponent<Enemy>().sheild > 0 && !hit1.transform.GetComponent<Enemy>().isHacking && curHackingNum > 0)
+    //            {
+    //                //Debug.Log(hit1.transform.tag);
+    //                hackingEnemyInfo = hit1.transform.gameObject;
+    //                isHacking = true;
+    //            }
+    //            else
+    //            {
+    //                //실드 이미 없다고 하는 이미지나 이팩트 택스트 나타내기
+    //            }
+    //        }
 
-            if (isHacking)
-            {
-                curHackingTime += Time.deltaTime;
+    //        if (isHacking)
+    //        {
+    //            curHackingTime += Time.deltaTime;
 
-                if (curHackingTime >= hackingTime)
-                {
-                    curHackingTime = 0;
-                    curHackingNum--;
-                    hackingEnemyInfo.GetComponent<Enemy>().isHacking = true;
-                    hackingEnemyInfo.GetComponent<Enemy>().CreateEnemyUI();
-                    isHacking = false;
-                }
+    //            if (curHackingTime >= hackingTime)
+    //            {
+    //                curHackingTime = 0;
+    //                curHackingNum--;
+    //                hackingEnemyInfo.GetComponent<Enemy>().isHacking = true;
+    //                hackingEnemyInfo.GetComponent<Enemy>().CreateEnemyUI();
+    //                isHacking = false;
+    //            }
 
-                if (isDamage)
-                {
-                    if (isDamage)
-                    {
-                        curHackingTime = 0;
-                        hackingEnemyInfo = null;
-                        isHacking = false;
-                    }
-                }
-            }
-            else
-            {
-                curHackingTime = 0;
-                hackingEnemyInfo = null;
-                isHacking = false;
-            }
-        }
-        else
-        {
-            curHackingTime = 0;
-            hackingEnemyInfo = null;
-            isHacking = false;
-        }
+    //            if (isDamage)
+    //            {
+    //                if (isDamage)
+    //                {
+    //                    curHackingTime = 0;
+    //                    hackingEnemyInfo = null;
+    //                    isHacking = false;
+    //                }
+    //            }
+    //        }
+    //        else
+    //        {
+    //            curHackingTime = 0;
+    //            hackingEnemyInfo = null;
+    //            isHacking = false;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        curHackingTime = 0;
+    //        hackingEnemyInfo = null;
+    //        isHacking = false;
+    //    }
 
-        UIManager.Instance.HackingGauge.value = curHackingTime / hackingTime;
-    }
+    //    UIManager.Instance.HackingGauge.value = curHackingTime / hackingTime;
+    //}
 
-    void HackingCoolDown()
-    {
-        if(curHackingNum < hackingNum)
-        {
+    //void HackingCoolDown()
+    //{
+    //    if(curHackingNum < hackingNum)
+    //    {
             
-            curHackingCoolTime += Time.deltaTime;
-            if(curHackingCoolTime > hackingCoolTime)
-            {
-                curHackingCoolTime = 0;
-                curHackingNum++;
-            }
+    //        curHackingCoolTime += Time.deltaTime;
+    //        if(curHackingCoolTime > hackingCoolTime)
+    //        {
+    //            curHackingCoolTime = 0;
+    //            curHackingNum++;
+    //        }
+    //    }
+    //}
+
+    void Granade()
+    {
+        curGranadeCoolTime += Time.deltaTime;
+
+        if(curGranadeCoolTime >= granadeCoolTime)
+        {
+            isGranade = true;
+            curGranadeCoolTime = granadeCoolTime;
+        }
+
+        if (isGranade && skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen  && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        {
+            curGranadeCoolTime = 0;
+            isGranade = false;
+            instGranade = Instantiate(granade);
+            instGranade.transform.position = ShootPos.position;
+            Rigidbody granadeRig = instGranade.GetComponent<Rigidbody>();
+            granadeRig.AddForce(transform.forward * 10, ForceMode.Impulse);
         }
     }
 
@@ -1087,20 +1113,28 @@ public class Player : MonoBehaviour
                 Time.timeScale = 1.0f;
                 cameraArm.enabled = !isInventoryOpen;
                 UIManager.Instance.inventoryPanel.SetActive(isInventoryOpen);
+                UIManager.Instance.skillButtonUIAnim.SetTrigger("PlayerSkill_Close");
             }
         }
     }
 
     void newOCInventory()
     {
-        if (qDown && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if (skDown2 && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn)
         {
             if (!isInventoryOpen)
             {
                 isInventoryOpen = true;
                 //Time.timeScale = 0f;
                 cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.uiAnim.SetTrigger("Menu_In");
+                UIManager.Instance.mainUIAnim.SetTrigger("Close");
+                UIManager.Instance.menuUIAnim.SetTrigger("Open");
+
+                for (int i = 0; i < UIManager.Instance.fade_Ins.Length; i++)
+                {
+                    UIManager.Instance.fade_Ins[i].StartFadeIn();
+                }
+
             }
 
             else
@@ -1108,7 +1142,9 @@ public class Player : MonoBehaviour
                 isInventoryOpen = false;
                 //Time.timeScale = 1.0f;
                 cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.uiAnim.SetTrigger("Menu_Out");
+                UIManager.Instance.skillButtonUIAnim.SetTrigger("PlayerSkill_Close");
+                UIManager.Instance.mainUIAnim.SetTrigger("Open");
+                UIManager.Instance.menuUIAnim.SetTrigger("Close");
             }
         }
     }
@@ -1219,7 +1255,6 @@ public class Player : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, 5);
 
         Gizmos.DrawRay(_mainCamera.transform.position + (_mainCamera.transform.forward * Vector3.Distance(ShootPos.transform.position, _mainCamera.transform.position)), _mainCamera.transform.forward * 20);
-        
     }
 
     public void SetActiveRendererFeature<T>(bool active) where T : ScriptableRendererFeature

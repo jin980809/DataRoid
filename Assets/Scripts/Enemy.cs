@@ -13,13 +13,10 @@ public class Enemy : MonoBehaviour
 
     public NavMeshAgent nav;
     public Rigidbody rigid;
-    public BoxCollider attackCollider;
+    public BoxCollider L_attackCollider;
+    public BoxCollider R_attackCollider;
     public Animator anim;
     public CapsuleCollider damageCollider;
-    public Material gLight;
-    public Material oLight;
-    public Material rLight;
-    public SkinnedMeshRenderer headLight;
 
     [Space(10f)]
     public bool isAttack = false;
@@ -58,29 +55,27 @@ public class Enemy : MonoBehaviour
     }
     public dropItem[] dropItems;
 
-
-
-    public GameObject enemyPrefab; // 프리팹으로 사용할 적 UI
-    public Canvas canvas; // UI가 속한 캔버스
-    public GameObject enemyUI; // 생성된 적 UI
+    //public GameObject enemyPrefab; // 프리팹으로 사용할 적 UI
+    //public Canvas canvas; // UI가 속한 캔버스
+    //public GameObject enemyUI; // 생성된 적 UI
     RectTransform rectTransform; // RectTransform 컴포넌트
     public Camera mainCamera;
     public float rotateRate = 1;
 
     [Space(10f)]
-    [Header("Hacking")]
-    public Transform[] parts;
-    private bool[] isHitStackDone = new bool[6]; // 0:head 1:Body 2:Arm 3:Leg
+    [Header("Parts")]
+    //public Transform[] parts;
+    private bool[] isHitStackDone = new bool[6];
     private int[] partsHitStack = new int[6];
-    private Slider sheildUI;
-    private Slider hackingDurationUI;
-    private float curHackingDuration;
-    public float hackingDuration;
+    public GameObject[] partsEffect;
+    //private Slider sheildUI;
+    //private Slider hackingDurationUI;
+    //private float curHackingDuration;
+    //public float hackingDuration;
 
     [Space(10f)]
     public Coroutine attackCoroutine;
     public ParticleSystem cps;
-    public bool hasUSFData;
     public bool isMeleeDamage;
 
     [Space(10f)]
@@ -93,8 +88,8 @@ public class Enemy : MonoBehaviour
 
     [Space(10f)]
     [Header("Data")]
-    public bool hasData;
-    public int getDataAmount;
+    public bool getData = false;
+
 
     public Coroutine DoSubdue = null;
     public float subdueCoolTime;
@@ -124,7 +119,7 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         //curHealth = maxHealth;
-        rectTransform = enemyPrefab.GetComponent<RectTransform>();
+        //rectTransform = enemyPrefab.GetComponent<RectTransform>();
         EnemyInitialization();
         curSubdueProgress = subdueProgress;
     }
@@ -147,7 +142,8 @@ public class Enemy : MonoBehaviour
         isAttack = false;
         isChase = false;
         isShotChase = false;
-        attackCollider.enabled = false;
+        L_attackCollider.enabled = false;
+        R_attackCollider.enabled = false;
         StartCoroutine(StunOut(parrying, time));
         if (attackCoroutine != null)
         {
@@ -191,7 +187,8 @@ public class Enemy : MonoBehaviour
         curHealth = maxHealth;
         maxSheild = float.Parse(EnemyManager.Instance.enemyInfo[ID]["Sheild"] + "");
         sheild = maxSheild;
-        attackCollider.gameObject.GetComponent<Attack>().damage = int.Parse(EnemyManager.Instance.enemyInfo[ID]["Damage"] + "");
+        L_attackCollider.gameObject.GetComponent<Attack>().damage = int.Parse(EnemyManager.Instance.enemyInfo[ID]["Damage"] + "");
+        R_attackCollider.gameObject.GetComponent<Attack>().damage = int.Parse(EnemyManager.Instance.enemyInfo[ID]["Damage"] + "");
     }
 
     public void HitEffect(Vector3 spawnPosition)
@@ -202,40 +199,48 @@ public class Enemy : MonoBehaviour
 
     void StackHitArea(int hitArea, float damage)
     {
-        switch(hitArea)
+        if (!isDeath)
         {
-            case -1:
-                break;
+            switch (hitArea)
+            {
+                case -1:
+                    break;
 
-
-            case 0:
-                curHealth /= 2f;
-                Debug.Log("Head 5");
-                break;
-            case 1:
-                curHealth -= damage * 4;
-                Debug.Log("Body 5");
-                break;
-            case 2:
-                GetComponentInChildren<Attack>().curDamage -= GetComponentInChildren<Attack>().damage * 0.25f;
-                Debug.Log("L Arm 5");
-                break;
-            case 3:
-                GetComponentInChildren<Attack>().curDamage -= GetComponentInChildren<Attack>().damage * 0.25f;
-                Debug.Log("R Arm 5");
-                break;
-            case 4:
-                speedDiscountRate -= 0.25f;
-                Debug.Log("L Leg 5");
-                break;
-            case 5:
-                speedDiscountRate -= 0.25f;
-                Debug.Log("R Leg 5");
-                break;
+                case 0:
+                    curHealth /= 2f;
+                    partsEffect[0].SetActive(true);
+                    Debug.Log("Head 5");
+                    break;
+                case 1:
+                    curHealth -= damage * 4;
+                    partsEffect[1].SetActive(true);
+                    Debug.Log("Body 5");
+                    break;
+                case 2:
+                    L_attackCollider.gameObject.GetComponent<Attack>().curDamage -= GetComponentInChildren<Attack>().damage * 0.25f;
+                    partsEffect[2].SetActive(true);
+                    Debug.Log("L Arm 5");
+                    break;
+                case 3:
+                    R_attackCollider.gameObject.GetComponent<Attack>().curDamage -= GetComponentInChildren<Attack>().damage * 0.25f;
+                    partsEffect[3].SetActive(true);
+                    Debug.Log("R Arm 5");
+                    break;
+                case 4:
+                    speedDiscountRate -= 0.25f;
+                    partsEffect[4].SetActive(true);
+                    Debug.Log("L Leg 5");
+                    break;
+                case 5:
+                    speedDiscountRate -= 0.25f;
+                    partsEffect[5].SetActive(true);
+                    Debug.Log("R Leg 5");
+                    break;
+            }
         }
     }
 
-    public void OnDamage(float damage, Vector3 playerShotPos, int hitArea, float sheildDamage)
+    public void OnDamage(float damage, Vector3 playerShotPos, int hitArea)
     {
         Debug.Log(hitArea);
 
@@ -258,15 +263,17 @@ public class Enemy : MonoBehaviour
         //}
         curHealth -= damage;
 
-
-        if (!isHitStackDone[hitArea])
+        if (hitArea != -1)
         {
-            partsHitStack[hitArea]++;
-
-            if(partsHitStack[hitArea] >= 5)
+            if (!isHitStackDone[hitArea])
             {
-                isHitStackDone[hitArea] = true;
-                StackHitArea(hitArea, damage);
+                partsHitStack[hitArea]++;
+
+                if (partsHitStack[hitArea] >= 5)
+                {
+                    isHitStackDone[hitArea] = true;
+                    StackHitArea(hitArea, damage);
+                }
             }
         }
 
@@ -293,21 +300,17 @@ public class Enemy : MonoBehaviour
             this.gameObject.layer = 10;
             isDeath = true;
             nav.isStopped = true;
+            nav.speed = 0;
             anim.SetTrigger("doDie");
             DropItems();
             StartCoroutine(Dead());
         }
     }
 
-    IEnumerator Dead()
+    public IEnumerator Dead()
     {
         yield return new WaitForSeconds(3f);
         transform.gameObject.SetActive(false);
-        if (hasUSFData)
-        {
-            UIManager.Instance.OpenObjectGetText("Get Data");
-            MaterialManager.Instance.UFSData += 1;
-        }
     }
 
     IEnumerator OnDamageOut()
@@ -317,21 +320,6 @@ public class Enemy : MonoBehaviour
         isHit = false;
     }
 
-    public void SwitchLight()
-    {
-        if (curHealth / maxHealth > 0.5f)
-        {
-            headLight.material = gLight;
-        }
-        else if (curHealth / maxHealth > 0.3f)
-        {
-            headLight.material = oLight;
-        }
-        else
-        {
-            headLight.material = rLight;
-        }
-    }
 
     public void DropItems()
     {
@@ -364,112 +352,112 @@ public class Enemy : MonoBehaviour
         return Success;
     }
 
-    public void HackingUI()
-    {
-        if (isHacking)
-        {
-            //Debug.Log(IsEnemyVisible());
-            if (IsEnemyVisible())
-            {
-                UpdateUIPosition();
-                UpdateUIScale();
-                if (enemyUI != null)
-                    enemyUI.SetActive(true);
-            }
-            else
-            {
-                enemyUI.SetActive(false);
-            }
+    //public void HackingUI()
+    //{
+    //    if (isHacking)
+    //    {
+    //        //Debug.Log(IsEnemyVisible());
+    //        if (IsEnemyVisible())
+    //        {
+    //            UpdateUIPosition();
+    //            UpdateUIScale();
+    //            if (enemyUI != null)
+    //                enemyUI.SetActive(true);
+    //        }
+    //        else
+    //        {
+    //            enemyUI.SetActive(false);
+    //        }
 
-        }
-        else
-        {
-            if (enemyUI != null)
-            {
-                enemyUI.SetActive(false);
-            }
-        }
-    }
+    //    }
+    //    else
+    //    {
+    //        if (enemyUI != null)
+    //        {
+    //            enemyUI.SetActive(false);
+    //        }
+    //    }
+    //}
 
-    public void HackingCoolDown()
-    {
-        if (isHacking)
-        {
-            curHackingDuration -= Time.deltaTime;
-            hackingDurationUI.value = curHackingDuration / hackingDuration;
-            sheildUI.value = sheild / maxSheild;
-        }
+    //public void HackingCoolDown()
+    //{
+    //    if (isHacking)
+    //    {
+    //        curHackingDuration -= Time.deltaTime;
+    //        hackingDurationUI.value = curHackingDuration / hackingDuration;
+    //        sheildUI.value = sheild / maxSheild;
+    //    }
 
-        if (curHackingDuration <= 0)
-        {
-            isHacking = false;
-            curHackingDuration = hackingDuration;
-        }
-    }
+    //    if (curHackingDuration <= 0)
+    //    {
+    //        isHacking = false;
+    //        curHackingDuration = hackingDuration;
+    //    }
+    //}
 
-    public void CreateEnemyUI()
-    {
-        if (enemyUI == null)
-        {
-            enemyUI = Instantiate(enemyPrefab, canvas.transform);
-            sheildUI = enemyUI.transform.GetChild(0).GetComponent<Slider>();
-            hackingDurationUI = enemyUI.transform.GetChild(1).GetComponent<Slider>();
-        }
-        else
-        {
-            enemyUI.SetActive(true);
-        }
-    }
+    //public void CreateEnemyUI()
+    //{
+    //    if (enemyUI == null)
+    //    {
+    //        enemyUI = Instantiate(enemyPrefab, canvas.transform);
+    //        sheildUI = enemyUI.transform.GetChild(0).GetComponent<Slider>();
+    //        hackingDurationUI = enemyUI.transform.GetChild(1).GetComponent<Slider>();
+    //    }
+    //    else
+    //    {
+    //        enemyUI.SetActive(true);
+    //    }
+    //}
 
-    bool IsEnemyVisible()
-    {
-        Vector3 screenPos = mainCamera.WorldToScreenPoint(this.transform.position);
-        //Debug.Log(screenPos);
-        return screenPos.z > 0 && screenPos.x > 0 && screenPos.x < Screen.width && screenPos.y > 0 && screenPos.y < Screen.height;
-    }
+    //bool IsEnemyVisible()
+    //{
+    //    Vector3 screenPos = mainCamera.WorldToScreenPoint(this.transform.position);
+    //    //Debug.Log(screenPos);
+    //    return screenPos.z > 0 && screenPos.x > 0 && screenPos.x < Screen.width && screenPos.y > 0 && screenPos.y < Screen.height;
+    //}
 
-    void UpdateUIPosition()
-    {
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+    //void UpdateUIPosition()
+    //{
+    //    Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
 
-        switch (hitAreaType)
-        {
-            case Type.Head:
-                screenPos = Camera.main.WorldToScreenPoint(parts[0].position);
-                break;
-            case Type.Body:
-                screenPos = Camera.main.WorldToScreenPoint(parts[1].position);
-                break;
-            case Type.LeftArm:
-                screenPos = Camera.main.WorldToScreenPoint(parts[2].position);
-                break;
-            case Type.RightArm:
-                screenPos = Camera.main.WorldToScreenPoint(parts[3].position);
-                break;
-            case Type.LeftLeg:
-                screenPos = Camera.main.WorldToScreenPoint(parts[4].position);
-                break;
-            case Type.RightLeg:
-                screenPos = Camera.main.WorldToScreenPoint(parts[5].position);
-                break;
-        }
+    //    switch (hitAreaType)
+    //    {
+    //        case Type.Head:
+    //            screenPos = Camera.main.WorldToScreenPoint(parts[0].position);
+    //            break;
+    //        case Type.Body:
+    //            screenPos = Camera.main.WorldToScreenPoint(parts[1].position);
+    //            break;
+    //        case Type.LeftArm:
+    //            screenPos = Camera.main.WorldToScreenPoint(parts[2].position);
+    //            break;
+    //        case Type.RightArm:
+    //            screenPos = Camera.main.WorldToScreenPoint(parts[3].position);
+    //            break;
+    //        case Type.LeftLeg:
+    //            screenPos = Camera.main.WorldToScreenPoint(parts[4].position);
+    //            break;
+    //        case Type.RightLeg:
+    //            screenPos = Camera.main.WorldToScreenPoint(parts[5].position);
+    //            break;
+    //    }
 
-        if (enemyUI != null)
-        {
-            Vector3 canvasPos = screenPos / canvas.scaleFactor;
-            enemyUI.transform.position = canvasPos;
-        }
+    //    //if (enemyUI != null)
+    //    //{
+    //    //    Vector3 canvasPos = screenPos / canvas.scaleFactor;
+    //    //    enemyUI.transform.position = canvasPos;
+    //    //}
 
-    }
+    //}
 
-    void UpdateUIScale()
-    {
-        float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
-        float scaleFactor = Mathf.Clamp(10f / distance, 0.5f, 2f);
+    //void UpdateUIScale()
+    //{
+    //    float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
+    //    float scaleFactor = Mathf.Clamp(10f / distance, 0.5f, 2f);
 
-        if (enemyUI != null)
-            enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
-    }
+    //    if (enemyUI != null)
+    //        enemyUI.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+    //}
 
     public void RotationSpeedUp()
     {
@@ -487,7 +475,7 @@ public class Enemy : MonoBehaviour
                 //UIManager.Instance.SubDueSlider.gameObject.SetActive(true);
                 isMeleeDamage = true;
                 Attack attack = other.GetComponent<Attack>();
-                OnDamage(attack.curDamage, other.transform.position, -1, other.GetComponentInParent<Player>().sheildDamage);
+                OnDamage(attack.curDamage, other.transform.position, -1);
                 StartCoroutine(MeleeDamageOut());
                 //anim.SetTrigger("doSubdueOut");
             }
