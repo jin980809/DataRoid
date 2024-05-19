@@ -22,7 +22,7 @@ public class Hovl_DemoLasers : MonoBehaviour
     public void LazerOn()
     {
         //Destroy(Instance);
-        Instance = Instantiate(Prefabs, FirePoint.transform.position, FirePoint.transform.rotation, transform.parent);
+        Instance = Instantiate(Prefabs, FirePoint.transform.position, FirePoint.transform.rotation, transform);
         //Instance.transform.parent = transform;
         LaserScript = Instance.GetComponent<Hovl_Laser>();
         LaserScript2 = Instance.GetComponent<Hovl_Laser2>();

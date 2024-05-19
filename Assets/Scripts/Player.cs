@@ -74,6 +74,7 @@ public class Player : MonoBehaviour
     bool sDown1;
     bool sDown2;
     bool sDown3;
+    bool sDown4;
 
     [Space(10)]
     [Header("Player State")]
@@ -172,8 +173,10 @@ public class Player : MonoBehaviour
     Animator anim;
     CrosshairDemoPlayerRecoil recoil;
     Coroutine meleeAttackCor;
-
+    public Hovl_DemoLasers Lazers;
+    bool isLazerAttack = false;
     //public AimMovement aimMove;
+    bool isShotAnimStart = false;
 
     void Awake()
     {
@@ -210,7 +213,7 @@ public class Player : MonoBehaviour
         FlashLightOnOff();
 
         //EnemyHacking();
-        Granade();
+        //Granade();
 
         Swap();
 
@@ -235,7 +238,7 @@ public class Player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         rDown = Input.GetButton("Run");
         sDown = Input.GetButton("Crouch");
-        fDown = (qSkillOn) ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1");
+        fDown = (isGunOn && weapon.isLazer) ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1");
         f2Down = Input.GetButton("Fire2");
         dDown = Input.GetButton("Dodge");
         gDown = Input.GetButtonDown("GunOn");
@@ -247,6 +250,7 @@ public class Player : MonoBehaviour
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
         sDown3 = Input.GetButtonDown("Swap3");
+        sDown4 = Input.GetButtonDown("Swap4");
         skDown1 = Input.GetButtonDown("Skill1");
         skDown2 = Input.GetButtonDown("Skill2");
         mDown = Input.GetButtonDown("Map");
@@ -422,8 +426,10 @@ public class Player : MonoBehaviour
             return;
         if (sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
             return;
+        if (sDown4 && (!hasWeapons[3] || equipWeaponIndex == 3))
+            return;
 
-        if ((sDown1 || sDown2 || sDown3) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if ((sDown1 || sDown2 || sDown3 || sDown4) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
         {
             isGunOn = true;
             isZoom = false;
@@ -432,13 +438,20 @@ public class Player : MonoBehaviour
             if (sDown1) { weaponIndex = 0; lastSwapWeaponIndex = 0; }
             if (sDown2) { weaponIndex = 1; lastSwapWeaponIndex = 1; }
             if (sDown3) { weaponIndex = 2; lastSwapWeaponIndex = 2; }
+            if (sDown4) { weaponIndex = 3; lastSwapWeaponIndex = 3; }
 
             if (weapon != null)
                 weapon.gameObject.SetActive(false);
 
+
+
             equipWeaponIndex = weaponIndex;
             weapon = weapons[weaponIndex].GetComponent<Weapon>();
+
             weapon.gameObject.SetActive(true);
+            if (weapon.isLazer && Lazers == null)
+                Lazers = weapon.lazerEffect;
+
             muzzleEffect = weapon.muzzleFlash;
 
             //anim.SetTrigger("doSwap");
@@ -458,52 +471,81 @@ public class Player : MonoBehaviour
     {
         fireDelay += Time.deltaTime;
         isFireReady = (weapon.delay < fireDelay) && (weapon.isSemiauto ? isSemiReady : true);
-        if (isFireReady && muzzleEffect != null)
+        if (isFireReady && muzzleEffect != null && !weapon.isLazer)
         {
             muzzleEffect.SetActive(false);
         }
 
         isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack;
 
-        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack )
         {
-            recoil.Shot();
+            //recoil.Shot();
             isShotEnd = false;
             //aimMove.MoveAim();
             fireDelay = 0;
             RaycastHit hit;
-            muzzleEffect.SetActive(true);
+            //muzzleEffect.SetActive(true);
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
            
-            Vector3 playerShotPos = ShootPos.position;
 
+            Vector3 playerShotPos = ShootPos.position;
             if (!weapon.isShotGun)
             {
-                if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy") ))
+                if(!weapon.isLazer)
                 {
-                    Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
-                    BulletInstance((hit.point - muzzleEffect.transform.position).normalized);
-
-                    switch (hit.transform.gameObject.layer)
+                    if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy")))
                     {
-                        case 9://Enemy
-                            SpawnHitEffect(hit.point, 1);
-                            //enemy.HitEffect(hit.point);
-                            break;
+                        StartCoroutine(ShotEffect(hit.point));
+                        Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
+                        
 
-                        case 6: //Enviroment
-                            SpawnHitEffect(hit.point, 0);
-                            break;
+                        switch (hit.transform.gameObject.layer)
+                        {
+                            case 9://Enemy
+                                SpawnHitEffect(hit.point, 1);
+                                //enemy.HitEffect(hit.point);
+                                break;
 
-                        case 16: // Glass
-                            SpawnHitEffect(hit.point, 2);
-                            break;
+                            case 6: //Enviroment
+                                SpawnHitEffect(hit.point, 0);
+                                break;
+
+                            case 16: // Glass
+                                SpawnHitEffect(hit.point, 2);
+                                break;
+                        }
+
+                        if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath && hit.transform.gameObject.layer == 9)
+                        {
+                            enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                        }
                     }
-
-                    if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath && hit.transform.gameObject.layer == 9)
+                }
+                else //레이저건
+                {
+                    if (Physics.SphereCast(_mainCamera.transform.position, 0.1f, _mainCamera.transform.forward, out hit, 100f, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy")))
                     {
-                        enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                        muzzleEffect.SetActive(true);
+
+                        StartCoroutine(LazerEffect(hit.point));
+
+                        Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
+
+                        if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath && hit.transform.gameObject.layer == 9)
+                        {
+                            enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
+                        }
+                    }
+                    else
+                    {
+                        weapon.muzzleFlash.transform.rotation = Quaternion.LookRotation(((_mainCamera.transform.position + _mainCamera.transform.forward * 20) - muzzleEffect.transform.position).normalized);
+                        if (!isLazerAttack)
+                        {
+                            Lazers.LazerOn();
+                            isLazerAttack = true;
+                        }
                     }
                 }
             }
@@ -511,9 +553,10 @@ public class Player : MonoBehaviour
             {
                 for(int i = 0; i < weapon.shotGunSpreadAmount; i++)
                 {
-                    if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, LayerMask.GetMask("PhysicsEnemy")))
+                    if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy")))
                     {
                         Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
+                        BulletInstance((hit.point - muzzleEffect.transform.position).normalized);
 
                         switch (hit.transform.gameObject.layer)
                         {
@@ -533,12 +576,12 @@ public class Player : MonoBehaviour
 
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                         {
-                            Debug.Log(hitArea(hit.collider.transform.gameObject));
+                            //Debug.Log(hitArea(hit.collider.transform.gameObject));
 
                             enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
 
 
-                            Debug.Log(isEnemyHitArea(hit.collider.transform.gameObject));
+                            //Debug.Log(isEnemyHitArea(hit.collider.transform.gameObject));
                         }
                     }
                 }
@@ -550,9 +593,34 @@ public class Player : MonoBehaviour
         if(!isShot)
         {
             isSemiReady = true;
+            if (weapon.isLazer)
+            {
+                if(isLazerAttack)
+                    Lazers.LazerOff();
+                isLazerAttack = false;
+            }
         }
         
         anim.SetBool("isShotOut", !isShotEnd && !isDodge);
+    }
+
+    IEnumerator ShotEffect(Vector3 hitPos)
+    {
+        yield return new WaitForSeconds(0.1f);
+        muzzleEffect.SetActive(true);
+        BulletInstance((hitPos - muzzleEffect.transform.position).normalized);
+    }
+
+    IEnumerator LazerEffect(Vector3 hitPos)
+    {
+        yield return new WaitForSeconds(0.1f);
+        if (!isLazerAttack)
+        {
+            Lazers.LazerOn();
+            isLazerAttack = true;
+        }
+
+        weapon.muzzleFlash.transform.rotation = Quaternion.LookRotation((hitPos - Lazers.FirePoint.transform.position).normalized);
     }
 
     void MeleeAttack()
@@ -792,7 +860,7 @@ public class Player : MonoBehaviour
         //Debug.DrawLine(ShootPos.position, transform.forward , Color.green);
         int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("PhysicsEnemy")) + (1 << LayerMask.NameToLayer("Glass")) + (1 << LayerMask.NameToLayer("Object"));
         RaycastHit hit;
-        if (Physics.SphereCast(borderPos.position, 0.15f, targetDirection, out hit, 0.8f, layerMask))
+        if (Physics.SphereCast(borderPos.position, 0.15f, targetDirection, out hit, 0.95f, layerMask))
         {
             isBorder = true;
             //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
@@ -1120,9 +1188,9 @@ public class Player : MonoBehaviour
 
     void newOCInventory()
     {
-        if (skDown2 && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn)
+        if ((skDown2 || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn)
         {
-            if (!isInventoryOpen)
+            if (!isInventoryOpen && skDown2)
             {
                 isInventoryOpen = true;
                 //Time.timeScale = 0f;
@@ -1137,7 +1205,7 @@ public class Player : MonoBehaviour
 
             }
 
-            else
+            else if(isInventoryOpen)
             {
                 isInventoryOpen = false;
                 //Time.timeScale = 1.0f;
@@ -1247,6 +1315,12 @@ public class Player : MonoBehaviour
     public void ShotAnimEnd()
     {
         isShotEnd = true;
+        isShotAnimStart = false;
+    }
+
+    public void ShotAnimStart()
+    {
+        isShotAnimStart = true;
     }
 
     void OnDrawGizmos()

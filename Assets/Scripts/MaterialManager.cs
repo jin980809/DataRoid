@@ -19,7 +19,7 @@ public class MaterialManager : MonoBehaviour
     private static MaterialManager m_instance;
 
     public int ShotgunAmmo;
-    public int GunPowder;
+    public int LazerAmmo;
     public int ExpPiece;
     public int HandgunAmmo;
     public int RifleAmmo;

@@ -8,8 +8,7 @@ public class Bullet : MonoBehaviour
     public Vector3 direction = Vector3.forward;
 
     void Start()
-    {
-        Destroy(this, 0.4f);
+    { 
     }
     void Update()
     {

@@ -82,7 +82,10 @@ public class PassWord : MonoBehaviour
             d_interaction[i].enabled = false;
 
         if (isDroneOn)
+        {
             ObjectManager.Instance.saveObjects[0] = true;
+            player.droneOn = true;
+        }
     }
 
     void ExitPassWord()

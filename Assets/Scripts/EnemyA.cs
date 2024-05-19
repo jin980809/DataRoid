@@ -121,7 +121,7 @@ public class EnemyA : Enemy
                     else // 실패(일반공격)
                     {
                         int attackNum = AttackPercentage();
-
+                        isStop = false;
                         switch (attackNum)
                         {
                             case 1:
@@ -209,7 +209,7 @@ public class EnemyA : Enemy
                 isRangedAttack = false;
             }
 
-            if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
+            if (!isRangedAttack && !isShotChase && !isDeath && !isStun)
             {
                 nav.speed = walkSpeed * speedDiscountRate;
                 isChase = false;
@@ -220,8 +220,9 @@ public class EnemyA : Enemy
                     nav.speed = 0;
                 }
             }
-            else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
+            else if (!isRangedAttack && isShotChase)
             {
+                isChase = false;
                 nav.SetDestination(playerShotPos);
                 if (nav.remainingDistance <= 0.5f)
                 {
@@ -310,13 +311,13 @@ public class EnemyA : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(1.1f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.45f);
+        yield return new WaitForSeconds(0.22f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1.15f);
+        yield return new WaitForSeconds(1.17f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -329,19 +330,19 @@ public class EnemyA : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(0.45f);
+        yield return new WaitForSeconds(0.55f);
         R_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.17f);
+        yield return new WaitForSeconds(0.11f);
         R_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(0.38f);
+        yield return new WaitForSeconds(0.578f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.15f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(0.8f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -354,13 +355,13 @@ public class EnemyA : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(1.35f);
+        yield return new WaitForSeconds(1.11f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.24f);
+        yield return new WaitForSeconds(0.28f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1.125f);
+        yield return new WaitForSeconds(1f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);

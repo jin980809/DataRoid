@@ -22,6 +22,7 @@ public class Interaction : FadeController
         PassWord = 11,
         ObjectRotater = 12,
         ObjectOn = 13,
+        WeaponBox = 14,
     };
     public Type interactionType;
 
@@ -153,6 +154,12 @@ public class Interaction : FadeController
         public float duration;
     }
 
+    [Space(10)]
+    [Header("WeaponBox")]
+    public int weaponIndex;
+    public int weaponAmount;
+    public bool hasOpen = false;
+
     void Awake()
     {
 
@@ -170,6 +177,10 @@ public class Interaction : FadeController
             {
                 ObjectOnOff();
                 transform.gameObject.SetActive(false);
+            }
+            else if(interactionType == Type.WeaponBox)
+            {
+                hasOpen = !ObjectManager.Instance.saveObjects[ObjectID];
             }
             else
             {
@@ -335,6 +346,10 @@ public class Interaction : FadeController
             case Type.ObjectOn:
                 ObjectOn();
                 break;
+
+            case Type.WeaponBox:
+                OpenWeaponBox();
+                break;
         }
 
 
@@ -373,6 +388,13 @@ public class Interaction : FadeController
 
             if(!isNotClose)
                 Invoke("CloseDoor", openTime);
+        }
+        else
+        {
+            if (isTextOn)
+            {
+                TextOn();
+            }
         }
 
     }
@@ -664,5 +686,32 @@ public class Interaction : FadeController
 
         for (int i = 0; i < d_interaction.Length; i++)
             d_interaction[i].enabled = false;
+    }
+
+    void OpenWeaponBox()
+    {
+        if (hasOpen)
+        {
+            TextOn();
+        }
+        else
+        {
+            switch (weaponIndex)
+            {
+                case 1:
+                    MaterialManager.Instance.RifleAmmo += weaponAmount;
+                    break;
+
+                case 2:
+                    MaterialManager.Instance.ShotgunAmmo += weaponAmount;
+                    break;
+
+                case 3:
+                    MaterialManager.Instance.LazerAmmo += weaponAmount;
+                    break;
+            }
+
+            hasOpen = true;
+        }
     }
 }

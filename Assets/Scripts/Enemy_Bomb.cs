@@ -56,6 +56,10 @@ public class Enemy_Bomb : Enemy
         if (isDeath && !getData)
         {
             ProgressManager.Instance.curAlarmData += 4;
+            if (bombCor != null)
+            {
+                StopCoroutine(bombCor);
+            }
             getData = true;
         }
     }
@@ -117,7 +121,7 @@ public class Enemy_Bomb : Enemy
                         else // 실패(일반공격)
                         {
                             int attackNum = AttackPercentage();
-
+                            isStop = false;
                             switch (attackNum)
                             {
                                 case 1:
@@ -168,7 +172,7 @@ public class Enemy_Bomb : Enemy
         }
         else
         {
-            if(!isBombAttack)
+            if(!isBombAttack && isDetectBomb)
                 anim.SetTrigger("doDown");
 
             if (isDetectBomb)
@@ -179,39 +183,17 @@ public class Enemy_Bomb : Enemy
                     if (!IsObstacleBetween(thisPos, target.transform.position, LayerMask.GetMask("Enviroment", "Door")) && !isDeath)
                     {
 
-                        nav.SetDestination(target.transform.position);
-                        nav.speed = bombActiveSpeed;
+                        //nav.SetDestination(target.transform.position);
+                        //nav.speed = bombActiveSpeed;
 
                         if (!isBombAttack && !isDeath)
                         {
                             anim.SetTrigger("doRise");
                             nav.isStopped = true;
-                            StartCoroutine(Bomb());
+                            bombCor = StartCoroutine(Bomb());
                             isBombAttack = true;
                         }
                     }
-                }
-                else
-                {
-                    if (isBombAttack && !isDeath)
-                    {
-                        nav.SetDestination(target.transform.position);
-                        nav.speed = bombActiveSpeed;
-                    }
-                }
-            }
-            else
-            {
-                if (!isDeath)
-                {
-                    nav.SetDestination(target.transform.position);
-                    nav.speed = bombActiveSpeed;
-                }
-
-                if (!isBombAttack && !isDeath)
-                {
-                    StartCoroutine(Bomb());
-                    isBombAttack = true;
                 }
             }
         }
@@ -219,12 +201,7 @@ public class Enemy_Bomb : Enemy
 
     IEnumerator Bomb()
     {
-        yield return new WaitForSeconds(3f);
-        nav.isStopped = false;
-        nav.speed = bombActiveSpeed;
-
         yield return new WaitForSeconds(bombTime);
-        nav.isStopped = true;
         nav.speed = 0;
 
         yield return new WaitForSeconds(0.5f);
@@ -273,13 +250,13 @@ public class Enemy_Bomb : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(1.6f);
+        yield return new WaitForSeconds(1.1f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.22f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1.4f);
+        yield return new WaitForSeconds(1.17f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -292,19 +269,19 @@ public class Enemy_Bomb : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.55f);
         R_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.11f);
         R_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.578f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(0.15f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.8f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -317,13 +294,13 @@ public class Enemy_Bomb : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(1.6f);
+        yield return new WaitForSeconds(1.11f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.28f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);

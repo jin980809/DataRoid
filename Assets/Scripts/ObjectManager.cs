@@ -20,11 +20,6 @@ public class ObjectManager : MonoBehaviour
     }
     private static ObjectManager m_instance;
 
-    [Header("ESN08")]
-    public GameObject p1ServerRacks;
-    public GameObject p2ServerRacks;
-    public EnemyB ESN08;
-
     [Space(10)]
     [Header("Save Object")]
     public bool[] saveObjects;
@@ -52,7 +47,7 @@ public class ObjectManager : MonoBehaviour
 
     void Update()
     {
-        ESN08Clear();
+        //ESN08Clear();
     }
 
     void Initialization()
@@ -70,19 +65,19 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
-    void ESN08Clear()
-    {
-        if (ESN08.isDeath)
-        {
-            p1ServerRacks.SetActive(false);
-            p2ServerRacks.SetActive(true);
-        }
-        else
-        {
-            p1ServerRacks.SetActive(true);
-            p2ServerRacks.SetActive(false);
-        }
-    }
+    //void ESN08Clear()
+    //{
+    //    if (ESN08.isDeath)
+    //    {
+    //        p1ServerRacks.SetActive(false);
+    //        p2ServerRacks.SetActive(true);
+    //    }
+    //    else
+    //    {
+    //        p1ServerRacks.SetActive(true);
+    //        p2ServerRacks.SetActive(false);
+    //    }
+    //}
 
     void LoadCSVFile()
     {

@@ -139,7 +139,7 @@ public class UIManager : MonoBehaviour
     void TextUpdate()
     {
         steelAmount.text = "Steel : " + MaterialManager.Instance.ShotgunAmmo;
-        gunPowderAmount.text = "GunPowder : " + MaterialManager.Instance.GunPowder;
+        gunPowderAmount.text = "LazerAmmo : " + MaterialManager.Instance.LazerAmmo;
         ExpPieceAmount.text = "ExpPiece : " + MaterialManager.Instance.ExpPiece;
         ammoAmount.text = "Ammo : " + MaterialManager.Instance.HandgunAmmo;
         specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.RifleAmmo;

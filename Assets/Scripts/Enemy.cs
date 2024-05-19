@@ -97,6 +97,9 @@ public class Enemy : MonoBehaviour
     public float subdueProgress;
     public float curSubdueProgress;
     public float speedDiscountRate = 1;
+
+    public Coroutine bombCor = null;
+
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();

@@ -18,6 +18,8 @@ public class Weapon : MonoBehaviour
     public int shotGunSpreadAmount;
     public float shotGunRange;
     public float inaccuracyDistance;
+    public bool isLazer;
+    public Hovl_DemoLasers lazerEffect;
 
     void Start()
     {

@@ -46,12 +46,13 @@ public class Enemy_Flash : Enemy
     float curFlashCoolTime = 11;
     bool isFlash = false;
     public GameObject chargingEffect;
+    Coroutine flash;
 
     void Update()
     {
-        Around();
-
         FlashAttack();
+
+        Around();
 
         if (!isRanged)
             TargetPlayer();
@@ -79,7 +80,70 @@ public class Enemy_Flash : Enemy
         if (isDeath && !getData)
         {
             ProgressManager.Instance.curCameraData += 4;
+            if (flash != null)
+            {
+                StopCoroutine(flash);
+            }
             getData = true;
+        }
+    }
+
+    void FlashAttack()
+    {
+        if (curFlashCoolTime <= flashCoolTime && !isFlash)
+        {
+            curFlashCoolTime += Time.deltaTime;
+        }
+        else
+        {
+            curFlashCoolTime = flashCoolTime;
+
+        }
+
+        //RaycastHit[] hit = Physics.SphereCastAll(transform.position, rangedDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
+        //if (hit.Length > 0)
+        //{
+        //    if (!isAttack && !isFlash && !isAttack && !isShotChase && !isDeath && !isStun && curFlashCoolTime >= flashCoolTime && !isRangedAttack && !isRangedAttackReady)
+        //    {
+        //        Debug.Log("Flash");
+        //        StartCoroutine(FlashReady());
+        //    }
+        //}
+    }
+
+
+    IEnumerator FlashReady()
+    {
+        isFlash = true;
+        chargingEffect.SetActive(true);
+        anim.SetTrigger("doFlash");
+        nav.isStopped = true;
+
+        yield return new WaitForSeconds(1f);
+        chargingEffect.SetActive(false);
+        Flash();
+
+        yield return new WaitForSeconds(0.5f);
+        nav.isStopped = false;
+        curFlashCoolTime = 0;
+        isFlash = false;
+    }
+
+    void Flash()
+    {
+        // SphereCast로 원뿔 모양의 레이캐스트 수행
+        RaycastHit[] hits = Physics.SphereCastAll(FlashPos.position, flashDistance, transform.forward, 0, LayerMask.GetMask("Player"));
+
+        if (hits.Length > 0)
+        {
+            Vector3 dirToTarget = (hits[0].transform.position - transform.position).normalized;
+            if (Vector3.Angle(transform.forward, dirToTarget) < flashAngle / 2 && !IsObstacleBetween(FlashPos.position, hits[0].transform.position, LayerMask.GetMask("Enviroment")))
+            {
+                Debug.Log("player stun");
+                flashEffect.FlashBanged();
+                Player playerObject = hits[0].collider.gameObject.GetComponent<Player>();
+                playerObject.Stun(3f);
+            }
         }
     }
 
@@ -117,7 +181,7 @@ public class Enemy_Flash : Enemy
             if (attackHit.Length > 0 && !isAttack && !isDeath && !isPlayerSubdue && isSubdueReady)
             {
                 Vector3 AttackPos = new Vector3(attackHit[0].transform.position.x, attackHit[0].transform.position.y + 1, attackHit[0].transform.position.z);
-                if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")) && !isStun)
+                if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")) && !isStun && !isFlash)
                 {
                     isShotChase = false;
 
@@ -130,19 +194,26 @@ public class Enemy_Flash : Enemy
                     }
                     else // 실패(일반공격)
                     {
-                        int attackNum = AttackPercentage();
-
-                        switch (attackNum)
+                        if (curFlashCoolTime >= flashCoolTime)
                         {
-                            case 1:
-                                attackCoroutine = StartCoroutine(DoAttack1());
-                                break;
-                            case 2:
-                                attackCoroutine = StartCoroutine(DoAttack2());
-                                break;
-                            case 3:
-                                attackCoroutine = StartCoroutine(DoAttack3());
-                                break;
+                            flash = StartCoroutine(FlashReady());
+                        }
+                        else
+                        {
+                            int attackNum = AttackPercentage();
+                            isStop = false;
+                            switch (attackNum)
+                            {
+                                case 1:
+                                    attackCoroutine = StartCoroutine(DoAttack1());
+                                    break;
+                                case 2:
+                                    attackCoroutine = StartCoroutine(DoAttack2());
+                                    break;
+                                case 3:
+                                    attackCoroutine = StartCoroutine(DoAttack3());
+                                    break;
+                            }
                         }
                     }
 
@@ -202,7 +273,7 @@ public class Enemy_Flash : Enemy
             {
                 nav.speed = 0;
                 isChase = true;
-                if (rangedAttackCoolTime <= curRangedAttackCoolTime && !isRangedAttack && !isRangedAttackReady && !isFlash)
+                if (rangedAttackCoolTime <= curRangedAttackCoolTime && !isRangedAttack && !isRangedAttackReady)
                 {
                     rangeAttack = StartCoroutine(RangeAttackReady());
                 }
@@ -210,16 +281,16 @@ public class Enemy_Flash : Enemy
         }
         else // 플레이어 감지 x
         {
-            //if (isRangedAttack)
-            //{
-            //    Lazers.LazerOff();
-            //    isRangedAttackReady = false;
-            //    curRangedAttackCoolTime = 0;
-            //    rotateRate = 1f;
-            //    isRangedAttack = false;
-            //}
+            if (isRangedAttack)
+            {
+                Lazers.LazerOff();
+                isRangedAttackReady = false;
+                curRangedAttackCoolTime = 0;
+                rotateRate = 1f;
+                isRangedAttack = false;
+            }
 
-            if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue && !isRangedAttack)
+            if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
             {
                 nav.speed = walkSpeed * speedDiscountRate;
                 isChase = false;
@@ -230,7 +301,7 @@ public class Enemy_Flash : Enemy
                     nav.speed = 0;
                 }
             }
-            else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue && !isRangedAttack)
+            else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
             {
                 nav.SetDestination(playerShotPos);
                 if (nav.remainingDistance <= 0.5f)
@@ -242,45 +313,6 @@ public class Enemy_Flash : Enemy
                 nav.speed = runSpeed * speedDiscountRate;
             }
         }
-    }
-
-    void FlashAttack()
-    {
-        if (curFlashCoolTime <= flashCoolTime && !isFlash)
-        {
-            curFlashCoolTime += Time.deltaTime;
-        }
-        else
-        {
-            curFlashCoolTime = flashCoolTime;
-        }
-
-        RaycastHit[] hit = Physics.SphereCastAll(transform.position, rangedDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
-        if (hit.Length > 0)
-        {
-            if (!isAttack && !isFlash && !isAttack && !isShotChase && !isDeath && !isStun && curFlashCoolTime >= flashCoolTime && !isRangedAttack && !isRangedAttackReady)
-            {
-                Debug.Log("Flash");
-                StartCoroutine(FlashReady());
-            }
-        }
-    }
-
-    IEnumerator FlashReady()
-    {
-        isFlash = true;
-        chargingEffect.SetActive(true);
-        anim.SetTrigger("doFlash");
-        nav.isStopped = true;
-
-        yield return new WaitForSeconds(1f);
-        chargingEffect.SetActive(false);
-        Flash();
-        nav.isStopped = false;
-
-        yield return new WaitForSeconds(0.1f);
-        curFlashCoolTime = 0;
-        isFlash = false;
     }
 
     IEnumerator RangeAttackReady()
@@ -313,7 +345,7 @@ public class Enemy_Flash : Enemy
 
             Vector3 playerPos = new Vector3(target.transform.position.x, target.transform.position.y + 1, target.transform.position.z);
 
-            if (Physics.SphereCast(rangedPos.position, 0.05f, rangedPos.forward, out hit, 100f, LayerMask.GetMask("Player")))
+            if (Physics.SphereCast(rangedPos.position, 0.1f, rangedPos.forward, out hit, 100f, LayerMask.GetMask("Player")))
             {
                 if (!IsObstacleBetween(rangedPos.position, playerPos, LayerMask.GetMask("Enviroment")))
                 {
@@ -359,13 +391,13 @@ public class Enemy_Flash : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(1.6f);
+        yield return new WaitForSeconds(1.1f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.22f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1.4f);
+        yield return new WaitForSeconds(1.17f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -378,19 +410,19 @@ public class Enemy_Flash : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.55f);
         R_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.11f);
         R_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.578f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(0.15f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.8f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -403,13 +435,13 @@ public class Enemy_Flash : Enemy
         isAttack = true;
         nav.isStopped = true;
 
-        yield return new WaitForSeconds(1.6f);
+        yield return new WaitForSeconds(1.11f);
         L_attackCollider.enabled = true;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.28f);
         L_attackCollider.enabled = false;
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         nav.isStopped = false;
         isAttack = false;
         anim.SetBool("isAttack", false);
@@ -478,25 +510,6 @@ public class Enemy_Flash : Enemy
             }
         }
     }
-
-    void Flash()
-    {
-        // SphereCast로 원뿔 모양의 레이캐스트 수행
-        RaycastHit[] hits = Physics.SphereCastAll(FlashPos.position, flashDistance, transform.forward, 0, LayerMask.GetMask("Player"));
-
-        if (hits.Length > 0)
-        {
-            Vector3 dirToTarget = (hits[0].transform.position - transform.position).normalized;
-            if (Vector3.Angle(transform.forward, dirToTarget) < flashAngle / 2 && !IsObstacleBetween(FlashPos.position, hits[0].transform.position, LayerMask.GetMask("Enviroment")))
-            {
-                Debug.Log("player stun");
-                flashEffect.FlashBanged();
-                Player playerObject = hits[0].collider.gameObject.GetComponent<Player>();
-                playerObject.Stun(3f);
-            }
-        }
-    }
-
 
     void OnDrawGizmos()
     {

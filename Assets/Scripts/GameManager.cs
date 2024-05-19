@@ -31,11 +31,6 @@ public class GameManager : MonoBehaviour
     public Transform[] spawnPoints;
     public int spawnPoint;
 
-    [Space(10)]
-    [Header("Player Initialization")]
-    public GameObject handGunObj;
-    public GameObject riffleObj;
-    public GameObject shotGunObj;
 
     [Space(10)]
     [Header("ESN08")]
@@ -57,7 +52,7 @@ public class GameManager : MonoBehaviour
         tempData[3] = "HandgunAmmo";
         tempData[4] = "RifleAmmo";
         tempData[5] = "ShotgunAmmo";
-        tempData[6] = "GunPowder";
+        tempData[6] = "LazerAmmo";
         tempData[7] = "UFSData";
         data.Add(tempData);
     }
@@ -73,17 +68,13 @@ public class GameManager : MonoBehaviour
         MaterialManager.Instance.HandgunAmmo = int.Parse(dicList[0]["HandgunAmmo"] + "");
         MaterialManager.Instance.RifleAmmo = int.Parse(dicList[0]["RifleAmmo"] + "");
         MaterialManager.Instance.ShotgunAmmo = int.Parse(dicList[0]["ShotgunAmmo"] + "");
-        MaterialManager.Instance.GunPowder = int.Parse(dicList[0]["GunPowder"] + "");
+        MaterialManager.Instance.LazerAmmo = int.Parse(dicList[0]["LazerAmmo"] + "");
         MaterialManager.Instance.UFSData = int.Parse(dicList[0]["UFSData"] + "");
 
         spawnPoint = int.Parse(dicList[0]["SavePoint"] + "");
 
         SpawnPlayer();
 
-        if(handGunObj.activeSelf == false)
-        {
-            player.hasWeapons[1] = true;
-        }
 
         //총기 추가 할떄마다 추가하기
     }
@@ -116,7 +107,7 @@ public class GameManager : MonoBehaviour
         tempData[3] = MaterialManager.Instance.HandgunAmmo.ToString();
         tempData[4] = MaterialManager.Instance.RifleAmmo.ToString();
         tempData[5] = MaterialManager.Instance.ShotgunAmmo.ToString();
-        tempData[6] = MaterialManager.Instance.GunPowder.ToString();
+        tempData[6] = MaterialManager.Instance.LazerAmmo.ToString();
         tempData[7] = MaterialManager.Instance.UFSData.ToString();
         data.Add(tempData);
 

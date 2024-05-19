@@ -18,14 +18,16 @@ public class SaveManager : MonoBehaviour
     {
         data.Clear();
 
-        tempData = new string[7];
+        tempData = new string[8];
         tempData[0] = "SavePoint";
         tempData[1] = "Progress";
         tempData[2] = "MaxProgress";
         tempData[3] = "HandgunAmmo";
         tempData[4] = "RifleAmmo";
         tempData[5] = "ShotgunAmmo";
-        tempData[6] = "GunPowder";
+        tempData[6] = "LazerAmmo";
+        tempData[7] = "UFSData";
+
         data.Add(tempData);
     }
 
@@ -36,14 +38,15 @@ public class SaveManager : MonoBehaviour
 
     public void SaveCSVFile(int savePointIndex)
     {
-        tempData = new string[7];
+        tempData = new string[8];
         tempData[0] = savePointIndex.ToString();
         tempData[1] = ProgressManager.Instance.curData.ToString();
         tempData[2] = ProgressManager.Instance.saveData.ToString();
         tempData[3] = MaterialManager.Instance.HandgunAmmo.ToString();
         tempData[4] = MaterialManager.Instance.RifleAmmo.ToString();
         tempData[5] = MaterialManager.Instance.ShotgunAmmo.ToString();
-        tempData[6] = MaterialManager.Instance.GunPowder.ToString();
+        tempData[6] = MaterialManager.Instance.LazerAmmo.ToString();
+        tempData[7] = MaterialManager.Instance.UFSData.ToString();
         data.Add(tempData);
 
         string[][] output = new string[data.Count][];
