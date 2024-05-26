@@ -177,6 +177,7 @@ public class Player : MonoBehaviour
     bool isLazerAttack = false;
     //public AimMovement aimMove;
     bool isShotAnimStart = false;
+    bool[] autoReload = new bool[4];
 
     void Awake()
     {
@@ -227,7 +228,7 @@ public class Player : MonoBehaviour
 
         SubdueCancel();
 
-        DecreaseHp();
+        WeaponEnable();
 
         ObjectNameTag();
     }
@@ -238,7 +239,7 @@ public class Player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         rDown = Input.GetButton("Run");
         sDown = Input.GetButton("Crouch");
-        fDown = (isGunOn && weapon.isLazer) ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1");
+        fDown = (isGunOn && (equipWeaponIndex == 1 || equipWeaponIndex == 3)) ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1");
         f2Down = Input.GetButton("Fire2");
         dDown = Input.GetButton("Dodge");
         gDown = Input.GetButtonDown("GunOn");
@@ -257,13 +258,120 @@ public class Player : MonoBehaviour
         vDown = Input.GetButtonDown("Search");
     }
 
-    void DecreaseHp()
+    void WeaponEnable()
     {
-        curHp -= Time.deltaTime * decreaseHpRate;
-
-        if (curHp <= 0)
+        if(MaterialManager.Instance.RifleAmmo > 0 || weapons[1].GetComponent<Weapon>().curAmmo > 0)
         {
-            //GameManager.Instance.PlayerDead();
+            hasWeapons[1] = true;
+            if(autoReload[1])
+            {
+                Weapon _weapon = weapons[1].GetComponent<Weapon>();
+                if (MaterialManager.Instance.RifleAmmo > _weapon.maxAmmo)
+                {
+                    _weapon.curAmmo = _weapon.maxAmmo;
+                    MaterialManager.Instance.RifleAmmo -= _weapon.maxAmmo;
+                }
+                else
+                {
+                    _weapon.curAmmo = MaterialManager.Instance.RifleAmmo;
+                    MaterialManager.Instance.RifleAmmo = 0;
+                }
+
+                autoReload[1] = false;
+            }
+        }
+        else
+        {
+            hasWeapons[1] = false;
+            autoReload[1]= true;
+            if(equipWeaponIndex == 1)
+            {
+                equipWeaponIndex = 0;
+                weapon = weapons[0].GetComponent<Weapon>();
+                weapons[1].SetActive(false);
+                weapons[0].SetActive(true);
+                muzzleEffect = weapon.muzzleFlash;
+
+                isSwap = true;
+
+                Invoke("SwapOut", 0.4f);
+            }
+        }
+
+        if (MaterialManager.Instance.ShotgunAmmo > 0 || weapons[2].GetComponent<Weapon>().curAmmo > 0)
+        {
+            hasWeapons[2] = true;
+            if (autoReload[2])
+            {
+                Weapon _weapon = weapons[2].GetComponent<Weapon>();
+                if (MaterialManager.Instance.RifleAmmo > _weapon.maxAmmo)
+                {
+                    _weapon.curAmmo = _weapon.maxAmmo;
+                    MaterialManager.Instance.RifleAmmo -= _weapon.maxAmmo;
+                }
+                else
+                {
+                    _weapon.curAmmo = MaterialManager.Instance.RifleAmmo;
+                    MaterialManager.Instance.RifleAmmo = 0;
+                }
+
+                autoReload[2] = false;
+            }
+        }
+        else
+        {
+            hasWeapons[2] = false;
+            autoReload[2]= true;
+            if (equipWeaponIndex == 2)
+            {
+                equipWeaponIndex = 0;
+                weapon = weapons[0].GetComponent<Weapon>();
+                weapons[2].SetActive(false);
+                weapons[0].SetActive(true);
+                muzzleEffect = weapon.muzzleFlash;
+
+                isSwap = true;
+
+                Invoke("SwapOut", 0.4f);
+            }
+        }
+
+        if (MaterialManager.Instance.LazerAmmo > 0 || weapons[3].GetComponent<Weapon>().curAmmo > 0)
+        {
+            hasWeapons[3] = true;
+            if (autoReload[3])
+            {
+                Weapon _weapon = weapons[3].GetComponent<Weapon>();
+                if (MaterialManager.Instance.RifleAmmo > _weapon.maxAmmo)
+                {
+                    _weapon.curAmmo = _weapon.maxAmmo;
+                    MaterialManager.Instance.RifleAmmo -= _weapon.maxAmmo;
+                }
+                else
+                {
+                    _weapon.curAmmo = MaterialManager.Instance.RifleAmmo;
+                    MaterialManager.Instance.RifleAmmo = 0;
+                }
+
+                autoReload[3] = false;
+            }
+        }
+        else
+        {
+            hasWeapons[3] = false;
+            autoReload[3] = true;
+            if (equipWeaponIndex == 3)
+            {
+                equipWeaponIndex = 0;
+                weapon = weapons[0].GetComponent<Weapon>();
+                weapons[3].SetActive(false);
+                weapons[0].SetActive(true);
+                muzzleEffect = weapon.muzzleFlash;
+
+                isSwap = true;
+
+                Invoke("SwapOut", 0.4f);
+            }
         }
     }
 
@@ -385,6 +493,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    
     void DodgeOut()
     {
         //targetSpeed *= 0.25f;
@@ -442,8 +551,6 @@ public class Player : MonoBehaviour
 
             if (weapon != null)
                 weapon.gameObject.SetActive(false);
-
-
 
             equipWeaponIndex = weaponIndex;
             weapon = weapons[weaponIndex].GetComponent<Weapon>();
@@ -789,50 +896,54 @@ public class Player : MonoBehaviour
 
         if (isReload)
         {
-            curHp -= weapon.reloadCost;
-            weapon.curAmmo = weapon.maxAmmo;
-            //if (equipWeaponIndex == 0)
-            //{ 
-            //    if (MaterialManager.Instance.RifleAmmo < weapon.maxAmmo - weapon.curAmmo)
-            //    {
-            //        weapon.curAmmo += MaterialManager.Instance.RifleAmmo;
-            //        MaterialManager.Instance.RifleAmmo = 0;
-            //    }
-            //    else
-            //    {
-            //        MaterialManager.Instance.RifleAmmo -= (weapon.maxAmmo - weapon.curAmmo);
-            //        weapon.curAmmo = weapon.maxAmmo;
+            //curHp -= weapon.reloadCost;
+            //weapon.curAmmo = weapon.maxAmmo;
+            if (equipWeaponIndex == 0)
+            {
+                weapon.curAmmo = weapon.maxAmmo;
+            }
+            else if (equipWeaponIndex == 1)
+            {
+                if (MaterialManager.Instance.RifleAmmo < weapon.maxAmmo - weapon.curAmmo)
+                {
+                    weapon.curAmmo += MaterialManager.Instance.RifleAmmo;
+                    MaterialManager.Instance.RifleAmmo = 0;
+                }
+                else
+                {
+                    MaterialManager.Instance.RifleAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+                    weapon.curAmmo = weapon.maxAmmo;
 
-            //    }
-            //}
-            //else if (equipWeaponIndex == 1)
-            //{
-            //    if (MaterialManager.Instance.HandgunAmmo < weapon.maxAmmo - weapon.curAmmo)
-            //    {
-            //        weapon.curAmmo += MaterialManager.Instance.HandgunAmmo;
-            //        MaterialManager.Instance.HandgunAmmo = 0;
-            //    }
-            //    else
-            //    {
-            //        MaterialManager.Instance.HandgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
-            //        weapon.curAmmo = weapon.maxAmmo;
+                }
+            }
+            else if (equipWeaponIndex == 2)
+            {
+                if (MaterialManager.Instance.ShotgunAmmo < weapon.maxAmmo - weapon.curAmmo)
+                {
+                    weapon.curAmmo += MaterialManager.Instance.ShotgunAmmo;
+                    MaterialManager.Instance.ShotgunAmmo = 0;
+                }
+                else
+                {
+                    MaterialManager.Instance.ShotgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+                    weapon.curAmmo = weapon.maxAmmo;
 
-            //    }
-            //}
-            //else if (equipWeaponIndex == 2)
-            //{
-            //    if (MaterialManager.Instance.ShotgunAmmo < weapon.maxAmmo - weapon.curAmmo)
-            //    {
-            //        weapon.curAmmo += MaterialManager.Instance.ShotgunAmmo;
-            //        MaterialManager.Instance.ShotgunAmmo = 0;
-            //    }
-            //    else
-            //    {
-            //        MaterialManager.Instance.ShotgunAmmo -= (weapon.maxAmmo - weapon.curAmmo);
-            //        weapon.curAmmo = weapon.maxAmmo;
+                }
+            }
+            else if (equipWeaponIndex == 3)
+            {
+                if (MaterialManager.Instance.LazerAmmo < weapon.maxAmmo - weapon.curAmmo)
+                {
+                    weapon.curAmmo += MaterialManager.Instance.LazerAmmo;
+                    MaterialManager.Instance.LazerAmmo = 0;
+                }
+                else
+                {
+                    MaterialManager.Instance.LazerAmmo -= (weapon.maxAmmo - weapon.curAmmo);
+                    weapon.curAmmo = weapon.maxAmmo;
 
-            //    }
-            //}
+                }
+            }
         }
 
         //가지고 있는 총알개수가 maxAmmo보다 적으면 가지고 있는 총알 개수만 curAmmo에 장전

@@ -20,20 +20,20 @@ public class ObjectNameUI : MonoBehaviour
         if (isNameTagOpen)
         {
             CreateEnemyUI();
-            //Debug.Log(IsEnemyVisible());
             if (IsEnemyVisible())
             {
                 UpdateUIPosition();
                 UpdateUIScale();
                 if (nameUI != null)
                     nameUI.SetActive(true);
-                
             }
             else
             {
-                nameUI.SetActive(false);
+                UpdateUIPositionOffScreen();
+                UpdateUIScale();
+                if (nameUI != null)
+                    nameUI.SetActive(true);
             }
-
         }
         else
         {
@@ -42,17 +42,13 @@ public class ObjectNameUI : MonoBehaviour
                 nameUI.SetActive(false);
             }
         }
-
     }
-
 
     public void CreateEnemyUI()
     {
         if (nameUI == null)
         {
             nameUI = Instantiate(nameUIPrefab, canvas.transform);
-            //sheildUI = enemyUI.transform.GetChild(0).GetComponent<Slider>();
-            //hackingDurationUI = enemyUI.transform.GetChild(1).GetComponent<Slider>();
         }
         else
         {
@@ -63,7 +59,6 @@ public class ObjectNameUI : MonoBehaviour
     bool IsEnemyVisible()
     {
         Vector3 screenPos = mainCamera.WorldToScreenPoint(this.transform.position);
-        //Debug.Log(screenPos);
         return screenPos.z > 0 && screenPos.x > 0 && screenPos.x < Screen.width && screenPos.y > 0 && screenPos.y < Screen.height;
     }
 
@@ -76,7 +71,25 @@ public class ObjectNameUI : MonoBehaviour
             Vector3 canvasPos = screenPos / canvas.scaleFactor;
             nameUI.transform.position = canvasPos;
         }
+    }
 
+    void UpdateUIPositionOffScreen()
+    {
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+
+        if (screenPos.z < 0)
+        {
+            screenPos *= -1;
+        }
+
+        screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width);
+        screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height);
+
+        if (nameUI != null)
+        {
+            Vector3 canvasPos = screenPos / canvas.scaleFactor;
+            nameUI.transform.position = canvasPos;
+        }
     }
 
     void UpdateUIScale()

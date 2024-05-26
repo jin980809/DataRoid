@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     {
         data.Clear();
 
-        tempData = new string[8];
+        tempData = new string[12];
         tempData[0] = "SavePoint";
         tempData[1] = "Data";
         tempData[2] = "MaxData";
@@ -54,6 +54,10 @@ public class GameManager : MonoBehaviour
         tempData[5] = "ShotgunAmmo";
         tempData[6] = "LazerAmmo";
         tempData[7] = "UFSData";
+        tempData[8] = "LoadedHandgun";
+        tempData[9] = "LoadedRiffle";
+        tempData[10] = "LoadedShotgun";
+        tempData[11] = "LoadedLazer";
         data.Add(tempData);
     }
 
@@ -70,6 +74,12 @@ public class GameManager : MonoBehaviour
         MaterialManager.Instance.ShotgunAmmo = int.Parse(dicList[0]["ShotgunAmmo"] + "");
         MaterialManager.Instance.LazerAmmo = int.Parse(dicList[0]["LazerAmmo"] + "");
         MaterialManager.Instance.UFSData = int.Parse(dicList[0]["UFSData"] + "");
+
+        player.weapons[0].GetComponent<Weapon>().curAmmo = int.Parse(dicList[0]["LoadedHandgun"] + "");
+        player.weapons[1].GetComponent<Weapon>().curAmmo = int.Parse(dicList[0]["LoadedRiffle"] + "");
+        player.weapons[2].GetComponent<Weapon>().curAmmo = int.Parse(dicList[0]["LoadedShotgun"] + "");
+        player.weapons[3].GetComponent<Weapon>().curAmmo = int.Parse(dicList[0]["LoadedLazer"] + "");
+
 
         spawnPoint = int.Parse(dicList[0]["SavePoint"] + "");
 
@@ -100,7 +110,7 @@ public class GameManager : MonoBehaviour
 
     public void SaveCSVFile(int savePointIndex)
     {
-        tempData = new string[8];
+        tempData = new string[12];
         tempData[0] = savePointIndex.ToString();
         tempData[1] = ProgressManager.Instance.curData.ToString();
         tempData[2] = ProgressManager.Instance.saveData.ToString();
@@ -109,6 +119,10 @@ public class GameManager : MonoBehaviour
         tempData[5] = MaterialManager.Instance.ShotgunAmmo.ToString();
         tempData[6] = MaterialManager.Instance.LazerAmmo.ToString();
         tempData[7] = MaterialManager.Instance.UFSData.ToString();
+        tempData[8] = player.weapons[0].GetComponent<Weapon>().curAmmo.ToString();
+        tempData[9] = player.weapons[1].GetComponent<Weapon>().curAmmo.ToString();
+        tempData[10] = player.weapons[2].GetComponent<Weapon>().curAmmo.ToString();
+        tempData[11] = player.weapons[3].GetComponent<Weapon>().curAmmo.ToString();
         data.Add(tempData);
 
         string[][] output = new string[data.Count][];

@@ -24,6 +24,7 @@ public class Enemy_Bomb : Enemy
     [Header("Bomb")]
     public bool isBomb;
     public bool isDetectBomb; // 범위에 닿으면 다가가서 터지기
+    bool bombChasing = false;
     bool isBombAttack = false ;
     public float activeHP;
     public float bombTime;
@@ -182,10 +183,6 @@ public class Enemy_Bomb : Enemy
                 {
                     if (!IsObstacleBetween(thisPos, target.transform.position, LayerMask.GetMask("Enviroment", "Door")) && !isDeath)
                     {
-
-                        //nav.SetDestination(target.transform.position);
-                        //nav.speed = bombActiveSpeed;
-
                         if (!isBombAttack && !isDeath)
                         {
                             anim.SetTrigger("doRise");
@@ -195,19 +192,40 @@ public class Enemy_Bomb : Enemy
                         }
                     }
                 }
+
+                if(bombChasing)
+                {
+                    nav.SetDestination(target.transform.position);
+                    
+
+                    if (nav.remainingDistance <= 1f)
+                    {
+                        nav.velocity = Vector3.zero;
+                        nav.isStopped = true;
+                        nav.speed = 0;
+                    }
+                    else
+                    {
+                        nav.isStopped = false;
+                        nav.speed = bombActiveSpeed;
+                    }
+                    
+                }
             }
         }
     }
 
     IEnumerator Bomb()
     {
-        yield return new WaitForSeconds(bombTime);
-        nav.speed = 0;
+        yield return new WaitForSeconds(3f);
+        nav.speed = bombActiveSpeed;
+        nav.isStopped = false;
+        bombChasing = true;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(bombTime);
         bombRange.enabled = true;
         bombEffect.SetActive(true);
-        nav.SetDestination(transform.position);
+        //nav.SetDestination(transform.position);
 
         yield return new WaitForSeconds(0.3f);
         bombRange.enabled = false;

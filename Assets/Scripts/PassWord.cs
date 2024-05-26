@@ -1,15 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 public class PassWord : MonoBehaviour
 {
     public Interaction interaction;
     public bool isDone = false;
-    public TMP_InputField[] passWordInput;
-    public string[] passWord;
+
     public Player player;
     public bool isDroneOn;
 
@@ -25,43 +22,12 @@ public class PassWord : MonoBehaviour
     public GameObject[] d_gameObj;
     public Interaction[] d_interaction;
 
-    bool qDown;
 
     void Start()
     {
 
     }
-
-    void Update()
-    {
-        qDown = Input.GetButtonDown("Cancel");
-
-        if (isPassWordCorrect())
-        {
-            Debug.Log("unlock");
-            isDone = true;
-            PassWordResult();
-            ExitPassWord();
-        }
-
-        if(qDown)
-        {
-            ExitPassWord();
-        }
-    }
-
-    bool isPassWordCorrect()
-    {
-        for(int i = 0; i < passWord.Length; i++)
-        {
-            if(!string.Equals(passWord[i], passWordInput[i].text))
-            return false;
-        }
-
-        return true;
-    }
-
-    void PassWordResult()
+    public void PassWordResult()
     {
         for (int i = 0; i < a_col.Length; i++)
             a_col[i].enabled = true;
@@ -88,7 +54,7 @@ public class PassWord : MonoBehaviour
         }
     }
 
-    void ExitPassWord()
+    public void ExitPassWord()
     {
         interaction.isActive = false;
         interaction.v_Cam.SetActive(true);
