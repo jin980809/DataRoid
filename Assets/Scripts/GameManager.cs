@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     string[] tempData;
     public Player player;
     public string wfileName = "Save";
-
+    public string userName;
     [Space(10)]
     [Header("Player Spawn")]
     public Transform[] spawnPoints;
@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     {
         data.Clear();
 
-        tempData = new string[12];
+        tempData = new string[15];
         tempData[0] = "SavePoint";
         tempData[1] = "Data";
         tempData[2] = "MaxData";
@@ -58,6 +58,9 @@ public class GameManager : MonoBehaviour
         tempData[9] = "LoadedRiffle";
         tempData[10] = "LoadedShotgun";
         tempData[11] = "LoadedLazer";
+        tempData[12] = "QuestText";
+        tempData[13] = "TargetIcon";
+        tempData[14] = "UserName";
         data.Add(tempData);
     }
 
@@ -79,7 +82,9 @@ public class GameManager : MonoBehaviour
         player.weapons[1].GetComponent<Weapon>().curAmmo = int.Parse(dicList[0]["LoadedRiffle"] + "");
         player.weapons[2].GetComponent<Weapon>().curAmmo = int.Parse(dicList[0]["LoadedShotgun"] + "");
         player.weapons[3].GetComponent<Weapon>().curAmmo = int.Parse(dicList[0]["LoadedLazer"] + "");
-
+        UIManager.Instance.questText.text = dicList[0]["QuestText"] + "";
+        ObjectManager.Instance.nameTagIndex = int.Parse(dicList[0]["TargetIcon"] + "");
+        userName = dicList[0]["UserName"] + "";
 
         spawnPoint = int.Parse(dicList[0]["SavePoint"] + "");
 
@@ -110,7 +115,7 @@ public class GameManager : MonoBehaviour
 
     public void SaveCSVFile(int savePointIndex)
     {
-        tempData = new string[12];
+        tempData = new string[15];
         tempData[0] = savePointIndex.ToString();
         tempData[1] = ProgressManager.Instance.curData.ToString();
         tempData[2] = ProgressManager.Instance.saveData.ToString();
@@ -123,6 +128,11 @@ public class GameManager : MonoBehaviour
         tempData[9] = player.weapons[1].GetComponent<Weapon>().curAmmo.ToString();
         tempData[10] = player.weapons[2].GetComponent<Weapon>().curAmmo.ToString();
         tempData[11] = player.weapons[3].GetComponent<Weapon>().curAmmo.ToString();
+        tempData[12] = UIManager.Instance.questText.text;
+        tempData[13] = ObjectManager.Instance.nameTagIndex.ToString();
+        tempData[14] = userName;
+
+
         data.Add(tempData);
 
         string[][] output = new string[data.Count][];

@@ -30,7 +30,23 @@ public class Interaction : FadeController
     public bool isNonCharging;
     public bool isFade;
     public bool isTextOn;
+    public bool isQuestUpdate;
+    public bool isNameTagOn;
+    public bool isGetData;
     public Player player;
+
+    [Space(10)]
+    [Header("Quest Text")]
+    public string questText;
+
+    [Space(10)]
+    [Header("NameTag On Off")]
+    public int nameTagIndex;
+
+    [Space(10)]
+    [Header("GetData")]
+    public float getDataAmount;
+    public bool hasData;
 
     [Space(10)]
     [Header("Save Object")]
@@ -130,7 +146,7 @@ public class Interaction : FadeController
     public GameObject rotate_Camera;
     public Transform rotate_Camera_Pos;
     private ObjectRotater objRotater;
-    public bool hasData;
+    public bool hasUFSData;
 
     [Space(10)]
     [Header("ObjectOn")]
@@ -171,7 +187,7 @@ public class Interaction : FadeController
         {
             if (interactionType == Type.ObjectRotater)
             {
-                hasData = ObjectManager.Instance.saveObjects[ObjectID]; //true 면 데이터 있음 / false면 데이터 없음(이미 습득)
+                hasUFSData = ObjectManager.Instance.saveObjects[ObjectID]; //true 면 데이터 있음 / false면 데이터 없음(이미 습득)
             }
             else if(interactionType == Type.ObjectOn && !ObjectManager.Instance.saveObjects[ObjectID])
             {
@@ -186,6 +202,11 @@ public class Interaction : FadeController
             {
                 transform.gameObject.SetActive(ObjectManager.Instance.saveObjects[ObjectID]);
             }
+
+            if (isGetData)
+            {
+                hasData = !ObjectManager.Instance.saveObjects[ObjectID];
+            }
         }
 
         curCoolTime = coolTime;
@@ -194,6 +215,8 @@ public class Interaction : FadeController
         {
             passWord = passWordUI.GetComponent<PassWord>();
         }
+
+
     }
 
     void Update()
@@ -227,7 +250,7 @@ public class Interaction : FadeController
 
         if(interactionType == Type.ObjectRotater)
         {
-            if (hasData == false && isSaveObject)
+            if (hasUFSData == false && isSaveObject)
             {
                 ObjectManager.Instance.saveObjects[ObjectID] = false;
             }
@@ -243,6 +266,26 @@ public class Interaction : FadeController
         //        }
         //    }
         //}
+    }
+
+    void UIObjectOn()
+    {
+        if (isQuestUpdate)
+        {
+            UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
+            UIManager.Instance.questText.text = questText;
+        }
+
+        if(isNameTagOn)
+        {
+            ObjectManager.Instance.SetNameTag(nameTagIndex);
+        }
+
+        if(isGetData && !hasData)
+        {
+            ProgressManager.Instance.curData += getDataAmount;
+            hasData = true;
+        }
     }
 
     void CoolDown()
@@ -266,7 +309,7 @@ public class Interaction : FadeController
     {
         if (interactionType == Type.ObjectRotater)
         {
-            if (hasData == false && isSaveObject)
+            if (hasUFSData == false && isSaveObject)
             {
                 ObjectManager.Instance.saveObjects[ObjectID] = false;
             }
@@ -352,7 +395,6 @@ public class Interaction : FadeController
                 break;
         }
 
-
         //if(GetComponent<ObjectNameUI>() != null )
         //{
         //    GetComponent<ObjectNameUI>().nameUI.SetActive(false);
@@ -386,7 +428,9 @@ public class Interaction : FadeController
 
             OpenDoor();
 
-            if(!isNotClose)
+            UIObjectOn();
+
+            if (!isNotClose)
                 Invoke("CloseDoor", openTime);
         }
         else
@@ -444,6 +488,7 @@ public class Interaction : FadeController
     void MovePlayer()
     {
         SaveObject();
+        UIObjectOn();
         StartCoroutine(MovePlayer(1.5f));
     }
 
@@ -456,6 +501,7 @@ public class Interaction : FadeController
     void ObjectActive()
     {
         SaveObject();
+        UIObjectOn();
         activeObj.SetActive(activeTrue);
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
@@ -469,6 +515,7 @@ public class Interaction : FadeController
     void GunActive()
     {
         SaveObject();
+        UIObjectOn();
         player.hasWeapons[gunIndex] = true;
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
@@ -477,6 +524,7 @@ public class Interaction : FadeController
     void GetData()
     {
         SaveObject();
+        UIObjectOn();
         MaterialManager.Instance.UFSData += DataCount;
         transform.gameObject.SetActive(false);
         ObjectManager.Instance.saveObjects[ObjectID] = false;
@@ -495,6 +543,7 @@ public class Interaction : FadeController
             MaterialManager.Instance.UFSData -= needUFSData;
             ProgressManager.Instance.curData += getData;
             ObjectOn();
+            UIObjectOn();
         }
         else
         {
@@ -612,7 +661,7 @@ public class Interaction : FadeController
         rotate_Camera.transform.position = rotate_Camera_Pos.position;
         rotate_Camera.transform.rotation = rotate_Camera_Pos.rotation;
 
-        if (hasData)
+        if (hasUFSData)
         {
             if (data_inst_Object == null)
             {
@@ -651,6 +700,8 @@ public class Interaction : FadeController
         if (MaterialManager.Instance.UFSData >= o_needUSFData)
         {
             MaterialManager.Instance.UFSData -= o_needUSFData;
+
+            UIObjectOn();
 
             ObjectOnOff();
 
@@ -696,6 +747,8 @@ public class Interaction : FadeController
         }
         else
         {
+            UIObjectOn();
+
             switch (weaponIndex)
             {
                 case 1:
@@ -712,6 +765,7 @@ public class Interaction : FadeController
             }
 
             hasOpen = true;
+            SaveObject();
         }
     }
 }

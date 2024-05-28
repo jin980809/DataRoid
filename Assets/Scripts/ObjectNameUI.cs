@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ObjectNameUI : MonoBehaviour
 {
+    public Player player;
     public GameObject nameUI; // 积己等 利 UI
     public bool isNameTagOpen;
     public GameObject nameUIPrefab;
     public Canvas canvas;
     public Camera mainCamera;
+    private float distance;
+    private Text distText;
 
     void Update()
     {
@@ -20,6 +24,9 @@ public class ObjectNameUI : MonoBehaviour
         if (isNameTagOpen)
         {
             CreateEnemyUI();
+
+            distText.text = Vector3.Distance(player.transform.position, transform.position).ToString();
+
             if (IsEnemyVisible())
             {
                 UpdateUIPosition();
@@ -49,6 +56,7 @@ public class ObjectNameUI : MonoBehaviour
         if (nameUI == null)
         {
             nameUI = Instantiate(nameUIPrefab, canvas.transform);
+            distText = nameUI.GetComponentInChildren<Text>();
         }
         else
         {

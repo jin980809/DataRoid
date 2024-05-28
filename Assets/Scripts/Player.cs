@@ -206,8 +206,6 @@ public class Player : MonoBehaviour
 
         Interaction();
 
-        InteractionCheck();
-
         //OCInventory();
         newOCInventory();
 
@@ -1117,19 +1115,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    void InteractionCheck()
-    {
-        RaycastHit[] hit = Physics.SphereCastAll(transform.position, 5, Vector3.up, 0f, LayerMask.GetMask("Interaction"));
-        int count = 0;
-        foreach (RaycastHit i in hit)
-        {
-            if (!IsObstacleBetween(transform.position, i.transform.position, LayerMask.GetMask("Enviroment")))
-            {
-                count++;
-            }
-        }
-        UIManager.Instance.detectCount.text = "Interaction Detect : " + count;
-    }
 
     //void EnemyHacking()
     //{
@@ -1273,29 +1258,29 @@ public class Player : MonoBehaviour
         return false;
     }
 
-    void OCInventory()
-    {
-        if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
-        {
+    //void OCInventory()
+    //{
+    //    if ((iDown || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction && !CreateManager.Instance.isCreating && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+    //    {
 
-            if (iDown)
-            {
-                isInventoryOpen = !isInventoryOpen;
-                Time.timeScale = isInventoryOpen ? 0f : 1.0f;
-                cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.inventoryPanel.SetActive(isInventoryOpen);
-            }
+    //        if (iDown)
+    //        {
+    //            isInventoryOpen = !isInventoryOpen;
+    //            Time.timeScale = isInventoryOpen ? 0f : 1.0f;
+    //            cameraArm.enabled = !isInventoryOpen;
+    //            UIManager.Instance.inventoryPanel.SetActive(isInventoryOpen);
+    //        }
 
-            if(qDown)
-            {
-                isInventoryOpen = false;
-                Time.timeScale = 1.0f;
-                cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.inventoryPanel.SetActive(isInventoryOpen);
-                UIManager.Instance.skillButtonUIAnim.SetTrigger("PlayerSkill_Close");
-            }
-        }
-    }
+    //        if(qDown)
+    //        {
+    //            isInventoryOpen = false;
+    //            Time.timeScale = 1.0f;
+    //            cameraArm.enabled = !isInventoryOpen;
+    //            UIManager.Instance.inventoryPanel.SetActive(isInventoryOpen);
+    //            UIManager.Instance.skillButtonUIAnim.SetTrigger("PlayerSkill_Close");
+    //        }
+    //    }
+    //}
 
     void newOCInventory()
     {

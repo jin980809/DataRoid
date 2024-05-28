@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class PassWord : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class PassWord : MonoBehaviour
 
     public Player player;
     public bool isDroneOn;
+    public bool isNameTagOn;
+    public int nameTagIndex;
 
     [Space(10)]
     [Header("Active")]
@@ -22,11 +25,19 @@ public class PassWord : MonoBehaviour
     public GameObject[] d_gameObj;
     public Interaction[] d_interaction;
 
-
     void Start()
     {
 
     }
+
+    public void NameTagOnOff()
+    {
+        if(isNameTagOn)
+        {
+            ObjectManager.Instance.SetNameTag(nameTagIndex);
+        }
+    }
+
     public void PassWordResult()
     {
         for (int i = 0; i < a_col.Length; i++)
@@ -65,7 +76,7 @@ public class PassWord : MonoBehaviour
 
     IEnumerator ActiveFalse()
     {
-        yield return new WaitForSeconds(0.01f);
+        yield return new WaitForSeconds(0.1f);
         transform.gameObject.SetActive(false);
     }
 }

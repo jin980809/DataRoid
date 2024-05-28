@@ -123,6 +123,7 @@ public class LockPattern : PassWord
             Debug.Log("unlock");
             isDone = true;
             PassWordResult();
+            NameTagOnOff();
             ExitPassWord();
         }
         else

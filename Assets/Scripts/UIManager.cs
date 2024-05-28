@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
     public Animator mainUIAnim;
     public Animator menuUIAnim;
     public Animator textUIAnim;
+    public Animator questUIAnim;
     public Animator skillButtonUIAnim;
     public Player player;
     public Image hpGauge;
@@ -34,17 +35,18 @@ public class UIManager : MonoBehaviour
     [Header("Interaction")]
     public Image InteractionGauge;
     public Image InteractionGaugeGlow;
-    public Text detectCount;
+    //public Text detectCount;
 
-    [Space(10)]
-    [Header("Inventory")]
-    public GameObject inventoryPanel;
-    public Text steelAmount;
-    public Text gunPowderAmount;
-    public Text ExpPieceAmount;
-    public Text ammoAmount;
-    public Text specialAmmoAmount;
-    public Text ExpCapsuleAmount;
+    //[Space(10)]
+    //[Header("Inventory")]
+    //public GameObject inventoryPanel;
+    //public Text steelAmount;
+    //public Text gunPowderAmount;
+    //public Text ExpPieceAmount;
+    //public Text ammoAmount;
+    //public Text maxAmmoAmount;
+    //public Text specialAmmoAmount;
+    //public Text ExpCapsuleAmount;
 
     [Space(10)]
     [Header("Creating")]
@@ -85,10 +87,12 @@ public class UIManager : MonoBehaviour
     public Image rifleImage;
     public Image shotGunImage;
     public Text AmmoText;
+    public Text maxAmmoText;
 
     [Space(10)]
     [Header("DroneTextBox")]
     public Text DroneText;
+    public TextOnOff textOnOff;
 
     [Space(10)]
     [Header("PlayerDead UI")]
@@ -102,6 +106,10 @@ public class UIManager : MonoBehaviour
     [Header("F Button UI")]
     public Image fButton;
 
+    [Space(10)]
+    [Header("Quest Text")]
+    public Text questText;
+
     void Start()
     {
         mainUIAnim.SetTrigger("Open");
@@ -109,16 +117,15 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        TextUpdate();
         InteractionGaugeGlow.fillAmount = InteractionGauge.fillAmount;
 
         float hp = player.curHp / player.maxHp;
         if (hp < 0) hp = 0;
         hpGauge.fillAmount = hp;
 
-        float data = ProgressManager.Instance.dataAverage / 100f;
+        float data = ProgressManager.Instance.curData / 100f;
         if (data < 0) data = 0;
-        DataGauge.fillAmount = 1 - data;
+        DataGauge.fillAmount = data;
 
         //for(int i = 0; i < hpGauges.Length; i++)
         //{
@@ -136,17 +143,6 @@ public class UIManager : MonoBehaviour
         GunImageChange(player.equipWeaponIndex);
     }
 
-    void TextUpdate()
-    {
-        steelAmount.text = "Steel : " + MaterialManager.Instance.ShotgunAmmo;
-        gunPowderAmount.text = "LazerAmmo : " + MaterialManager.Instance.LazerAmmo;
-        ExpPieceAmount.text = "ExpPiece : " + MaterialManager.Instance.ExpPiece;
-        ammoAmount.text = "Ammo : " + MaterialManager.Instance.HandgunAmmo;
-        specialAmmoAmount.text = "SpecialAmmo : " + MaterialManager.Instance.RifleAmmo;
-        ExpCapsuleAmount.text = "ExpCapsule : " + MaterialManager.Instance.ExpCapsule;
-        hpText.text = (int)((player.curHp / player.maxHp) * 100) + "%";
-        Datatext.text = (int)ProgressManager.Instance.dataAverage + "%";
-    }
 
     public void CreateTextBox(string text)
     {
@@ -175,11 +171,16 @@ public class UIManager : MonoBehaviour
             rifleImage.gameObject.SetActive(false);
             shotGunImage.gameObject.SetActive(false);
             AmmoText.gameObject.SetActive(false);
+            maxAmmoText.gameObject.SetActive(false);
+
         }
         else
         {
             AmmoText.gameObject.SetActive(true);
-            AmmoText.text = player.weapon.curAmmo + " / " + player.weapon.maxAmmo;
+            maxAmmoText.gameObject.SetActive(true);
+            AmmoText.text = player.weapon.curAmmo.ToString();
+            maxAmmoText.text = player.weapon.maxAmmo.ToString();
+
             switch (gunIndex)
             {
                 case 0:

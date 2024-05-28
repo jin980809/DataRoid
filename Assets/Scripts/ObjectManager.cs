@@ -29,6 +29,11 @@ public class ObjectManager : MonoBehaviour
     public string wfileName = "Object.csv";
     public string fileName = "Object";
 
+    [Space(10)]
+    [Header("Name Tag")]
+    public ObjectNameUI[] nameTags;
+    public int nameTagIndex;
+
     void Awake()
     {
         LoadCSVFile();
@@ -42,12 +47,28 @@ public class ObjectManager : MonoBehaviour
 
     void Start()
     {
-
+        SetNameTag(nameTagIndex);
     }
 
     void Update()
     {
         //ESN08Clear();
+    }
+
+    public void SetNameTag(int index)
+    {
+
+        for(int i = 0; i < nameTags.Length; i++)
+        {
+            nameTags[i].isNameTagOpen = false;
+        }
+
+        if (index != -1)
+        {
+            nameTags[index].isNameTagOpen = true;
+        }
+
+        nameTagIndex = index;
     }
 
     void Initialization()
