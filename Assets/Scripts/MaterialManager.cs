@@ -18,6 +18,8 @@ public class MaterialManager : MonoBehaviour
     }
     private static MaterialManager m_instance;
 
+    public Player player;
+
     public int ShotgunAmmo;
     public int LazerAmmo;
     public int ExpPiece;
@@ -25,4 +27,5 @@ public class MaterialManager : MonoBehaviour
     public int RifleAmmo;
     public int ExpCapsule;
     public int UFSData;
+
 }

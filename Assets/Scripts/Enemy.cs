@@ -58,8 +58,6 @@ public class Enemy : MonoBehaviour
     //public GameObject enemyPrefab; // 프리팹으로 사용할 적 UI
     //public Canvas canvas; // UI가 속한 캔버스
     //public GameObject enemyUI; // 생성된 적 UI
-    RectTransform rectTransform; // RectTransform 컴포넌트
-    public Camera mainCamera;
     public float rotateRate = 1;
 
     [Space(10f)]

@@ -15,6 +15,7 @@ TagManager:
   - EnemyRightLeg
   - EnemyHead
   - AroundPoint
+  - BrokenObject
   layers:
   - Default
   - TransparentFX

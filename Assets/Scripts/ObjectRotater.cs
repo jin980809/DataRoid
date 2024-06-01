@@ -13,6 +13,12 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
     public Interaction interaction;
     bool qDown;
 
+    public bool isQuestUpdate;
+
+    public string questText;
+    public bool useUSFDataVariation;
+    public string questTextPlus;
+
     public void OnDrag(PointerEventData eventData)
     {
         float x = eventData.delta.x * Time.deltaTime * rotateSpeed;
@@ -55,6 +61,19 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
                     {
                         hit.transform.GetComponent<RotateObjectHasData>().getData = true;
                         MaterialManager.Instance.UFSData += 1;
+                        if (isQuestUpdate)
+                        {
+                            UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
+
+                            if (useUSFDataVariation)
+                            {
+                                UIManager.Instance.questText.text = questText + MaterialManager.Instance.UFSData.ToString() + questTextPlus;
+                            }
+                            else
+                            {
+                                UIManager.Instance.questText.text = questText;
+                            }
+                        }
                         UIManager.Instance.OpenObjectGetText("Get Data");
                         hit.transform.gameObject.SetActive(false);
                         interaction.hasData = false;

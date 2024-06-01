@@ -79,7 +79,7 @@ public class Enemy_Flash : Enemy
 
         if (isDeath && !getData)
         {
-            ProgressManager.Instance.curCameraData += 4;
+            //ProgressManager.Instance.curCameraData += 4;
             if (flash != null)
             {
                 StopCoroutine(flash);

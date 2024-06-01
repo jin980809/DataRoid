@@ -21,13 +21,4 @@ public class Weapon : MonoBehaviour
     public bool isLazer;
     public Hovl_DemoLasers lazerEffect;
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 }

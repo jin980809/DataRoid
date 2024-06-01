@@ -65,10 +65,10 @@ public class EnemyA : Enemy
 
         if (isDeath && !getData)
         {
-            ProgressManager.Instance.curAlarmData += 1;
-            ProgressManager.Instance.curCameraData += 1;
-            ProgressManager.Instance.curSilentData += 1;
-            ProgressManager.Instance.curNetworkData += 1;
+            //ProgressManager.Instance.curAlarmData += 1;
+            //ProgressManager.Instance.curCameraData += 1;
+            //ProgressManager.Instance.curSilentData += 1;
+            //ProgressManager.Instance.curNetworkData += 1;
             getData = true;
         }
     }
@@ -98,7 +98,7 @@ public class EnemyA : Enemy
                 if (isShotChase && !isDeath && !isStun && isSubdueReady)
                 {
                     nav.SetDestination(playerShotPos);
-                    if (nav.remainingDistance <= 0.5f)
+                    if (nav.remainingDistance <= 0f)
                         isShotChase = false;
                 }
             }
@@ -150,7 +150,7 @@ public class EnemyA : Enemy
             {
                 nav.speed = walkSpeed * speedDiscountRate;
                 isChase = false;
-                isShotChase = false;
+                //isShotChase = false;
                 nav.SetDestination(aroundTarget[aroundTargetIndex].position);
                 if (isStop && isNotAround)
                 {
@@ -160,7 +160,7 @@ public class EnemyA : Enemy
             else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
             {
                 nav.SetDestination(playerShotPos);
-                if (nav.remainingDistance <= 0.5f)
+                if (nav.remainingDistance <= 0f)
                 {
                     isShotChase = false;
                     nav.SetDestination(aroundTarget[aroundTargetIndex].position);
@@ -224,7 +224,7 @@ public class EnemyA : Enemy
             {
                 isChase = false;
                 nav.SetDestination(playerShotPos);
-                if (nav.remainingDistance <= 0.5f)
+                if (nav.remainingDistance <= 0f)
                 {
                     isShotChase = false;
                     nav.SetDestination(aroundTarget[aroundTargetIndex].position);
@@ -379,7 +379,7 @@ public class EnemyA : Enemy
     {
         if (!isChase && !isDeath && !isStun && !isNotAround)
         {
-            if (nav.remainingDistance <= 0.5f)
+            if (nav.remainingDistance <= 0f)
             {
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
                 //if (aroundTargetIndex == aroundTarget.Length - 1)
@@ -418,7 +418,7 @@ public class EnemyA : Enemy
         {
             nav.SetDestination(aroundTarget[0].position);
 
-            if (nav.remainingDistance <= 0.5f)
+            if (nav.remainingDistance <= 0f)
             {
                 nav.speed = 0;
                 isStop = true;

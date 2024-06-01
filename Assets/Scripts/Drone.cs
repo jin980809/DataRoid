@@ -18,7 +18,6 @@ public class Drone : MonoBehaviour
         {
             transform.gameObject.SetActive(true);
             player.droneOn = true;
-
         }
         else
         {

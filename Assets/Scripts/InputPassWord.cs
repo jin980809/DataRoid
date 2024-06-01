@@ -81,6 +81,8 @@ public class InputPassWord : PassWord
         {
             isDone = true;
             GameManager.Instance.userName = passWordInput[0].text;
+            UIManager.Instance.t_QuestText.text = GameManager.Instance.userName + "ÀÇ ±â¾ï";
+            PassWordResult();
             ExitPassWord();
         }
     }

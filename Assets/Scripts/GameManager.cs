@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     {
         data.Clear();
 
-        tempData = new string[15];
+        tempData = new string[17];
         tempData[0] = "SavePoint";
         tempData[1] = "Data";
         tempData[2] = "MaxData";
@@ -61,6 +61,8 @@ public class GameManager : MonoBehaviour
         tempData[12] = "QuestText";
         tempData[13] = "TargetIcon";
         tempData[14] = "UserName";
+        tempData[15] = "BatteryLevel";
+        tempData[16] = "StatLevel";
         data.Add(tempData);
     }
 
@@ -85,6 +87,8 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.questText.text = dicList[0]["QuestText"] + "";
         ObjectManager.Instance.nameTagIndex = int.Parse(dicList[0]["TargetIcon"] + "");
         userName = dicList[0]["UserName"] + "";
+        ProgressManager.Instance.batteryLevel = int.Parse(dicList[0]["BatteryLevel"] + "");
+        ProgressManager.Instance.statLevel = int.Parse(dicList[0]["StatLevel"] + "");
 
         spawnPoint = int.Parse(dicList[0]["SavePoint"] + "");
 
@@ -115,7 +119,7 @@ public class GameManager : MonoBehaviour
 
     public void SaveCSVFile(int savePointIndex)
     {
-        tempData = new string[15];
+        tempData = new string[17];
         tempData[0] = savePointIndex.ToString();
         tempData[1] = ProgressManager.Instance.curData.ToString();
         tempData[2] = ProgressManager.Instance.saveData.ToString();
@@ -131,7 +135,8 @@ public class GameManager : MonoBehaviour
         tempData[12] = UIManager.Instance.questText.text;
         tempData[13] = ObjectManager.Instance.nameTagIndex.ToString();
         tempData[14] = userName;
-
+        tempData[15] = ProgressManager.Instance.batteryLevel.ToString();
+        tempData[16] = ProgressManager.Instance.statLevel.ToString();
 
         data.Add(tempData);
 

@@ -16,7 +16,8 @@ public class ObjectNameUI : MonoBehaviour
 
     void Update()
     {
-        ObjectUI();
+        if(mainCamera.gameObject.activeSelf)
+            ObjectUI();
     }
 
     public void ObjectUI()

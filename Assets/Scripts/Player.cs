@@ -159,6 +159,7 @@ public class Player : MonoBehaviour
     [Header("Search")]
     private bool isScan = false;
     public bool droneOn;
+    public bool deviceOn;
     public float searchDistance;
     public float nameTagDisappearSeconds;
     public GameObject scanEffect;
@@ -188,6 +189,11 @@ public class Player : MonoBehaviour
         //curHackingNum = 0;
     }
 
+    void Start()
+    {
+        curHp = maxHp;
+    }
+
     void Update()
     {
         GetInput();
@@ -212,7 +218,7 @@ public class Player : MonoBehaviour
         FlashLightOnOff();
 
         //EnemyHacking();
-        //Granade();
+        Granade();
 
         Swap();
 
@@ -229,6 +235,11 @@ public class Player : MonoBehaviour
         WeaponEnable();
 
         ObjectNameTag();
+
+        if(curHp > maxHp)
+        {
+            curHp = maxHp;
+        }
     }
 
     void GetInput()
@@ -261,22 +272,6 @@ public class Player : MonoBehaviour
         if(MaterialManager.Instance.RifleAmmo > 0 || weapons[1].GetComponent<Weapon>().curAmmo > 0)
         {
             hasWeapons[1] = true;
-            if(autoReload[1])
-            {
-                Weapon _weapon = weapons[1].GetComponent<Weapon>();
-                if (MaterialManager.Instance.RifleAmmo > _weapon.maxAmmo)
-                {
-                    _weapon.curAmmo = _weapon.maxAmmo;
-                    MaterialManager.Instance.RifleAmmo -= _weapon.maxAmmo;
-                }
-                else
-                {
-                    _weapon.curAmmo = MaterialManager.Instance.RifleAmmo;
-                    MaterialManager.Instance.RifleAmmo = 0;
-                }
-
-                autoReload[1] = false;
-            }
         }
         else
         {
@@ -298,23 +293,7 @@ public class Player : MonoBehaviour
 
         if (MaterialManager.Instance.ShotgunAmmo > 0 || weapons[2].GetComponent<Weapon>().curAmmo > 0)
         {
-            hasWeapons[2] = true;
-            if (autoReload[2])
-            {
-                Weapon _weapon = weapons[2].GetComponent<Weapon>();
-                if (MaterialManager.Instance.RifleAmmo > _weapon.maxAmmo)
-                {
-                    _weapon.curAmmo = _weapon.maxAmmo;
-                    MaterialManager.Instance.RifleAmmo -= _weapon.maxAmmo;
-                }
-                else
-                {
-                    _weapon.curAmmo = MaterialManager.Instance.RifleAmmo;
-                    MaterialManager.Instance.RifleAmmo = 0;
-                }
-
-                autoReload[2] = false;
-            }
+            hasWeapons[2] = true; 
         }
         else
         {
@@ -337,22 +316,6 @@ public class Player : MonoBehaviour
         if (MaterialManager.Instance.LazerAmmo > 0 || weapons[3].GetComponent<Weapon>().curAmmo > 0)
         {
             hasWeapons[3] = true;
-            if (autoReload[3])
-            {
-                Weapon _weapon = weapons[3].GetComponent<Weapon>();
-                if (MaterialManager.Instance.RifleAmmo > _weapon.maxAmmo)
-                {
-                    _weapon.curAmmo = _weapon.maxAmmo;
-                    MaterialManager.Instance.RifleAmmo -= _weapon.maxAmmo;
-                }
-                else
-                {
-                    _weapon.curAmmo = MaterialManager.Instance.RifleAmmo;
-                    MaterialManager.Instance.RifleAmmo = 0;
-                }
-
-                autoReload[3] = false;
-            }
         }
         else
         {
@@ -559,6 +522,56 @@ public class Player : MonoBehaviour
 
             muzzleEffect = weapon.muzzleFlash;
 
+            if(weaponIndex != -1)
+            {
+                if (autoReload[weaponIndex])
+                {
+                    if (weaponIndex == 1)
+                    {
+                        if(MaterialManager.Instance.RifleAmmo > weapon.maxAmmo)
+                        {
+                            weapon.curAmmo = weapon.maxAmmo;
+                            MaterialManager.Instance.RifleAmmo -= weapon.maxAmmo;
+                        }
+                        else
+                        {
+                            weapon.curAmmo = MaterialManager.Instance.RifleAmmo;
+                            MaterialManager.Instance.RifleAmmo = 0;
+                        }
+
+
+                    }
+                    else if (weaponIndex == 2)
+                    {
+                        if (MaterialManager.Instance.ShotgunAmmo > weapon.maxAmmo)
+                        {
+                            weapon.curAmmo = weapon.maxAmmo;
+                            MaterialManager.Instance.ShotgunAmmo -= weapon.maxAmmo;
+                        }
+                        else
+                        {
+                            weapon.curAmmo = MaterialManager.Instance.ShotgunAmmo;
+                            MaterialManager.Instance.ShotgunAmmo = 0;
+                        }
+                    }
+                    else if (weaponIndex == 3)
+                    {
+                        if (MaterialManager.Instance.LazerAmmo > weapon.maxAmmo)
+                        {
+                            weapon.curAmmo = weapon.maxAmmo;
+                            MaterialManager.Instance.LazerAmmo -= weapon.maxAmmo;
+                        }
+                        else
+                        {
+                            weapon.curAmmo = MaterialManager.Instance.LazerAmmo;
+                            MaterialManager.Instance.LazerAmmo = 0;
+                        }
+                    }
+
+                    autoReload[weaponIndex] = false;
+                }
+            }
+
             //anim.SetTrigger("doSwap");
 
             isSwap = true;
@@ -626,6 +639,10 @@ public class Player : MonoBehaviour
                         {
                             enemy.OnDamage(weapon.damage, playerShotPos, hitArea(hit.collider.transform.gameObject));
                         }
+                    }
+                    else
+                    {
+                         StartCoroutine(ShotEffect(hit.point));
                     }
                 }
                 else //레이저건
@@ -872,12 +889,15 @@ public class Player : MonoBehaviour
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
             && /*MaterialManager.Instance.Ammo > 0 &&*/ !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
-            //if (equipWeaponIndex == 0 /*&& MaterialManager.Instance.RifleAmmo <= 0*/)
+            //if (equipWeaponIndex == 0)
             //    return;
-            //if (equipWeaponIndex == 1 /*&& MaterialManager.Instance.HandgunAmmo <= 0*/)
-            //    return;
-            //if (equipWeaponIndex == 2 /*&& MaterialManager.Instance.ShotgunAmmo <= 0*/)
-            //    return;
+            if (equipWeaponIndex == 1 && MaterialManager.Instance.RifleAmmo <= 0)
+                return;
+            if (equipWeaponIndex == 2 && MaterialManager.Instance.ShotgunAmmo <= 0)
+                return;            
+            if (equipWeaponIndex == 3 && MaterialManager.Instance.LazerAmmo <= 0)
+                return;
+
 
             isReload = true;
             isZoom = false;
@@ -902,7 +922,7 @@ public class Player : MonoBehaviour
             }
             else if (equipWeaponIndex == 1)
             {
-                if (MaterialManager.Instance.RifleAmmo < weapon.maxAmmo - weapon.curAmmo)
+                if (MaterialManager.Instance.RifleAmmo < (weapon.maxAmmo - weapon.curAmmo))
                 {
                     weapon.curAmmo += MaterialManager.Instance.RifleAmmo;
                     MaterialManager.Instance.RifleAmmo = 0;
@@ -916,7 +936,7 @@ public class Player : MonoBehaviour
             }
             else if (equipWeaponIndex == 2)
             {
-                if (MaterialManager.Instance.ShotgunAmmo < weapon.maxAmmo - weapon.curAmmo)
+                if (MaterialManager.Instance.ShotgunAmmo < (weapon.maxAmmo - weapon.curAmmo))
                 {
                     weapon.curAmmo += MaterialManager.Instance.ShotgunAmmo;
                     MaterialManager.Instance.ShotgunAmmo = 0;
@@ -930,7 +950,7 @@ public class Player : MonoBehaviour
             }
             else if (equipWeaponIndex == 3)
             {
-                if (MaterialManager.Instance.LazerAmmo < weapon.maxAmmo - weapon.curAmmo)
+                if (MaterialManager.Instance.LazerAmmo < (weapon.maxAmmo - weapon.curAmmo))
                 {
                     weapon.curAmmo += MaterialManager.Instance.LazerAmmo;
                     MaterialManager.Instance.LazerAmmo = 0;
@@ -1053,8 +1073,19 @@ public class Player : MonoBehaviour
                 interactionObj = hit.transform.GetComponent<Interaction>();
                 isMeleeAttackReady = false;
 
-
-                UIManager.Instance.InteractionButtonImage(!isCommunicate);
+                if(interactionObj.isGetData)
+                {
+                    UIManager.Instance.InteractionButtonImage(1);
+                }
+                else if((int)(interactionObj.interactionType) == 1)
+                {
+                    UIManager.Instance.InteractionButtonImage(2);
+                }
+                else //보조배터리 나오면 추가하기
+                {
+                    UIManager.Instance.InteractionButtonImage(0);
+                }
+               
 
 
                 if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
@@ -1110,7 +1141,7 @@ public class Player : MonoBehaviour
         else
         {
             isMeleeAttackReady = true;
-            UIManager.Instance.InteractionButtonImage(false);
+            UIManager.Instance.InteractionButtonImage(-1);
 
         }
     }
@@ -1284,7 +1315,7 @@ public class Player : MonoBehaviour
 
     void newOCInventory()
     {
-        if ((skDown2 || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn)
+        if ((skDown2 || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn && deviceOn)
         {
             if (!isInventoryOpen && skDown2)
             {

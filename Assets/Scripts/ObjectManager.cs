@@ -34,6 +34,10 @@ public class ObjectManager : MonoBehaviour
     public ObjectNameUI[] nameTags;
     public int nameTagIndex;
 
+    [Space(10)]
+    [Header("Drone Object")]
+    public GameObject drone;
+
     void Awake()
     {
         LoadCSVFile();

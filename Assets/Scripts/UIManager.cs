@@ -86,6 +86,7 @@ public class UIManager : MonoBehaviour
     public Image handGunImage;
     public Image rifleImage;
     public Image shotGunImage;
+    public Image LazerImage;
     public Text AmmoText;
     public Text maxAmmoText;
 
@@ -104,15 +105,38 @@ public class UIManager : MonoBehaviour
 
     [Space(10)]
     [Header("F Button UI")]
-    public Image fButton;
+    public GameObject fButton;
+    public GameObject fDataButton;
+    public GameObject fElecButton;
 
     [Space(10)]
     [Header("Quest Text")]
     public Text questText;
+    public Text t_QuestText;
+
+    [Space(10)]
+    [Header("Data Select")]
+    public GameObject selectLevelPanel;
+
+    [Space(10)]
+    [Header("Main UI")]
+    public GameObject mainUI;
 
     void Start()
     {
         mainUIAnim.SetTrigger("Open");
+
+        if(!ObjectManager.Instance.saveObjects[1])
+        {
+            mainUI.SetActive(true);
+            player.deviceOn = true;
+        }
+        else
+        {
+            mainUI.SetActive(false);
+            player.deviceOn = false;
+        }
+        t_QuestText.text = GameManager.Instance.userName + "ÀÇ ±â¾ï";
     }
 
     void Update()
@@ -170,6 +194,8 @@ public class UIManager : MonoBehaviour
             handGunImage.gameObject.SetActive(false);
             rifleImage.gameObject.SetActive(false);
             shotGunImage.gameObject.SetActive(false);
+            LazerImage.gameObject.SetActive(false);
+
             AmmoText.gameObject.SetActive(false);
             maxAmmoText.gameObject.SetActive(false);
 
@@ -184,29 +210,59 @@ public class UIManager : MonoBehaviour
             switch (gunIndex)
             {
                 case 0:
-                    handGunImage.gameObject.SetActive(false);
-                    rifleImage.gameObject.SetActive(true);
-                    shotGunImage.gameObject.SetActive(false);
-                    break;
-
-                case 1:
                     handGunImage.gameObject.SetActive(true);
                     rifleImage.gameObject.SetActive(false);
                     shotGunImage.gameObject.SetActive(false);
+                    LazerImage.gameObject.SetActive(false);
+                    break;
+
+                case 1:
+                    handGunImage.gameObject.SetActive(false);
+                    rifleImage.gameObject.SetActive(true);
+                    shotGunImage.gameObject.SetActive(false);
+                    LazerImage.gameObject.SetActive(false);
                     break;
 
                 case 2:
                     handGunImage.gameObject.SetActive(false);
                     rifleImage.gameObject.SetActive(false);
                     shotGunImage.gameObject.SetActive(true);
+                    LazerImage.gameObject.SetActive(false);
+                    break;
+
+                case 3:
+                    handGunImage.gameObject.SetActive(false);
+                    rifleImage.gameObject.SetActive(false);
+                    shotGunImage.gameObject.SetActive(false);
+                    LazerImage.gameObject.SetActive(true);
                     break;
             }
         }
         
     }
 
-    public void InteractionButtonImage(bool isActive)
+    public void InteractionButtonImage(int index)
     {
-        fButton.gameObject.SetActive(isActive);
+        fButton.SetActive(false);
+        fDataButton.SetActive(false);
+        fElecButton.SetActive(false);
+
+        if(index != -1)
+        {
+            switch(index)
+            {
+                case 0:
+                    fButton.SetActive(true);
+                    break;
+
+                case 1:
+                    fDataButton.SetActive(true);
+                    break;
+
+                case 2:
+                    fElecButton.SetActive(true);
+                    break;
+            }
+        }
     }
 }

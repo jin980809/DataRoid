@@ -11,4 +11,13 @@ public class Attack : MonoBehaviour
     {
         curDamage = damage;
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("BrokenObject"))
+        {
+            other.GetComponent<BrokeObject>().SaveObject();
+            other.gameObject.SetActive(false);
+        }
+    }
 }

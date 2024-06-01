@@ -56,7 +56,7 @@ public class Enemy_Bomb : Enemy
 
         if (isDeath && !getData)
         {
-            ProgressManager.Instance.curAlarmData += 4;
+            //ProgressManager.Instance.curAlarmData += 4;
             if (bombCor != null)
             {
                 StopCoroutine(bombCor);

@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
 using System;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 public class Interaction : FadeController
 {
@@ -14,7 +16,7 @@ public class Interaction : FadeController
         Door = 3,
         SavePoint = 4,
         MovePlayer = 5,
-        ObjecctActive = 6,
+        ObjectActive = 6,
         GunActive = 7,
         GetUSFData = 8,
         LightOn = 9,
@@ -33,11 +35,15 @@ public class Interaction : FadeController
     public bool isQuestUpdate;
     public bool isNameTagOn;
     public bool isGetData;
+    public bool dontDestroy;
     public Player player;
 
     [Space(10)]
     [Header("Quest Text")]
+    [SerializeField]
     public string questText;
+    public bool useUSFDataVariation;
+    public string questTextPlus;
 
     [Space(10)]
     [Header("NameTag On Off")]
@@ -200,7 +206,8 @@ public class Interaction : FadeController
             }
             else
             {
-                transform.gameObject.SetActive(ObjectManager.Instance.saveObjects[ObjectID]);
+                if (!dontDestroy)
+                    transform.gameObject.SetActive(ObjectManager.Instance.saveObjects[ObjectID]);
             }
 
             if (isGetData)
@@ -273,7 +280,15 @@ public class Interaction : FadeController
         if (isQuestUpdate)
         {
             UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
-            UIManager.Instance.questText.text = questText;
+
+            if (useUSFDataVariation)
+            {
+                UIManager.Instance.questText.text = questText + MaterialManager.Instance.UFSData.ToString() + questTextPlus;
+            }
+            else
+            {
+                UIManager.Instance.questText.text = questText;
+            }
         }
 
         if(isNameTagOn)
@@ -358,7 +373,7 @@ public class Interaction : FadeController
                 MovePlayer();
                 break;
 
-            case Type.ObjecctActive:
+            case Type.ObjectActive:
                 ObjectActive();
                 break;
 
@@ -408,6 +423,8 @@ public class Interaction : FadeController
 
         if (player.curHp > player.maxHp)
             player.curHp = player.maxHp;
+
+        transform.gameObject.SetActive(false);
     }
 
     void ConnectCCTV()
@@ -623,6 +640,8 @@ public class Interaction : FadeController
         if(!passWord.isDone)
         {
             SaveObject();
+            UIObjectOn();
+
             isActive = true;
             player.isCommunicate = true;
             v_Cam.SetActive(false);
@@ -711,6 +730,21 @@ public class Interaction : FadeController
         }
         else
         {
+            if (isQuestUpdate)
+            {
+                UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
+                string s = "";
+
+                if (useUSFDataVariation)
+                {
+                    UIManager.Instance.questText.text = questText + MaterialManager.Instance.UFSData.ToString() + questTextPlus;
+                }
+                else
+                {
+                    UIManager.Instance.questText.text = questText;
+                }
+            }
+
             if (isTextOn)
             {
                 TextOn();

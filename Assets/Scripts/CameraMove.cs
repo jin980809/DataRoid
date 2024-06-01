@@ -35,27 +35,12 @@ public class CameraMove : MonoBehaviour
     private Vector3 smoothCamera;
     public float zoomInSpeed;
 
-    [Space(10)]
-    public float walkHeight;
-    public float runHeight;
-    public float zoomHeight;
-    public float gunOnWalkHeight;
-    public float gunOnRunHeight;
-
-    [Space(10)]
     float hoverOffset;
-    public float walkHeightSpeed;
-    public float runHeightSpeed;
-    public float zoomHeightSpeed;
-    public float gunOnWalkHeightSpeed;
-    public float gunOnRunHeightSpeed;
 
-    [Space(10)]
-    private float walkSpeed;
-    private float runSpeed;
-    private float zoomSpeed;
-    private float gunOnWalkSpeed;
-    private float gunOnRunSpeed;
+    [Range(0f, 0.1f)]
+    public float hoverHeight = 0.01f;
+    [Range(0f, 10f)]
+    public float hoverSpeed = 5.5f;
 
     Vector3 valo;
     void Awake()
@@ -65,11 +50,6 @@ public class CameraMove : MonoBehaviour
 
     void Start()
     {
-        walkSpeed = player.walkSpeed;
-        runSpeed = player.runSpeed;
-        zoomSpeed = player.zoomSpeed;
-        gunOnWalkSpeed = player.gunWalkSpeed;
-        gunOnRunSpeed = player.gunRunSpeed;
     }
 
     void Update()
@@ -80,6 +60,7 @@ public class CameraMove : MonoBehaviour
 
         SwitchCamera();
     }
+
 
     void SwitchCamera()
     {
@@ -125,30 +106,32 @@ public class CameraMove : MonoBehaviour
 
     private void followCam()
     {
-        if (player.targetSpeed == walkSpeed)
-        {
-            hoverOffset = Mathf.Sin(Time.time * walkHeightSpeed) * walkHeight;
-        }
-        else if(player.targetSpeed == runSpeed)
-        {
-            hoverOffset = Mathf.Sin(Time.time * runHeightSpeed) * runHeight;
-        }
-        else if(player.targetSpeed == zoomSpeed)
-        {
-            hoverOffset = Mathf.Sin(Time.time * zoomHeightSpeed) * zoomHeight;
-        }
-        else if(player.targetSpeed == gunOnWalkSpeed)
-        {
-            hoverOffset = Mathf.Sin(Time.time * gunOnWalkHeightSpeed) * gunOnWalkHeight;
-        }
-        else if(player.targetSpeed == gunOnRunSpeed)
-        {
-            hoverOffset = Mathf.Sin(Time.time * gunOnRunHeightSpeed) * gunOnRunHeight;
-        }
-        else if(player.targetSpeed == 0f)
-        {
-            hoverOffset = Mathf.Sin(Time.time * 0) * 0;
-        }
+        hoverOffset = Mathf.Sin(Time.time * (player.targetSpeed * hoverSpeed)) * (player.targetSpeed * hoverHeight);
+
+        //if (player.targetSpeed == walkSpeed)
+        //{
+        //    hoverOffset = Mathf.Sin(Time.time * walkHeightSpeed) * walkHeight;
+        //}
+        //else if(player.targetSpeed == runSpeed)
+        //{
+        //    hoverOffset = Mathf.Sin(Time.time * runHeightSpeed) * runHeight;
+        //}
+        //else if(player.targetSpeed == zoomSpeed)
+        //{
+        //    hoverOffset = Mathf.Sin(Time.time * zoomHeightSpeed) * zoomHeight;
+        //}
+        //else if(player.targetSpeed == gunOnWalkSpeed)
+        //{
+        //    hoverOffset = Mathf.Sin(Time.time * gunOnWalkHeightSpeed) * gunOnWalkHeight;
+        //}
+        //else if(player.targetSpeed == gunOnRunSpeed)
+        //{
+        //    hoverOffset = Mathf.Sin(Time.time * gunOnRunHeightSpeed) * gunOnRunHeight;
+        //}
+        //else if(player.targetSpeed == 0f)
+        //{
+        //    hoverOffset = Mathf.Sin(Time.time * 0) * 0;
+        //}
 
 
         //float a = Mathf.Lerp(transform.position.y, target.position.y + hoverOffset, Time.deltaTime);

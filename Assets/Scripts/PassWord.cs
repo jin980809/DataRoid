@@ -10,6 +10,7 @@ public class PassWord : MonoBehaviour
 
     public Player player;
     public bool isDroneOn;
+    public bool isDeviceOn;
     public bool isNameTagOn;
     public int nameTagIndex;
 
@@ -60,8 +61,14 @@ public class PassWord : MonoBehaviour
 
         if (isDroneOn)
         {
-            ObjectManager.Instance.saveObjects[0] = true;
+            ObjectManager.Instance.saveObjects[0] = false;
             player.droneOn = true;
+        }
+
+        if(isDeviceOn)
+        {
+            ObjectManager.Instance.saveObjects[1] = false;
+            player.deviceOn = true;
         }
     }
 
