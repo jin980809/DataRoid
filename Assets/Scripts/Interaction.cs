@@ -29,6 +29,7 @@ public class Interaction : FadeController
     public Type interactionType;
 
     [Space(10)]
+    [Header("Setting")]
     public bool isNonCharging;
     public bool isFade;
     public bool isTextOn;
@@ -36,6 +37,7 @@ public class Interaction : FadeController
     public bool isNameTagOn;
     public bool isGetData;
     public bool dontDestroy;
+    public bool weaponDrop;
     public Player player;
 
     [Space(10)]
@@ -53,6 +55,12 @@ public class Interaction : FadeController
     [Header("GetData")]
     public float getDataAmount;
     public bool hasData;
+
+
+    [Space(10)]
+    [Header("Weapon Drop")]
+    public int weaponDropIndex;
+
 
     [Space(10)]
     [Header("Save Object")]
@@ -300,6 +308,12 @@ public class Interaction : FadeController
         {
             ProgressManager.Instance.curData += getDataAmount;
             hasData = true;
+        }
+
+        if(weaponDrop)
+        {
+            player.weapons[weaponDropIndex].GetComponent<Weapon>().curAmmo += 1;
+            player.hasWeapons[weaponDropIndex] = true;
         }
     }
 

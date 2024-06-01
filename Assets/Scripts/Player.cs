@@ -269,7 +269,16 @@ public class Player : MonoBehaviour
 
     void WeaponEnable()
     {
-        if(MaterialManager.Instance.RifleAmmo > 0 || weapons[1].GetComponent<Weapon>().curAmmo > 0)
+        if(MaterialManager.Instance.HandgunAmmo > 0 || weapons[0].GetComponent<Weapon>().curAmmo > 0)
+        {
+            hasWeapons[0] = true;
+        }
+        else
+        {
+            hasWeapons[0] = false;
+        }
+
+        if (MaterialManager.Instance.RifleAmmo > 0 || weapons[1].GetComponent<Weapon>().curAmmo > 0)
         {
             hasWeapons[1] = true;
         }
