@@ -108,6 +108,12 @@ public class UIManager : MonoBehaviour
     public GameObject fButton;
     public GameObject fDataButton;
     public GameObject fElecButton;
+    public Animator fButtonAnim;
+    public Animator fDataButtonAnim;
+    public Animator fElecButtonAnim;
+    public Text fButtonText;
+    public Text fDataButtonText;
+    public Text fElecButtonText;
 
     [Space(10)]
     [Header("Quest Text")]
@@ -123,6 +129,10 @@ public class UIManager : MonoBehaviour
     public Image damageImage;
     public float fadeDuration = 2f;
     private Coroutine DamegeImageCor;
+
+    [Space(10)]
+    [Header("Map Open UI")]
+    public Animator[] mapOpenAnims;
 
     void Start()
     {
@@ -245,7 +255,7 @@ public class UIManager : MonoBehaviour
         
     }
 
-    public void InteractionButtonImage(int index)
+    public void InteractionButtonImage(int index, string name)
     {
         fButton.SetActive(false);
         fDataButton.SetActive(false);
@@ -257,14 +267,20 @@ public class UIManager : MonoBehaviour
             {
                 case 0:
                     fButton.SetActive(true);
+                    fButtonAnim.SetTrigger("Quest_In");
+                    fButtonText.text = name;
                     break;
 
                 case 1:
                     fDataButton.SetActive(true);
+                    fDataButtonAnim.SetTrigger("Quest_In");
+                    fDataButtonText.text = name;
                     break;
 
                 case 2:
                     fElecButton.SetActive(true);
+                    fElecButtonAnim.SetTrigger("Quest_In");
+                    fElecButtonText.text = name;
                     break;
             }
         }
@@ -308,4 +324,16 @@ public class UIManager : MonoBehaviour
 
         damageImage.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
     }
+
+    public void MapOpenUI(int index)
+    {
+        mapOpenAnims[index].SetTrigger("UnLock");
+        StartCoroutine(MapCloseUI(index));
+    }
+    IEnumerator MapCloseUI(int index)
+    {
+        yield return new WaitForSeconds(2f);
+        mapOpenAnims[index].SetTrigger("Out");
+    }
+
 }

@@ -31,14 +31,14 @@ public class ObjectNameUI : MonoBehaviour
             if (IsEnemyVisible())
             {
                 UpdateUIPosition();
-                UpdateUIScale();
+                //UpdateUIScale();
                 if (nameUI != null)
                     nameUI.SetActive(true);
             }
             else
             {
                 UpdateUIPositionOffScreen();
-                UpdateUIScale();
+                //UpdateUIScale();
                 if (nameUI != null)
                     nameUI.SetActive(true);
             }

@@ -68,6 +68,7 @@ public class PassWord : MonoBehaviour
         if(isDeviceOn)
         {
             ObjectManager.Instance.saveObjects[1] = false;
+            UIManager.Instance.mainUI.SetActive(true);
             player.deviceOn = true;
         }
     }

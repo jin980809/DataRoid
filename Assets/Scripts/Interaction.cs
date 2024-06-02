@@ -31,6 +31,8 @@ public class Interaction : FadeController
 
     [Space(10)]
     [Header("Setting")]
+    public string interactionName;
+
     public bool isNonCharging;
     public bool isFade;
     public bool isTextOn;
@@ -40,6 +42,7 @@ public class Interaction : FadeController
     public bool isTrigger;
     public bool dontDestroy;
     public bool weaponDrop;
+    public bool isMapOpen;
     public Player player;
 
     [Space(10)]
@@ -48,6 +51,10 @@ public class Interaction : FadeController
     public string questText;
     public bool useUSFDataVariation;
     public string questTextPlus;
+
+    [Space(10)]
+    [Header("Map Open")]
+    public int mapOpenIndex;
 
     [Space(10)]
     [Header("NameTag On Off")]
@@ -324,6 +331,11 @@ public class Interaction : FadeController
         {
             player.weapons[weaponDropIndex].GetComponent<Weapon>().curAmmo += 1;
             player.hasWeapons[weaponDropIndex] = true;
+        }
+
+        if(isMapOpen)
+        {
+            UIManager.Instance.MapOpenUI(mapOpenIndex);
         }
     }
 
@@ -607,7 +619,7 @@ public class Interaction : FadeController
             isText = true;
 
             if(isTrigger)
-                UIManager.Instance.InteractionButtonImage(-1);
+                UIManager.Instance.InteractionButtonImage(-1, "aaa");
 
             SaveObject();
 
@@ -674,6 +686,9 @@ public class Interaction : FadeController
         {
             SaveObject();
             UIObjectOn();
+
+            if(isTextOn)
+                TextOn();
 
             isActive = true;
             player.isCommunicate = true;

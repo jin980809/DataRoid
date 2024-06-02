@@ -1056,15 +1056,15 @@ public class Player : MonoBehaviour
             {
                 if (interactionObj.isGetData)
                 {
-                    UIManager.Instance.InteractionButtonImage(1);
+                    UIManager.Instance.InteractionButtonImage(1, interactionObj.interactionName);
                 }
                 else if ((int)(interactionObj.interactionType) == 1)
                 {
-                    UIManager.Instance.InteractionButtonImage(2);
+                    UIManager.Instance.InteractionButtonImage(2, interactionObj.interactionName);
                 }
                 else //보조배터리 나오면 추가하기
                 {
-                    UIManager.Instance.InteractionButtonImage(0);
+                    UIManager.Instance.InteractionButtonImage(0, interactionObj.interactionName);
                 }
 
                 UIManager.Instance.interactionUIOpen = true;
@@ -1127,7 +1127,7 @@ public class Player : MonoBehaviour
         {
             if (UIManager.Instance.interactionUIOpen)
             {
-                UIManager.Instance.InteractionButtonImage(-1);
+                UIManager.Instance.InteractionButtonImage(-1, " ");
                 UIManager.Instance.interactionUIOpen = false;
             }
             isTriggerInteraction = false;
@@ -1176,15 +1176,15 @@ public class Player : MonoBehaviour
                     {
                         if (interactionObj.isGetData)
                         {
-                            UIManager.Instance.InteractionButtonImage(1);
+                            UIManager.Instance.InteractionButtonImage(1, interactionObj.interactionName);
                         }
                         else if ((int)(interactionObj.interactionType) == 1)
                         {
-                            UIManager.Instance.InteractionButtonImage(2);
+                            UIManager.Instance.InteractionButtonImage(2, interactionObj.interactionName);
                         }
                         else //보조배터리 나오면 추가하기
                         {
-                            UIManager.Instance.InteractionButtonImage(0);
+                            UIManager.Instance.InteractionButtonImage(0, interactionObj.interactionName);
                         }
                         UIManager.Instance.interactionUIOpen = true;
                     }
@@ -1243,7 +1243,7 @@ public class Player : MonoBehaviour
             {
                 if (UIManager.Instance.interactionUIOpen)
                 {
-                    UIManager.Instance.InteractionButtonImage(-1);
+                    UIManager.Instance.InteractionButtonImage(-1, " ");
                     UIManager.Instance.interactionUIOpen = false;
                 }
             }
@@ -1419,7 +1419,7 @@ public class Player : MonoBehaviour
 
     void newOCInventory()
     {
-        if ((skDown2 || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn && deviceOn)
+        if ((skDown2 || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && deviceOn)
         {
             if (!isInventoryOpen && skDown2)
             {

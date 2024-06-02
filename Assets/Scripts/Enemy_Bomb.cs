@@ -25,7 +25,7 @@ public class Enemy_Bomb : Enemy
     public bool isBomb;
     public bool isDetectBomb; // 범위에 닿으면 다가가서 터지기
     bool bombChasing = false;
-    bool isBombAttack = false ;
+    bool isBombAttack = false;
     public float activeHP;
     public float bombTime;
     public Collider bombRange;
@@ -173,10 +173,10 @@ public class Enemy_Bomb : Enemy
         }
         else
         {
-            if(!isBombAttack && isDetectBomb)
+            if(!isBombAttack && isDetectBomb )
                 anim.SetTrigger("doDown");
 
-            if (isDetectBomb)
+            if (isDetectBomb && !isDeath)
             {
                 RaycastHit[] hits = Physics.SphereCastAll(transform.position, 3, Vector3.up, 0f, LayerMask.GetMask("Player"));
                 if (hits.Length > 0 || isBombAttack)
@@ -193,7 +193,7 @@ public class Enemy_Bomb : Enemy
                     }
                 }
 
-                if(bombChasing)
+                if(bombChasing && !isDeath)
                 {
                     nav.SetDestination(target.transform.position);
                     

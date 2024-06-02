@@ -23,9 +23,14 @@ public class MapManager : MonoBehaviour
 
     [Space(10)]
     [Header("Tut Map Data")]
-    public GameObject[] tutMapData;
+    public bool isOfficeMapOpen;
     public bool isTutMapOpen;
+    public GameObject officeMapObject;
     public Collider tutLightInteraction;
+    public GameObject tutLightObject;
+    public GameObject officeMapUI;
+    public GameObject tutMapUI;
+    public GameObject lockMapUI;
 
     [Space(10)]
     [Header("else")]
@@ -33,8 +38,19 @@ public class MapManager : MonoBehaviour
 
     void Update()
     {
-        isTutMapOpen = MapOpenCheck(tutMapData);
-        tutLightInteraction.enabled = isTutMapOpen;
+        if (!officeMapObject.activeSelf)
+        {
+            lockMapUI.SetActive(false);
+            isOfficeMapOpen = true;
+            officeMapUI.SetActive(true);
+            tutLightInteraction.enabled = true;
+        }
+
+        if (!tutLightObject.activeSelf)
+        {
+            isTutMapOpen = true;
+            tutMapUI.SetActive(true);
+        }
     }
 
     public bool MapOpenCheck(GameObject[] gObj)
@@ -49,4 +65,5 @@ public class MapManager : MonoBehaviour
 
         return true;
     }
+
 }
