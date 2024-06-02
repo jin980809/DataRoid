@@ -25,7 +25,7 @@ public class Enemy_Bomb : Enemy
     public bool isBomb;
     public bool isDetectBomb; // 범위에 닿으면 다가가서 터지기
     bool bombChasing = false;
-    bool isBombAttack = false;
+    bool isBombAttack = false ;
     public float activeHP;
     public float bombTime;
     public Collider bombRange;
@@ -77,106 +77,134 @@ public class Enemy_Bomb : Enemy
         RaycastHit[] hit = Physics.SphereCastAll(transform.position, chasingDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
         Vector3 thisPos = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
 
-        if (!isBomb)
+        if (!isDetectBomb)
         {
-            if (hit.Length > 0 && !isDeath)
+            if (!isBomb)
             {
-                Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
-                isStop = false;
-                isShotChase = false;
-
-                if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment")))
+                if (hit.Length > 0)
                 {
-                    if (!isAttack && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue && isSubdueReady)
+                    Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
+                    isStop = false;
+                    isShotChase = false;
+
+                    if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment")))
                     {
-                        //Debug.Log("target " + hit[0].transform.name);
-                        nav.speed = runSpeed * speedDiscountRate;
-                        isChase = true;
+                        if (!isAttack && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue && isSubdueReady)
+                        {
+                            //Debug.Log("target " + hit[0].transform.name);
+                            nav.speed = runSpeed * speedDiscountRate;
+                            isChase = true;
+                        }
+                    }
+                    else
+                    {
+                        if (isShotChase && !isDeath && !isStun && isSubdueReady)
+                        {
+                            isStop = false;
+                            nav.SetDestination(playerShotPos);
+                            if (nav.remainingDistance <= 0.1f)
+                                isShotChase = false;
+                        }
+                    }
+
+                    RaycastHit[] attackHit = Physics.SphereCastAll(transform.position, attackDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
+
+                    if (attackHit.Length > 0 && !isAttack && !isDeath && !isPlayerSubdue && isSubdueReady)
+                    {
+                        Vector3 AttackPos = new Vector3(attackHit[0].transform.position.x, attackHit[0].transform.position.y + 1, attackHit[0].transform.position.z);
+                        if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")) && !isStun)
+                        {
+                            isShotChase = false;
+
+                            if (RandPercentage(subduePercentage)) //제압기 확률 성공(제압기)
+                            {
+                                if (!isPlayerSubdue && isSubdueReady)
+                                {
+                                    DoSubdueCor();
+                                }
+                            }
+                            else // 실패(일반공격)
+                            {
+                                int attackNum = AttackPercentage();
+                                isStop = false;
+                                switch (attackNum)
+                                {
+                                    case 1:
+                                        attackCoroutine = StartCoroutine(DoAttack1());
+                                        break;
+                                    case 2:
+                                        attackCoroutine = StartCoroutine(DoAttack2());
+                                        break;
+                                    case 3:
+                                        attackCoroutine = StartCoroutine(DoAttack3());
+                                        break;
+                                }
+                            }
+
+
+                            // 제압기시 적 subdue 콜라이더 활성화(코루틴으로 약간의 딜레이주기)
+                            // 제압기 성공시 플레이어 subdue활성화 및 게이지 설정
+                            // 제압기 패링시 (코루틴 딜레이 사이에 근접 공격을 넣으면) 코루틴 중지, 스턴?  
+                        }
                     }
                 }
                 else
                 {
-                    if (isShotChase && !isDeath && !isStun && isSubdueReady)
+
+                    if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
+                    {
+                        nav.speed = walkSpeed * speedDiscountRate;
+                        isChase = false;
+                        //isShotChase = false;
+                        nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                        if (isStop && isNotAround)
+                        {
+                            nav.speed = 0;
+                        }
+                    }
+                    else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
                     {
                         nav.SetDestination(playerShotPos);
-                        if (nav.remainingDistance <= 0.5f)
+                        if (nav.remainingDistance <= 0.1f)
+                        {
                             isShotChase = false;
-                    }
-                }
-
-                RaycastHit[] attackHit = Physics.SphereCastAll(transform.position, attackDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
-                if (attackHit.Length > 0 && !isAttack && !isDeath && !isPlayerSubdue && isSubdueReady)
-                {
-                    Vector3 AttackPos = new Vector3(attackHit[0].transform.position.x, attackHit[0].transform.position.y + 1, attackHit[0].transform.position.z);
-                    if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")) && !isStun)
-                    {
-                        isShotChase = false;
-
-                        if (RandPercentage(subduePercentage)) //제압기 확률 성공(제압기)
-                        {
-                            if (!isPlayerSubdue && isSubdueReady)
-                            {
-                                DoSubdueCor();
-                            }
+                            nav.SetDestination(aroundTarget[aroundTargetIndex].position);
                         }
-                        else // 실패(일반공격)
-                        {
-                            int attackNum = AttackPercentage();
-                            isStop = false;
-                            switch (attackNum)
-                            {
-                                case 1:
-                                    attackCoroutine = StartCoroutine(DoAttack1());
-                                    break;
-                                case 2:
-                                    attackCoroutine = StartCoroutine(DoAttack2());
-                                    break;
-                                case 3:
-                                    attackCoroutine = StartCoroutine(DoAttack3());
-                                    break;
-                            }
-                        }
-
-
-                        // 제압기시 적 subdue 콜라이더 활성화(코루틴으로 약간의 딜레이주기)
-                        // 제압기 성공시 플레이어 subdue활성화 및 게이지 설정
-                        // 제압기 패링시 (코루틴 딜레이 사이에 근접 공격을 넣으면) 코루틴 중지, 스턴?  
+                        isStop = false;
+                        nav.speed = runSpeed * speedDiscountRate;
                     }
                 }
             }
             else
             {
+                bombCor = StartCoroutine(Bomb());
+                isBombAttack = true;
 
-                if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
+                if (bombChasing)
                 {
-                    nav.speed = walkSpeed * speedDiscountRate;
-                    isChase = false;
-                    isShotChase = false;
-                    nav.SetDestination(aroundTarget[aroundTargetIndex].position);
-                    if (isStop && isNotAround)
+                    nav.SetDestination(target.transform.position);
+
+
+                    if (nav.remainingDistance <= 1f)
                     {
+                        nav.velocity = Vector3.zero;
+                        nav.isStopped = true;
                         nav.speed = 0;
                     }
-                }
-                else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue && !isDeath)
-                {
-                    nav.SetDestination(playerShotPos);
-                    if (nav.remainingDistance <= 0.5f)
+                    else
                     {
-                        isShotChase = false;
-                        nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                        nav.isStopped = false;
+                        nav.speed = bombActiveSpeed;
                     }
-                    isStop = false;
-                    nav.speed = runSpeed * speedDiscountRate;
                 }
             }
         }
         else
         {
-            if(!isBombAttack && isDetectBomb )
+            if(!isBombAttack && isDetectBomb)
                 anim.SetTrigger("doDown");
 
-            if (isDetectBomb && !isDeath)
+            if (isDetectBomb)
             {
                 RaycastHit[] hits = Physics.SphereCastAll(transform.position, 3, Vector3.up, 0f, LayerMask.GetMask("Player"));
                 if (hits.Length > 0 || isBombAttack)
@@ -193,7 +221,7 @@ public class Enemy_Bomb : Enemy
                     }
                 }
 
-                if(bombChasing && !isDeath)
+                if(bombChasing)
                 {
                     nav.SetDestination(target.transform.position);
                     
@@ -208,8 +236,7 @@ public class Enemy_Bomb : Enemy
                     {
                         nav.isStopped = false;
                         nav.speed = bombActiveSpeed;
-                    }
-                    
+                    }  
                 }
             }
         }
@@ -336,7 +363,7 @@ public class Enemy_Bomb : Enemy
     {
         if (!isChase && !isDeath && !isStun && !isNotAround)
         {
-            if (nav.remainingDistance <= 0.5f)
+            if (nav.remainingDistance <= 0.1f)
             {
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
                 //if (aroundTargetIndex == aroundTarget.Length - 1)
@@ -371,11 +398,11 @@ public class Enemy_Bomb : Enemy
             }
         }
 
-        if (!isChase && !isDeath && !isStun && isNotAround)
+        if (!isChase && !isDeath && !isStun && isNotAround && !isShotChase)
         {
             nav.SetDestination(aroundTarget[0].position);
 
-            if (nav.remainingDistance <= 0.5f)
+            if (nav.remainingDistance <= 0.1f)
             {
                 nav.speed = 0;
                 isStop = true;

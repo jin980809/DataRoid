@@ -13,7 +13,6 @@ public class ElectricLine : MonoBehaviour
             ElectricLine elec = other.GetComponent<SetElecLine>().elec;
             if (elec.detectElec)
             {
-                Debug.Log("AA");
                 detectElec = true;
             }
             else

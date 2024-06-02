@@ -28,6 +28,8 @@ public class DiscriptionImage : MonoBehaviour
     public void ExitImage()
     {
         player.isCommunicate = false;
-        transform.gameObject.SetActive(false);
+        //transform.gameObject.SetActive(false);
+        Time.timeScale = 1f;
+        GetComponent<Animator>().SetTrigger("Guide_End");
     }
 }

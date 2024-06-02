@@ -999,7 +999,7 @@ public class Player : MonoBehaviour
         //Debug.DrawLine(ShootPos.position, transform.forward , Color.green);
         int layerMask = (1 << LayerMask.NameToLayer("Enviroment")) + (1 << LayerMask.NameToLayer("Door")) + (1 << LayerMask.NameToLayer("PhysicsEnemy")) + (1 << LayerMask.NameToLayer("Glass")) + (1 << LayerMask.NameToLayer("Object"));
         RaycastHit hit;
-        if (Physics.SphereCast(borderPos.position, 0.15f, targetDirection, out hit, 0.95f, layerMask))
+        if (Physics.SphereCast(borderPos.position, 0.15f, targetDirection, out hit, 0.5f, layerMask))
         {
             isBorder = true;
             //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;

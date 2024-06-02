@@ -145,27 +145,36 @@ public class EnemyA : Enemy
         }
         else
         {
-
-            if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue)
+            if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue) //감지되지 않고 맞지도 않고 돌아다닐때
             {
+                Debug.Log("BB");
+
                 nav.speed = walkSpeed * speedDiscountRate;
                 isChase = false;
-                //isShotChase = false;
-                nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                isShotChase = false;
+
+                if(!isShotChase)
+                    nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+
                 if (isStop && isNotAround)
                 {
+                    Debug.Log("Bb");
                     nav.speed = 0;
                 }
+
             }
-            else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
+
+            if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue && !isDeath && !isStun) //감지 되지 않고 맞을때
             {
                 nav.SetDestination(playerShotPos);
-                if (nav.remainingDistance <= 0f)
-                {
-                    isShotChase = false;
-                    nav.SetDestination(aroundTarget[aroundTargetIndex].position);
-                }
                 isStop = false;
+
+                if (nav.remainingDistance <= 0.1f)
+                {
+                    nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                    //isShotChase = false;
+                }
+
                 nav.speed = runSpeed * speedDiscountRate;
             }
         }
@@ -377,8 +386,9 @@ public class EnemyA : Enemy
 
     void Around()
     {
-        if (!isChase && !isDeath && !isStun && !isNotAround)
+        if (!isChase && !isDeath && !isStun && !isNotAround && !isShotChase)
         {
+            Debug.Log("CC");
             if (nav.remainingDistance <= 0f)
             {
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
@@ -414,11 +424,13 @@ public class EnemyA : Enemy
             }
         }
 
-        if(!isChase && !isDeath && !isStun && isNotAround)
+        else if (!isChase && !isDeath && !isStun && isNotAround && !isShotChase && !isStop)
         {
-            nav.SetDestination(aroundTarget[0].position);
+            Debug.Log("DD");
+            if(!isShotChase)
+                nav.SetDestination(aroundTarget[0].position);
 
-            if (nav.remainingDistance <= 0f)
+            if (nav.remainingDistance <= 0.1f)
             {
                 nav.speed = 0;
                 isStop = true;

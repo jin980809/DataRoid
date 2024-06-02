@@ -88,6 +88,10 @@ public class Enemy : MonoBehaviour
     [Header("Data")]
     public bool getData = false;
 
+    [Space(10f)]
+    [Header("Death to OnOff")]
+    public GameObject[] onObject;
+    public GameObject[] offObject;
 
     public Coroutine DoSubdue = null;
     public float subdueCoolTime;
@@ -304,6 +308,7 @@ public class Enemy : MonoBehaviour
             nav.speed = 0;
             anim.SetTrigger("doDie");
             DropItems();
+            OnOffObject();
             StartCoroutine(Dead());
         }
     }
@@ -588,5 +593,17 @@ public class Enemy : MonoBehaviour
         UIManager.Instance.SubDueSlider.value = 0;
         nav.isStopped = false;
         isSubdueReady = true;
+    }
+
+    public void OnOffObject()
+    {
+        for(int i = 0; i < onObject.Length; i++)
+        {
+            onObject[i].SetActive(true);
+        }
+        for(int i = 0; i < offObject.Length; i++)
+        {
+            onObject[i].SetActive(false);
+        }
     }
 }

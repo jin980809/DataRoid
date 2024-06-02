@@ -172,7 +172,7 @@ public class Enemy_Flash : Enemy
                 if (isShotChase && !isDeath && !isStun && isSubdueReady)
                 {
                     nav.SetDestination(playerShotPos);
-                    if (nav.remainingDistance <= 0.5f)
+                    if (nav.remainingDistance <= 0f)
                         isShotChase = false;
                 }
             }
@@ -241,7 +241,7 @@ public class Enemy_Flash : Enemy
             else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
             {
                 nav.SetDestination(playerShotPos);
-                if (nav.remainingDistance <= 0.5f)
+                if (nav.remainingDistance <= 0f)
                 {
                     isShotChase = false;
                     nav.SetDestination(aroundTarget[aroundTargetIndex].position);
@@ -304,7 +304,7 @@ public class Enemy_Flash : Enemy
             else if (!isAttack && isShotChase && isSubdueReady && !isPlayerSubdue)
             {
                 nav.SetDestination(playerShotPos);
-                if (nav.remainingDistance <= 0.5f)
+                if (nav.remainingDistance <= 0f)
                 {
                     isShotChase = false;
                     nav.SetDestination(aroundTarget[aroundTargetIndex].position);
@@ -459,7 +459,7 @@ public class Enemy_Flash : Enemy
     {
         if (!isChase && !isDeath && !isStun && !isNotAround)
         {
-            if (nav.remainingDistance <= 0.5f)
+            if (nav.remainingDistance <= 0f)
             {
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
                 //if (aroundTargetIndex == aroundTarget.Length - 1)
@@ -498,7 +498,7 @@ public class Enemy_Flash : Enemy
         {
             nav.SetDestination(aroundTarget[0].position);
 
-            if (nav.remainingDistance <= 0.5f)
+            if (nav.remainingDistance <= 0f)
             {
                 nav.speed = 0;
                 isStop = true;

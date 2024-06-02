@@ -43,6 +43,8 @@ public class Interaction : FadeController
     public bool dontDestroy;
     public bool weaponDrop;
     public bool isMapOpen;
+    public bool isNeedElec;
+    public bool elecDetect = true;
     public Player player;
 
     [Space(10)]
@@ -129,8 +131,8 @@ public class Interaction : FadeController
     [Space(10)]
     [Header("Light On")]
     public int lightIndex;
-    public GameObject offLight;
-    public GameObject OnLight;
+    public GameObject[] offLight;
+    public GameObject[] OnLight;
     public int needUFSData;
     public float getData;
 
@@ -145,6 +147,7 @@ public class Interaction : FadeController
     bool fDown;
     public bool textEndObjectOn;
     public bool isOnce;
+    private Coroutine endText;
 
     [Space(10)]
     [Header("PassWord")]
@@ -247,6 +250,8 @@ public class Interaction : FadeController
             passWord = passWordUI.GetComponent<PassWord>();
         }
 
+        if (isNeedElec)
+            elecDetect = false;
 
     }
 
@@ -381,72 +386,79 @@ public class Interaction : FadeController
             FadeInOut();
         }
 
-        switch (interactionType)
+        if (elecDetect)
         {
-            case Type.ElecCharge:
-                ElecCharge();
-                break;
+            switch (interactionType)
+            {
+                case Type.ElecCharge:
+                    ElecCharge();
+                    break;
 
-            case Type.ConnectCCTV:
-                ConnectCCTV();
-                break;
+                case Type.ConnectCCTV:
+                    ConnectCCTV();
+                    break;
 
-            case Type.Door:
-                DoorOpen();
-                break;
+                case Type.Door:
+                    DoorOpen();
+                    break;
 
-            case Type.SavePoint:
-                GameManager.Instance.SaveCSVFile(savePoint);
-                ObjectManager.Instance.SaveObjectFile();
-                EnemyManager.Instance.SaveEnemyData();
-                TextManager.Instance.SaveTextObjectFile();
-                LightManager.Instance.SaveLightObjectFile();
-                player.curHp = player.maxHp;
-                break;
+                case Type.SavePoint:
+                    GameManager.Instance.SaveCSVFile(savePoint);
+                    ObjectManager.Instance.SaveObjectFile();
+                    EnemyManager.Instance.SaveEnemyData();
+                    TextManager.Instance.SaveTextObjectFile();
+                    LightManager.Instance.SaveLightObjectFile();
+                    player.curHp = player.maxHp;
+                    break;
 
-            case Type.MovePlayer:
-                MovePlayer();
-                break;
+                case Type.MovePlayer:
+                    MovePlayer();
+                    break;
 
-            case Type.ObjectActive:
-                ObjectActive();
-                break;
+                case Type.ObjectActive:
+                    ObjectActive();
+                    break;
 
-            case Type.GunActive:
-                GunActive();
-                break;
+                case Type.GunActive:
+                    GunActive();
+                    break;
 
-            case Type.GetUSFData:
-                GetData();
-                break;
+                case Type.GetUSFData:
+                    GetData();
+                    break;
 
-            case Type.LightOn:
-                LightOn();
-                break;
+                case Type.LightOn:
+                    LightOn();
+                    break;
 
-            case Type.TextBox:
-                TextOn();
-                break;
+                case Type.TextBox:
+                    TextOn();
+                    break;
 
-            case Type.PassWord:
-                PassWordOn();
-                break;
+                case Type.PassWord:
+                    PassWordOn();
+                    break;
 
-            case Type.ObjectRotater:
-                ObjectRotaterOpen();
-                break;
+                case Type.ObjectRotater:
+                    ObjectRotaterOpen();
+                    break;
 
-            case Type.ObjectOn:
-                ObjectOn();
-                break;
+                case Type.ObjectOn:
+                    ObjectOn();
+                    break;
 
-            case Type.WeaponBox:
-                OpenWeaponBox();
-                break;    
-                
-            case Type.RotationObject:
-                RotateObject();
-                break;
+                case Type.WeaponBox:
+                    OpenWeaponBox();
+                    break;
+
+                case Type.RotationObject:
+                    RotateObject();
+                    break;
+            }
+        }
+        else
+        {
+            TextOn();
         }
 
         //if(GetComponent<ObjectNameUI>() != null )
@@ -490,6 +502,7 @@ public class Interaction : FadeController
 
             if (!isNotClose)
                 Invoke("CloseDoor", openTime);
+
         }
         else
         {
@@ -594,8 +607,17 @@ public class Interaction : FadeController
         if (MaterialManager.Instance.UFSData >= needUFSData)
         {
             SaveObject();
-            offLight.SetActive(false);
-            OnLight.SetActive(true);
+            for(int i = 0; i < offLight.Length; i++)
+            {
+                offLight[i].SetActive(false);
+
+            }
+            for (int i = 0; i < OnLight.Length; i++)
+            {
+                OnLight[i].SetActive(true);
+
+            }
+
             GetComponent<BoxCollider>().enabled = false;
             LightManager.Instance.lightObjects[lightIndex] = true;
             MaterialManager.Instance.UFSData -= needUFSData;
@@ -645,7 +667,7 @@ public class Interaction : FadeController
         if (!isClick)
         {
             yield return new WaitForSeconds(durationTime);
-            StartCoroutine(TextBoxOut(textBox[curTextCount].duration));
+            endText = StartCoroutine(TextBoxOut(textBox[curTextCount].duration));
         }
         isNextReady = true;
         yield return null;
@@ -770,11 +792,11 @@ public class Interaction : FadeController
 
             UIObjectOn();
 
-            ObjectOnOff();
-
             SaveObject();
 
-            transform.gameObject.SetActive(false);
+            ObjectOnOff();
+
+            gameObject.SetActive(false);
         }
         else
         {
@@ -878,5 +900,34 @@ public class Interaction : FadeController
         }
 
         isRotate = false;
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (isNeedElec)
+        {
+            if (other.CompareTag("Electric"))
+            {
+                ElectricLine elec = other.GetComponent<SetElecLine>().elec;
+
+                if (elec.detectElec)
+                {
+                    elecDetect = true;
+                }
+                else
+                {
+                    elecDetect = false;
+                }
+            }
+        }
+        
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Electric") && isNeedElec)
+        {
+            elecDetect = false;
+        }
     }
 }

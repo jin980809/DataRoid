@@ -29,6 +29,9 @@ public class ImageTrigger : MonoBehaviour
             player.isCommunicate = true;
             inst_Obj = Instantiate(p_Obj, canvas.transform);
             inst_Obj.GetComponent<DiscriptionImage>().player = other.GetComponent<Player>();
+            inst_Obj.GetComponent<Animator>().SetTrigger("Guide_Open");
+            Time.timeScale = 0f;
+
             GetComponent<BoxCollider>().enabled = false;
 
             if (isSave)

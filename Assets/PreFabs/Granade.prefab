@@ -60,6 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   curDamage: 10
   damage: 10
+  isExplosion: 1
 --- !u!1 &7705928362304442694
 GameObject:
   m_ObjectHideFlags: 0

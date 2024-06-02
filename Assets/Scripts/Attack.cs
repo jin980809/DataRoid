@@ -6,7 +6,7 @@ public class Attack : MonoBehaviour
 {
     public float curDamage;
     public float damage;
-
+    public bool isExplosion;
     void Start()
     {
         curDamage = damage;
@@ -14,7 +14,7 @@ public class Attack : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("BrokenObject"))
+        if (other.CompareTag("BrokenObject") && isExplosion)
         {
             other.GetComponent<BrokeObject>().SaveObject();
             other.gameObject.SetActive(false);

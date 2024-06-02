@@ -160,10 +160,12 @@ public class UIManager : MonoBehaviour
         float hp = player.curHp / 100f;
         if (hp < 0) hp = 0;
         hpGauge.fillAmount = hp;
+        hpText.text = ((int)player.curHp).ToString();
 
         float data = ProgressManager.Instance.curData / 100f;
         if (data < 0) data = 0;
         DataGauge.fillAmount = data;
+        Datatext.text = ((int)ProgressManager.Instance.curData).ToString();
 
         //for(int i = 0; i < hpGauges.Length; i++)
         //{
