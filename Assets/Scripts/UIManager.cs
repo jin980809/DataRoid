@@ -20,21 +20,20 @@ public class UIManager : MonoBehaviour
     private static UIManager m_instance;
 
     public Animator mainUIAnim;
-    public Animator menuUIAnim;
+    public Animator GetUIAnim;
     public Animator textUIAnim;
     public Animator questUIAnim;
-    public Animator skillButtonUIAnim;
+    public Animator LevelPointUIAnim;
+    public Animator LevelUpAnim;
     public Player player;
     public Image hpGauge;
     public Text hpText;
-    public Slider shaderVolumm;
-
-    public UI_FadeIn[] fade_Ins;
 
     [Space(10)]
     [Header("Interaction")]
     public Image InteractionGauge;
     public Image InteractionGaugeGlow;
+    public bool interactionUIOpen = false;
     //public Text detectCount;
 
     //[Space(10)]
@@ -49,14 +48,15 @@ public class UIManager : MonoBehaviour
     //public Text ExpCapsuleAmount;
 
     [Space(10)]
-    [Header("Creating")]
-    public GameObject CreatingUI;
-    public GameObject CreatingText;
+    [Header("Get UI Text")]
+    public Text getBatteryText;
+    public Text getDataText;
 
     [Space(10)]
     [Header("Data")]
     public Image DataGauge;
     public Text Datatext;
+    public Text DataName;
 
     [Space(10)]
     [Header("HackingUI")]
@@ -115,12 +115,14 @@ public class UIManager : MonoBehaviour
     public Text t_QuestText;
 
     [Space(10)]
-    [Header("Data Select")]
-    public GameObject selectLevelPanel;
-
-    [Space(10)]
     [Header("Main UI")]
     public GameObject mainUI;
+
+    [Space(10)]
+    [Header("Damage")]
+    public Image damageImage;
+    public float fadeDuration = 2f;
+    private Coroutine DamegeImageCor;
 
     void Start()
     {
@@ -143,7 +145,9 @@ public class UIManager : MonoBehaviour
     {
         InteractionGaugeGlow.fillAmount = InteractionGauge.fillAmount;
 
-        float hp = player.curHp / player.maxHp;
+        LevelUpAnim.SetInteger("Level", ProgressManager.Instance.dataLevel);
+
+        float hp = player.curHp / 100f;
         if (hp < 0) hp = 0;
         hpGauge.fillAmount = hp;
 
@@ -264,5 +268,44 @@ public class UIManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+    public void GetDataUI(int amount)
+    {
+        getDataText.text = "+" + amount + "%";
+        GetUIAnim.SetTrigger("GetData");
+    }
+
+    public void GetBatteryUI(int amount)
+    {
+        getBatteryText.text = "+" + amount + "%";
+        GetUIAnim.SetTrigger("GetBattery");
+    }
+
+    public void DamageImage()
+    {
+        if (DamegeImageCor != null)
+        {
+            StopCoroutine(DamegeImageCor);
+        }
+        DamegeImageCor = StartCoroutine(FadeOut());
+    }
+
+
+    private IEnumerator FadeOut()
+    {
+        Color originalColor = damageImage.color;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
+            damageImage.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+
+            yield return null;
+        }
+
+        damageImage.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
     }
 }

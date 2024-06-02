@@ -9,18 +9,27 @@ public class DataPointSelect : MonoBehaviour
     {
         Time.timeScale = 1f;
         player.isCommunicate = false;
-        transform.gameObject.SetActive(false);
+        StartCoroutine(ClosePanel());
+        //transform.gameObject.SetActive(false);
+    }
+
+    IEnumerator ClosePanel()
+    {
+        yield return new WaitForSeconds(1);
+        UIManager.Instance.LevelPointUIAnim.SetTrigger("Close");
     }
 
     public void SelectStatLevel()
     {
         ProgressManager.Instance.statLevel += 1;
+        UIManager.Instance.LevelUpAnim.SetTrigger("LevelUp");
         ExitPanel();
     }
 
-    public void SelectSkillLevel()
+    public void SelectBatteryLevel()
     {
         ProgressManager.Instance.batteryLevel += 1;
+        UIManager.Instance.LevelUpAnim.SetTrigger("LevelUp");
         ExitPanel();
     }
 

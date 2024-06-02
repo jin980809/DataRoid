@@ -55,6 +55,8 @@ public class ProgressManager : MonoBehaviour
 
     public int batteryLevel;
     public int statLevel;
+
+    public string[] DataNames;
     //public string fileName = "Data";
     //List<string[]> data = new List<string[]>();
     //string[] tempData;
@@ -114,6 +116,13 @@ public class ProgressManager : MonoBehaviour
     void Update()
     {
         DataLevelUp();
+
+        SetDataName();
+    }
+
+    void SetDataName()
+    {
+        UIManager.Instance.DataName.text = DataNames[dataLevel];
     }
 
     public void DataLevelStat(int level)
@@ -135,7 +144,7 @@ public class ProgressManager : MonoBehaviour
         if(curData >= 100)
         { 
             dataLevel += 1;
-            UIManager.Instance.selectLevelPanel.SetActive(true);
+            UIManager.Instance.LevelPointUIAnim.SetTrigger("Open");
             Time.timeScale = 0f;
             player.isCommunicate = true;
             curData -= 100;

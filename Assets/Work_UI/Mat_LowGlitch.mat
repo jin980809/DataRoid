@@ -277,7 +277,7 @@ Material:
     - _GaussianBlurFade: 1
     - _GaussianBlurOffset: 1
     - _GlitchBrightness: 1.5
-    - _GlitchFade: 0.1
+    - _GlitchFade: 0.5
     - _GlitchHueSpeed: 1
     - _GlitchMaskMin: 0.4
     - _HalftoneFade: 1

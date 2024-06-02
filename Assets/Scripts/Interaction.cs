@@ -25,6 +25,7 @@ public class Interaction : FadeController
         ObjectRotater = 12,
         ObjectOn = 13,
         WeaponBox = 14,
+        RotationObject = 15,
     };
     public Type interactionType;
 
@@ -36,6 +37,7 @@ public class Interaction : FadeController
     public bool isQuestUpdate;
     public bool isNameTagOn;
     public bool isGetData;
+    public bool isTrigger;
     public bool dontDestroy;
     public bool weaponDrop;
     public Player player;
@@ -53,7 +55,7 @@ public class Interaction : FadeController
 
     [Space(10)]
     [Header("GetData")]
-    public float getDataAmount;
+    public int getDataAmount;
     public bool hasData;
 
 
@@ -190,6 +192,13 @@ public class Interaction : FadeController
     public int weaponAmount;
     public bool hasOpen = false;
 
+    [Space(10)]
+    [Header("Rotation Object")]
+    public GameObject targetObject;
+    public float rotationSpeed = 10f;
+    public float targetAngle = 90f;
+    private float currentAngle = 0f;
+    private bool isRotate = false;
     void Awake()
     {
 
@@ -307,6 +316,7 @@ public class Interaction : FadeController
         if(isGetData && !hasData)
         {
             ProgressManager.Instance.curData += getDataAmount;
+            UIManager.Instance.GetDataUI(getDataAmount);
             hasData = true;
         }
 
@@ -358,7 +368,6 @@ public class Interaction : FadeController
         {
             FadeInOut();
         }
-
 
         switch (interactionType)
         {
@@ -421,6 +430,10 @@ public class Interaction : FadeController
 
             case Type.WeaponBox:
                 OpenWeaponBox();
+                break;    
+                
+            case Type.RotationObject:
+                RotateObject();
                 break;
         }
 
@@ -437,6 +450,8 @@ public class Interaction : FadeController
 
         if (player.curHp > player.maxHp)
             player.curHp = player.maxHp;
+
+        UIManager.Instance.GetBatteryUI((int)healAmount);
 
         transform.gameObject.SetActive(false);
     }
@@ -590,6 +605,10 @@ public class Interaction : FadeController
         if (!isText)
         {
             isText = true;
+
+            if(isTrigger)
+                UIManager.Instance.InteractionButtonImage(-1);
+
             SaveObject();
 
             StartCoroutine(StartTextBox(textBox[curTextCount].duration));
@@ -747,7 +766,6 @@ public class Interaction : FadeController
             if (isQuestUpdate)
             {
                 UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
-                string s = "";
 
                 if (useUSFDataVariation)
                 {
@@ -815,5 +833,35 @@ public class Interaction : FadeController
             hasOpen = true;
             SaveObject();
         }
+    }
+
+    void RotateObject()
+    {
+        if (!isRotate)
+        {
+            StartCoroutine(RotateToTargetAngle());
+        }
+    }
+
+    private IEnumerator RotateToTargetAngle()
+    {
+        isRotate = true;
+        float currentAngle = 0f;
+
+        while (currentAngle < targetAngle)
+        {
+            float rotationAmount = rotationSpeed * Time.deltaTime;
+            if (currentAngle + rotationAmount > targetAngle)
+            {
+                rotationAmount = targetAngle - currentAngle;
+            }
+
+            targetObject.transform.Rotate(0, rotationAmount, 0);
+            currentAngle += rotationAmount;
+
+            yield return null;
+        }
+
+        isRotate = false;
     }
 }

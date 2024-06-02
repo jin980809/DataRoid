@@ -39,6 +39,6 @@ public class CreatingUI : MonoBehaviour
         player.isInventoryOpen = false;
         player.cameraArm.enabled = true;
         Time.timeScale = 1.0f;
-        UIManager.Instance.CreatingUI.SetActive(false);
+        //UIManager.Instance.CreatingUI.SetActive(false);
     }
 }

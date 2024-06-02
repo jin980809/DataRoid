@@ -9624,4 +9624,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c92d45411488ed841b27f9da0b2aa9a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DeleteTime: 5
+  DeleteTime: 2.5

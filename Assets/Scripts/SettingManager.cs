@@ -18,7 +18,7 @@ public class SettingManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        equatorColor = UIManager.Instance.shaderVolumm.value;
+        //equatorColor = UIManager.Instance.shaderVolumm.value;
         SetEquatorColor();
     }
 

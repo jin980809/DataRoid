@@ -16,6 +16,8 @@ TagManager:
   - EnemyHead
   - AroundPoint
   - BrokenObject
+  - Electric
+  - Interaction
   layers:
   - Default
   - TransparentFX

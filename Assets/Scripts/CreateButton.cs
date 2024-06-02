@@ -26,7 +26,7 @@ public class CreateButton : MonoBehaviour
             CreateManager.Instance.curCreatingTime = create.creatingTime;
             CreateManager.Instance.isCreating = true;
             //코루틴 시작
-            UIManager.Instance.CreatingText.SetActive(true);
+            //UIManager.Instance.CreatingText.SetActive(true);
             CreateManager.Instance.CreatingStart(ID);
             transform.parent.GetComponent<CreatingUI>().CreatingUIOut();
         }

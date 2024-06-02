@@ -179,6 +179,7 @@ public class Player : MonoBehaviour
     //public AimMovement aimMove;
     bool isShotAnimStart = false;
     bool[] autoReload = new bool[4];
+    bool isTriggerInteraction = false;
 
     void Awake()
     {
@@ -1018,8 +1019,7 @@ public class Player : MonoBehaviour
             if (!isDamage && !isSubdue && !IsObstacleBetween(transform.position, other.transform.position, LayerMask.GetMask("Enviroment")))
             {
                 Attack attack = other.transform.GetComponent<Attack>();
-
-                //Debug.Log(curHp);
+                UIManager.Instance.DamageImage();
 
                 StartCoroutine(OnDamage(attack.curDamage));
                 if(other.transform.GetComponentInParent<EnemyB>() != null)
@@ -1042,7 +1042,96 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Interaction"))
+        {
+            isTriggerInteraction = true;
+
+            Interaction interactionObj = other.transform.GetComponent<Interaction>();
+
+            if (!UIManager.Instance.interactionUIOpen)
+            {
+                if (interactionObj.isGetData)
+                {
+                    UIManager.Instance.InteractionButtonImage(1);
+                }
+                else if ((int)(interactionObj.interactionType) == 1)
+                {
+                    UIManager.Instance.InteractionButtonImage(2);
+                }
+                else //보조배터리 나오면 추가하기
+                {
+                    UIManager.Instance.InteractionButtonImage(0);
+                }
+
+                UIManager.Instance.interactionUIOpen = true;
+            }
+
+            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
+            {
+                if (interactionObj.isNonCharging)
+                {
+                    interactionObj.InteractionResult();
+                }
+                else
+                {
+                    isInteraction = true;
+                    isZoom = false;
+                }
+            }
+            else
+            {
+                interactionTime = 0;
+                isInteraction = false;
+
+                //if (interactionObj.isCoolTime)
+                //    Debug.Log("CoolTime");
+            }
+
+            if (isInteraction && !interactionObj.isNonCharging)
+            {
+                interactionTime += Time.deltaTime;
+
+                moveVec = Vector3.zero;
+                //Debug.Log(interactionObj.name + " " + interactionTime);
+
+                if (interactionTime >= interactionObj.interactionTime)
+                {
+                    interactionObj.InteractionResult();
+                    interactionTime = 0;
+                    interactionObj.isCoolTime = true;
+                    isInteraction = false;
+                    //Debug.Log("end");
+                }
+
+                if (isDamage)
+                {
+                    interactionTime = 0;
+                    isInteraction = false;
+                }
+            }
+
+            if (!interactionObj.isNonCharging)
+            {
+                UIManager.Instance.InteractionGauge.fillAmount = interactionTime / interactionObj.interactionTime;
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if(other.CompareTag("Interaction"))
+        {
+            if (UIManager.Instance.interactionUIOpen)
+            {
+                UIManager.Instance.InteractionButtonImage(-1);
+                UIManager.Instance.interactionUIOpen = false;
+            }
+            isTriggerInteraction = false;
+        }
     }
 
     public void Damage(float damage)
@@ -1074,84 +1163,90 @@ public class Player : MonoBehaviour
     {
         RaycastHit hit;
         Interaction interactionObj;
-
-        if (Physics.Raycast(_mainCamera.transform.position + (_mainCamera.transform.forward * Vector3.Distance(ShootPos.transform.position, _mainCamera.transform.position)), _mainCamera.transform.forward, out hit, 2, LayerMask.GetMask("Interaction")))
+        if (!isTriggerInteraction)
         {
-            if (!IsObstacleBetween(ShootPos.transform.position, hit.point, LayerMask.GetMask("Enviroment")))
+            if (Physics.Raycast(_mainCamera.transform.position + (_mainCamera.transform.forward * Vector3.Distance(ShootPos.transform.position, _mainCamera.transform.position)), _mainCamera.transform.forward, out hit, 2, LayerMask.GetMask("Interaction")))
             {
                 interactionObj = hit.transform.GetComponent<Interaction>();
-                isMeleeAttackReady = false;
+                if (!IsObstacleBetween(ShootPos.transform.position, hit.point, LayerMask.GetMask("Enviroment", "Door")) && !interactionObj.isTrigger)
+                {
+                    isMeleeAttackReady = false;
 
-                if(interactionObj.isGetData)
-                {
-                    UIManager.Instance.InteractionButtonImage(1);
-                }
-                else if((int)(interactionObj.interactionType) == 1)
-                {
-                    UIManager.Instance.InteractionButtonImage(2);
-                }
-                else //보조배터리 나오면 추가하기
-                {
-                    UIManager.Instance.InteractionButtonImage(0);
-                }
-               
-
-
-                if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
-                {
-                    if (interactionObj.isNonCharging)
+                    if (!UIManager.Instance.interactionUIOpen)
                     {
-                        interactionObj.InteractionResult();
+                        if (interactionObj.isGetData)
+                        {
+                            UIManager.Instance.InteractionButtonImage(1);
+                        }
+                        else if ((int)(interactionObj.interactionType) == 1)
+                        {
+                            UIManager.Instance.InteractionButtonImage(2);
+                        }
+                        else //보조배터리 나오면 추가하기
+                        {
+                            UIManager.Instance.InteractionButtonImage(0);
+                        }
+                        UIManager.Instance.interactionUIOpen = true;
+                    }
+
+                    if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
+                    {
+                        if (interactionObj.isNonCharging)
+                        {
+                            interactionObj.InteractionResult();
+                        }
+                        else
+                        {
+                            isInteraction = true;
+                            isZoom = false;
+                        }
                     }
                     else
                     {
-                        isInteraction = true;
-                        isZoom = false;
-                    }
-                }
-                else
-                {
-                    interactionTime = 0;
-                    isInteraction = false;
-
-                    //if (interactionObj.isCoolTime)
-                    //    Debug.Log("CoolTime");
-                }
-
-                if (isInteraction && !interactionObj.isNonCharging)
-                {
-                    interactionTime += Time.deltaTime;
-
-                    moveVec = Vector3.zero;
-                    //Debug.Log(interactionObj.name + " " + interactionTime);
-
-                    if (interactionTime >= interactionObj.interactionTime)
-                    {
-                        interactionObj.InteractionResult();
-                        interactionTime = 0;
-                        interactionObj.isCoolTime = true;
-                        isInteraction = false;
-                        //Debug.Log("end");
-                    }
-
-                    if (isDamage)
-                    {
                         interactionTime = 0;
                         isInteraction = false;
-                    }
-                }
 
-                if (!interactionObj.isNonCharging)
-                {
-                    UIManager.Instance.InteractionGauge.fillAmount = interactionTime / interactionObj.interactionTime;
+                        //if (interactionObj.isCoolTime)
+                        //    Debug.Log("CoolTime");
+                    }
+
+                    if (isInteraction && !interactionObj.isNonCharging)
+                    {
+                        interactionTime += Time.deltaTime;
+
+                        moveVec = Vector3.zero;
+                        //Debug.Log(interactionObj.name + " " + interactionTime);
+
+                        if (interactionTime >= interactionObj.interactionTime)
+                        {
+                            interactionObj.InteractionResult();
+                            interactionTime = 0;
+                            interactionObj.isCoolTime = true;
+                            isInteraction = false;
+                            //Debug.Log("end");
+                        }
+
+                        if (isDamage)
+                        {
+                            interactionTime = 0;
+                            isInteraction = false;
+                        }
+                    }
+
+                    if (!interactionObj.isNonCharging)
+                    {
+                        UIManager.Instance.InteractionGauge.fillAmount = interactionTime / interactionObj.interactionTime;
+                    }
                 }
             }
-        }
-        else
-        {
-            isMeleeAttackReady = true;
-            UIManager.Instance.InteractionButtonImage(-1);
-
+            else
+            {
+                if (UIManager.Instance.interactionUIOpen)
+                {
+                    UIManager.Instance.InteractionButtonImage(-1);
+                    UIManager.Instance.interactionUIOpen = false;
+                }
+            }
         }
     }
 
@@ -1331,13 +1426,12 @@ public class Player : MonoBehaviour
                 isInventoryOpen = true;
                 //Time.timeScale = 0f;
                 cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.mainUIAnim.SetTrigger("Close");
-                UIManager.Instance.menuUIAnim.SetTrigger("Open");
+                UIManager.Instance.mainUIAnim.SetTrigger("Open_Menu");
 
-                for (int i = 0; i < UIManager.Instance.fade_Ins.Length; i++)
-                {
-                    UIManager.Instance.fade_Ins[i].StartFadeIn();
-                }
+                //for (int i = 0; i < UIManager.Instance.fade_Ins.Length; i++)
+                //{
+                //    UIManager.Instance.fade_Ins[i].StartFadeIn();
+                //}
 
             }
 
@@ -1346,9 +1440,7 @@ public class Player : MonoBehaviour
                 isInventoryOpen = false;
                 //Time.timeScale = 1.0f;
                 cameraArm.enabled = !isInventoryOpen;
-                UIManager.Instance.skillButtonUIAnim.SetTrigger("PlayerSkill_Close");
-                UIManager.Instance.mainUIAnim.SetTrigger("Open");
-                UIManager.Instance.menuUIAnim.SetTrigger("Close");
+                UIManager.Instance.mainUIAnim.SetTrigger("Open_Main");
             }
         }
     }
