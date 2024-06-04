@@ -21,7 +21,7 @@ public class Granade : MonoBehaviour
         yield return new WaitForSeconds(cookingTime);
         range.SetActive(true);
         effect.SetActive(true);
-
+        rb.isKinematic = true;
         yield return new WaitForSeconds(0.1f);
         range.SetActive(false);
 

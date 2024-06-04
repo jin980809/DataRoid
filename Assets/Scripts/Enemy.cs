@@ -101,6 +101,7 @@ public class Enemy : MonoBehaviour
     public float speedDiscountRate = 1;
 
     public Coroutine bombCor = null;
+    public bool isA = false;
 
     void Awake()
     {
@@ -290,8 +291,6 @@ public class Enemy : MonoBehaviour
 
             this.playerShotPos = playerShotPos;
             isShotChase = true;
-
-
 
             StartCoroutine(OnDamageOut());
         }
