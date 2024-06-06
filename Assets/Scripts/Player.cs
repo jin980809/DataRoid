@@ -629,7 +629,7 @@ public class Player : MonoBehaviour
                         Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
                         
 
-                        switch (hit.transform.gameObject.layer)
+                        /*switch (hit.transform.gameObject.layer)
                         {
                             case 9://Enemy
                                 SpawnHitEffect(hit.point, 1);
@@ -643,7 +643,7 @@ public class Player : MonoBehaviour
                             case 16: // Glass
                                 SpawnHitEffect(hit.point, 2);
                                 break;
-                        }
+                        }*/
 
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath && hit.transform.gameObject.layer == 9)
                         {
@@ -927,7 +927,11 @@ public class Player : MonoBehaviour
             //curHp -= weapon.reloadCost;
             //weapon.curAmmo = weapon.maxAmmo;
             if (equipWeaponIndex == 0)
-            {
+            {  
+                float loseHp = weapon.reloadCost * (weapon.maxAmmo - weapon.curAmmo);
+                Debug.Log(loseHp);
+                curHp -= loseHp;
+                UIManager.Instance.LoseBatteryUI(loseHp);
                 weapon.curAmmo = weapon.maxAmmo;
             }
             else if (equipWeaponIndex == 1)
@@ -1148,6 +1152,7 @@ public class Player : MonoBehaviour
         isStun = false;
         curHp -= damage;
         anim.SetTrigger("Hit");
+        UIManager.Instance.deviceUIAnim.SetTrigger("Hited");
         //Vector3 playerDir = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         //Vector3 EnemyDir = new Vector3(enemyPos.x, enemyPos.y + 1f, enemyPos.z);
         //damageEffect.transform.rotation = Quaternion.LookRotation((EnemyDir - playerDir).normalized);

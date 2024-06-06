@@ -14,7 +14,7 @@ public class SetActiveObj : MonoBehaviour
     public bool ObjActive;
     public bool targetObjActive;
     public GameObject targetObj;
-    private bool isDone = false;
+    public bool isDone = false;
     [Space(10)]
     [Header("Interaction")]
     public Interaction interaction;
@@ -37,7 +37,7 @@ public class SetActiveObj : MonoBehaviour
         }
     }
 
-    void ObjectSet()
+    public void ObjectSet()
     {
         switch (activeType)
         {

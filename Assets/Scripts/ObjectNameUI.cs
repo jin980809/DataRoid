@@ -26,7 +26,7 @@ public class ObjectNameUI : MonoBehaviour
         {
             CreateEnemyUI();
 
-            distText.text = Vector3.Distance(player.transform.position, transform.position).ToString();
+            distText.text = ((int)Vector3.Distance(player.transform.position, transform.position)) + "m";
 
             if (IsEnemyVisible())
             {

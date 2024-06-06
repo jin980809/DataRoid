@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
     private static UIManager m_instance;
 
     public Animator mainUIAnim;
-    public Animator GetUIAnim;
+    public Animator deviceUIAnim;
     public Animator textUIAnim;
     public Animator questUIAnim;
     public Animator LevelPointUIAnim;
@@ -291,13 +291,19 @@ public class UIManager : MonoBehaviour
     public void GetDataUI(int amount)
     {
         getDataText.text = "+" + amount + "%";
-        GetUIAnim.SetTrigger("GetData");
+        deviceUIAnim.SetTrigger("Gain_Data");
     }
 
-    public void GetBatteryUI(int amount)
+    public void GetBatteryUI(float amount)
     {
         getBatteryText.text = "+" + amount + "%";
-        GetUIAnim.SetTrigger("GetBattery");
+        deviceUIAnim.SetTrigger("Gain_Battery");
+    }
+
+    public void LoseBatteryUI(float amount)
+    {
+        getBatteryText.text = "-" + amount + "%";
+        deviceUIAnim.SetTrigger("Lose_Battery");
     }
 
     public void DamageImage()

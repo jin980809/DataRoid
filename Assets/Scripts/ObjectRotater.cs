@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class ObjectRotater : MonoBehaviour, IDragHandler
@@ -12,12 +13,27 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
     public Player player;
     public Interaction interaction;
     bool qDown;
+    bool isScanning = false;
 
     public bool isQuestUpdate;
 
     public string questText;
     public bool useUSFDataVariation;
     public string questTextPlus;
+
+    private float startValue = -1f; // 초기 값
+    private float endValue = 7.6f; // 목표 값
+    public float scanIncreaseSpeed = 1f; // 증가 속도
+    private float currentValue; // 현재 값
+
+    public SpriteRenderer scanImage;
+
+    Material material;
+
+    void Start()
+    {
+        material = scanImage.material;
+    }
 
     public void OnDrag(PointerEventData eventData)
     {
@@ -41,7 +57,7 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
     {
         qDown = Input.GetButtonDown("Cancel");
 
-        if (qDown)
+        if (qDown && !isScanning)
         {
             ExitImage();
         }
@@ -74,14 +90,35 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
                                 UIManager.Instance.questText.text = questText;
                             }
                         }
-                        UIManager.Instance.OpenObjectGetText("Get Data");
-                        hit.transform.gameObject.SetActive(false);
-                        interaction.hasData = false;
+                        //UIManager.Instance.OpenObjectGetText("Get Data");
+                        UIManager.Instance.deviceUIAnim.SetTrigger("Scan_Code");
+                        isScanning = true;
+                        StartCoroutine(ScanOut(hit.transform.gameObject));
+                        //hit.transform.gameObject.SetActive(false);
+                        
                     }
                 }
             }
         }
     }
+
+    IEnumerator ScanOut(GameObject gobj)
+    {
+
+        while (currentValue < endValue)
+        {
+            currentValue += scanIncreaseSpeed * Time.deltaTime;
+            material.SetFloat("_DirectionalGlowFadeFade", currentValue);
+            yield return null;
+        }
+
+        currentValue = endValue;
+
+        yield return new WaitForSeconds(0.1f);
+        gobj.SetActive(false);
+        interaction.hasData = false;
+        isScanning = false;
+    }    
 
     void ExitImage()
     {
