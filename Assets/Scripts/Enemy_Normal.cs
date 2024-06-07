@@ -84,14 +84,14 @@ public class Enemy_Normal : Enemy
 
         if (hit.Length > 0) // 플레이어 감지
         {
-            Debug.Log("플레이어 감지");
+            //Debug.Log("플레이어 감지");
             //nav.isStopped = false;
             Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
             isShotChase = false;
 
             if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment", "Door", "Object"))) //특정 오브젝트 사이에 있는지 확인  
             {
-                Debug.Log("플레이어 공격");
+                //Debug.Log("플레이어 공격");
                 isChase = true;
                 nav.SetDestination(target.transform.position);
                 nav.speed = runSpeed * speedDiscountRate;
@@ -142,7 +142,7 @@ public class Enemy_Normal : Enemy
         {
             if(isShotChase) //플레이어가 총을 쐈을때
             {
-                Debug.Log("플레이어 총쏜위치 감");
+                //Debug.Log("플레이어 총쏜위치 감");
                 //nav.isStopped = false;
                 nav.SetDestination(playerShotPos);
                 nav.speed = runSpeed * speedDiscountRate;
@@ -158,19 +158,19 @@ public class Enemy_Normal : Enemy
                 isA = true;
                 if (isNotAround) //돌아다니지 않는 적
                 {
-                    Debug.Log("적 원래위치로");
+                    //Debug.Log("적 원래위치로");
                     nav.SetDestination(aroundTarget[0].position);
                     nav.speed = walkSpeed * speedDiscountRate;
                     if (nav.remainingDistance <= 0.1f)
                     {
-                        Debug.Log("적 멈춤");
+                        //Debug.Log("적 멈춤");
                         //nav.isStopped = true;
                         nav.speed = 0;
                     }
                 }
                 else // 돌아다니는 적
                 {
-                    Debug.Log("적 돌아다님");
+                    //Debug.Log("적 돌아다님");
                     //nav.isStopped = false;
                     nav.speed = walkSpeed * speedDiscountRate;
                     if (nav.remainingDistance <= 0.1f && isA)

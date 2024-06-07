@@ -623,11 +623,11 @@ public class Player : MonoBehaviour
             {
                 if(!weapon.isLazer)
                 {
-                    if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 20, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy")))
+                    if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out hit, 40, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy")))
                     {
                         StartCoroutine(ShotEffect(hit.point));
                         Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
-                        
+                        //BulletInstance((hit.point - muzzleEffect.transform.position).normalized);
 
                         /*switch (hit.transform.gameObject.layer)
                         {
@@ -652,7 +652,7 @@ public class Player : MonoBehaviour
                     }
                     else
                     {
-                         StartCoroutine(ShotEffect(hit.point));
+                         StartCoroutine(ShotEffect(playerShotPos + (_mainCamera.transform.forward * 40)));
                     }
                 }
                 else //레이저건
@@ -685,26 +685,26 @@ public class Player : MonoBehaviour
             {
                 for(int i = 0; i < weapon.shotGunSpreadAmount; i++)
                 {
-                    if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 20, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy")))
+                    if (Physics.Raycast(_mainCamera.transform.position, GetShotgunDirecting(), out hit, 40, ~LayerMask.GetMask("PhysicsEnemy", "TextBox") | LayerMask.GetMask("Enemy")))
                     {
                         Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
-                        BulletInstance((hit.point - muzzleEffect.transform.position).normalized);
+                        //BulletInstance((hit.point - muzzleEffect.transform.position).normalized);
+                        StartCoroutine(ShotEffect(hit.point));
+                        //switch (hit.transform.gameObject.layer)
+                        //{
+                        //    case 9://Enemy
+                        //        SpawnHitEffect(hit.point, 1);
+                        //        enemy.HitEffect(hit.point);
+                        //        break;
 
-                        switch (hit.transform.gameObject.layer)
-                        {
-                            case 9://Enemy
-                                SpawnHitEffect(hit.point, 1);
-                                enemy.HitEffect(hit.point);
-                                break;
+                        //    case 6: //Enviroment
+                        //        SpawnHitEffect(hit.point, 0);
+                        //        break;
 
-                            case 6: //Enviroment
-                                SpawnHitEffect(hit.point, 0);
-                                break;
-
-                            case 16: // Glass
-                                SpawnHitEffect(hit.point, 2);
-                                break;
-                        }
+                        //    case 16: // Glass
+                        //        SpawnHitEffect(hit.point, 2);
+                        //        break;
+                        //}
 
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath)
                         {
@@ -715,6 +715,10 @@ public class Player : MonoBehaviour
 
                             //Debug.Log(isEnemyHitArea(hit.collider.transform.gameObject));
                         }
+                    }
+                    else
+                    {
+                        StartCoroutine(ShotEffect(playerShotPos + (_mainCamera.transform.forward * 40)));
                     }
                 }
             }

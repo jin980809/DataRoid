@@ -10,7 +10,7 @@ public class ImageTrigger : MonoBehaviour
     private GameObject inst_Obj;
     public bool isSave;
     public int objectID;
-
+    public float deleyTime = 0;
     bool qDown;
 
     void Start()
@@ -26,20 +26,27 @@ public class ImageTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            player.isCommunicate = true;
-            inst_Obj = Instantiate(p_Obj, canvas.transform);
-            inst_Obj.GetComponent<DiscriptionImage>().player = other.GetComponent<Player>();
-            inst_Obj.GetComponent<Animator>().SetTrigger("Guide_Open");
-            Time.timeScale = 0f;
-
-            GetComponent<BoxCollider>().enabled = false;
-
-            if (isSave)
-            {
-                ObjectManager.Instance.saveObjects[objectID] = false;
-            }
-
-            //gameObject.SetActive(false);
+            StartCoroutine(ActiveObject(other));
         }
+    }
+
+    IEnumerator ActiveObject(Collider other)
+    {
+        yield return new WaitForSeconds(deleyTime);
+
+        player.isCommunicate = true;
+        inst_Obj = Instantiate(p_Obj, canvas.transform);
+        inst_Obj.GetComponent<DiscriptionImage>().player = other.GetComponent<Player>();
+        inst_Obj.GetComponent<Animator>().SetTrigger("Guide_Open");
+        Time.timeScale = 0f;
+
+        GetComponent<BoxCollider>().enabled = false;
+
+        if (isSave)
+        {
+            ObjectManager.Instance.saveObjects[objectID] = false;
+        }
+
+        //gameObject.SetActive(false);
     }
 }

@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
     public Animator questUIAnim;
     public Animator LevelPointUIAnim;
     public Animator LevelUpAnim;
+    public Animator weaponBoxAnim;
     public Player player;
     public Image hpGauge;
     public Text hpText;
@@ -36,6 +37,17 @@ public class UIManager : MonoBehaviour
     public bool interactionUIOpen = false;
     //public Text detectCount;
 
+    [Space(10)]
+    [Header("Weapon Box Item UI")]
+    public GameObject riffleIcon;
+    public GameObject shotgunIcon;
+    public GameObject lazerIcon;
+    public GameObject chargerIcon;
+
+    public Text getRiffleAmmoText;
+    public Text getShotgunAmmoText;
+    public Text getLazerAmmoText;
+    public Text getChargerText;
     //[Space(10)]
     //[Header("Inventory")]
     //public GameObject inventoryPanel;
@@ -160,12 +172,12 @@ public class UIManager : MonoBehaviour
         float hp = player.curHp / 100f;
         if (hp < 0) hp = 0;
         hpGauge.fillAmount = hp;
-        hpText.text = ((int)player.curHp).ToString();
+        hpText.text = ((int)player.curHp) + "%";
 
         float data = ProgressManager.Instance.curData / 100f;
         if (data < 0) data = 0;
         DataGauge.fillAmount = data;
-        Datatext.text = ((int)ProgressManager.Instance.curData).ToString();
+        Datatext.text = ((int)ProgressManager.Instance.curData) + "%";
 
         //for(int i = 0; i < hpGauges.Length; i++)
         //{
@@ -221,7 +233,7 @@ public class UIManager : MonoBehaviour
             AmmoText.gameObject.SetActive(true);
             maxAmmoText.gameObject.SetActive(true);
             AmmoText.text = player.weapon.curAmmo.ToString();
-            maxAmmoText.text = player.weapon.maxAmmo.ToString();
+            
 
             switch (gunIndex)
             {
@@ -230,6 +242,7 @@ public class UIManager : MonoBehaviour
                     rifleImage.gameObject.SetActive(false);
                     shotGunImage.gameObject.SetActive(false);
                     LazerImage.gameObject.SetActive(false);
+                    maxAmmoText.text = "¹ø°³";
                     break;
 
                 case 1:
@@ -237,6 +250,7 @@ public class UIManager : MonoBehaviour
                     rifleImage.gameObject.SetActive(true);
                     shotGunImage.gameObject.SetActive(false);
                     LazerImage.gameObject.SetActive(false);
+                    maxAmmoText.text = MaterialManager.Instance.RifleAmmo.ToString();
                     break;
 
                 case 2:
@@ -244,6 +258,7 @@ public class UIManager : MonoBehaviour
                     rifleImage.gameObject.SetActive(false);
                     shotGunImage.gameObject.SetActive(true);
                     LazerImage.gameObject.SetActive(false);
+                    maxAmmoText.text = MaterialManager.Instance.ShotgunAmmo.ToString();
                     break;
 
                 case 3:
@@ -251,6 +266,7 @@ public class UIManager : MonoBehaviour
                     rifleImage.gameObject.SetActive(false);
                     shotGunImage.gameObject.SetActive(false);
                     LazerImage.gameObject.SetActive(true);
+                    maxAmmoText.text = MaterialManager.Instance.LazerAmmo.ToString();
                     break;
             }
         }
@@ -342,6 +358,40 @@ public class UIManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
         mapOpenAnims[index].SetTrigger("Out");
+    }
+
+    public void WeaponBoxUI(int rA, int sA, int lA, int cA)
+    {
+        riffleIcon.SetActive(false);
+        shotgunIcon.SetActive(false);
+        lazerIcon.SetActive(false);
+        chargerIcon.SetActive(false);
+
+        if(rA > 0)
+        {
+            riffleIcon.SetActive(true);
+            getRiffleAmmoText.text = rA.ToString();
+        }
+
+        if(sA > 0)
+        {
+            shotgunIcon.SetActive(true);
+            getShotgunAmmoText.text = sA.ToString();
+        }
+
+        if(lA > 0)
+        {
+            lazerIcon.SetActive(true);
+            getLazerAmmoText.text = lA.ToString();
+        }
+
+        if(cA > 0)
+        {
+            chargerIcon.SetActive(true);
+            getChargerText.text = cA.ToString();
+        }
+
+        weaponBoxAnim.SetTrigger("Spawn");
     }
 
 }

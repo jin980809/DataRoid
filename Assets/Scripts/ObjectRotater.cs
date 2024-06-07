@@ -79,7 +79,7 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
                         MaterialManager.Instance.UFSData += 1;
                         if (isQuestUpdate)
                         {
-                            UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
+                            UIManager.Instance.questUIAnim.SetTrigger("Quest_In");
 
                             if (useUSFDataVariation)
                             {

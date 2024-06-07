@@ -198,8 +198,11 @@ public class Interaction : FadeController
 
     [Space(10)]
     [Header("WeaponBox")]
-    public int weaponIndex;
-    public int weaponAmount;
+    //public int weaponIndex;
+    public int riffleAmmoAmount;
+    public int shotgunAmmoAmount;
+    public int LazerAmmoAmount;
+    public int miniChargerAmount;
     public bool hasOpen = false;
 
     [Space(10)]
@@ -308,7 +311,7 @@ public class Interaction : FadeController
     {
         if (isQuestUpdate)
         {
-            UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
+            UIManager.Instance.questUIAnim.SetTrigger("Quest_In");
 
             if (useUSFDataVariation)
             {
@@ -802,7 +805,7 @@ public class Interaction : FadeController
         {
             if (isQuestUpdate)
             {
-                UIManager.Instance.questUIAnim.SetTrigger("QuestUpdate");
+                UIManager.Instance.questUIAnim.SetTrigger("Quest_In");
 
                 if (useUSFDataVariation)
                 {
@@ -851,21 +854,11 @@ public class Interaction : FadeController
         else
         {
             UIObjectOn();
+            MaterialManager.Instance.RifleAmmo += riffleAmmoAmount;
+            MaterialManager.Instance.ShotgunAmmo += shotgunAmmoAmount;
+            MaterialManager.Instance.LazerAmmo += LazerAmmoAmount;
 
-            switch (weaponIndex)
-            {
-                case 1:
-                    MaterialManager.Instance.RifleAmmo += weaponAmount;
-                    break;
-
-                case 2:
-                    MaterialManager.Instance.ShotgunAmmo += weaponAmount;
-                    break;
-
-                case 3:
-                    MaterialManager.Instance.LazerAmmo += weaponAmount;
-                    break;
-            }
+            UIManager.Instance.WeaponBoxUI(riffleAmmoAmount, shotgunAmmoAmount, LazerAmmoAmount, miniChargerAmount);
 
             hasOpen = true;
             SaveObject();
