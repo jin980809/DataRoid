@@ -8,7 +8,7 @@ public class EnemySetObject : SetActiveObj
 
     void Update()
     {
-        Debug.Log(EnemyManager.Instance.enemyInfo[targetEnemyID]["isDead"]);
+        //Debug.Log(EnemyManager.Instance.enemyInfo[targetEnemyID]["isDead"]);
 
         bool isEnemyDead;
         if (EnemyManager.Instance.enemyInfo[targetEnemyID]["isDead"].ToString() == "1")

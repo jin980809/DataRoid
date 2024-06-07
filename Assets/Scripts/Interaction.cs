@@ -104,6 +104,8 @@ public class Interaction : FadeController
     public GameObject rightDoor;
     public float openTime;
     public bool isNotClose;
+    public GameObject[] openImageObject;
+    public GameObject[] closeImageObject;
 
     [Space(10)]
     [Header("SavePoint")]
@@ -161,6 +163,7 @@ public class Interaction : FadeController
     public float smoothSpeed;
     public GameObject m_Camera;
 
+
     [Space(10)]
     [Header("ObjectRotater")]
     public GameObject p_Object;
@@ -204,6 +207,10 @@ public class Interaction : FadeController
     public int LazerAmmoAmount;
     public int miniChargerAmount;
     public bool hasOpen = false;
+
+    public Material matG;
+    public Material matR;
+    public MeshRenderer boxLight;
 
     [Space(10)]
     [Header("Rotation Object")]
@@ -256,6 +263,17 @@ public class Interaction : FadeController
         if (isNeedElec)
             elecDetect = false;
 
+        if (interactionType == Type.WeaponBox)
+        {
+            if (hasOpen)
+            {
+                boxLight.material = matR;
+            }
+            else
+            {
+                boxLight.material = matG;
+            }
+        }
     }
 
     void Update()
@@ -278,6 +296,7 @@ public class Interaction : FadeController
                 p_cameraMove.enabled = true;
 
                 transform.gameObject.SetActive(false);
+                //transform.GetComponent<BoxCollider>().enabled = false;
             }
 
             //if (!passWordUI.activeSelf && !isActive)
@@ -287,7 +306,7 @@ public class Interaction : FadeController
             //}
         }
 
-        if(interactionType == Type.ObjectRotater)
+        if (interactionType == Type.ObjectRotater)
         {
             if (hasUFSData == false && isSaveObject)
             {
@@ -305,6 +324,8 @@ public class Interaction : FadeController
         //        }
         //    }
         //}
+
+
     }
 
     void UIObjectOn()
@@ -337,8 +358,15 @@ public class Interaction : FadeController
 
         if(weaponDrop)
         {
-            player.weapons[weaponDropIndex].GetComponent<Weapon>().curAmmo += 1;
+            player.weapons[weaponDropIndex].GetComponent<Weapon>().curAmmo = 9;
             player.hasWeapons[weaponDropIndex] = true;
+
+            player.isGunOn = true;
+            player.isZoom = false;
+            player.equipWeaponIndex = 0;
+            player.weapon = player.weapons[0].GetComponent<Weapon>();
+            player.weapon.gameObject.SetActive(true);
+            player.muzzleEffect = player.weapon.muzzleFlash;
         }
 
         if(isMapOpen)
@@ -547,15 +575,30 @@ public class Interaction : FadeController
 
     void OpenDoor()
     {
+        Debug.Log(openImageObject.Length);
+        for(int i = 0; i < openImageObject.Length; i++)
+        {
+            openImageObject[i].SetActive(true);
+            closeImageObject[i].SetActive(false);
+        }
+
         StartCoroutine(MoveLeftDoor(leftDoor));
         StartCoroutine(MoveRightDoor(rightDoor));
+
         isOpen = true;
     }
 
     void CloseDoor()
     {
+        for (int i = 0; i < openImageObject.Length; i++)
+        {
+            openImageObject[i].SetActive(false);
+            closeImageObject[i].SetActive(true);
+        }
+
         StartCoroutine(MoveRightDoor(leftDoor));
         StartCoroutine(MoveLeftDoor(rightDoor));
+
         isOpen = false;
     }
 
@@ -862,6 +905,7 @@ public class Interaction : FadeController
 
             hasOpen = true;
             SaveObject();
+            boxLight.material = matR;
         }
     }
 

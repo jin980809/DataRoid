@@ -13,6 +13,8 @@ public class PassWord : MonoBehaviour
     public bool isDeviceOn;
     public bool isNameTagOn;
     public int nameTagIndex;
+    public bool doEndToInteraction;
+    public Interaction endToInteraction;
 
     [Space(10)]
     [Header("Active")]
@@ -70,6 +72,11 @@ public class PassWord : MonoBehaviour
             ObjectManager.Instance.saveObjects[1] = false;
             UIManager.Instance.mainUI.SetActive(true);
             player.deviceOn = true;
+        }
+
+        if(doEndToInteraction)
+        {
+            endToInteraction.InteractionResult();
         }
     }
 

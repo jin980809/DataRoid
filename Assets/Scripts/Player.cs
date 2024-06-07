@@ -85,7 +85,7 @@ public class Player : MonoBehaviour
     bool isBorder;
     public bool isDodge = false;
     private bool isDodgeReady = true;
-    private bool isGunOn = false;
+    public bool isGunOn = false;
     public bool isShot = false;
     public bool isReload = false;
     public bool isSwap = false;
@@ -933,7 +933,7 @@ public class Player : MonoBehaviour
             if (equipWeaponIndex == 0)
             {  
                 float loseHp = weapon.reloadCost * (weapon.maxAmmo - weapon.curAmmo);
-                Debug.Log(loseHp);
+                //Debug.Log(loseHp);
                 curHp -= loseHp;
                 UIManager.Instance.LoseBatteryUI(loseHp);
                 weapon.curAmmo = weapon.maxAmmo;
