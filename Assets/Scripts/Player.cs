@@ -8,8 +8,7 @@ using UnityEngine.Rendering;
 using System.Reflection;
 
 public class Player : MonoBehaviour
-{
-
+{ 
     public Transform borderPos;
 
     [Space(10)]
@@ -180,13 +179,16 @@ public class Player : MonoBehaviour
     bool isShotAnimStart = false;
     bool[] autoReload = new bool[4];
     bool isTriggerInteraction = false;
+    public ChangeHPMat cHpMat;
+    private Coroutine changeDamageLightCor;
 
     void Awake()
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         miniMap = UIManager.Instance.MiniMap.GetComponent<RectTransform>();
-        recoil = GetComponent<CrosshairDemoPlayerRecoil>();
+        //recoil = GetComponent<CrosshairDemoPlayerRecoil>();
+        //cHpMat = GetComponentInChildren<ChangeHPMat>();
         //curHackingNum = 0;
     }
 
@@ -1146,8 +1148,20 @@ public class Player : MonoBehaviour
     {
         if (!isDamage)
         {
+
             StartCoroutine(OnDamage(damage));
         }
+    }
+
+
+
+    public IEnumerator DamageLightChange()
+    {
+        cHpMat.isPlayerHit = true;
+
+        yield return new WaitForSeconds(1f);
+
+        cHpMat.isPlayerHit = false;
     }
 
     public IEnumerator OnDamage(float damage)
@@ -1157,12 +1171,22 @@ public class Player : MonoBehaviour
         curHp -= damage;
         anim.SetTrigger("Hit");
         UIManager.Instance.deviceUIAnim.SetTrigger("Hited");
+        if (changeDamageLightCor != null)
+        {
+            StopCoroutine(changeDamageLightCor);
+            StartCoroutine(DamageLightChange());
+        }
+        else
+        {
+            StartCoroutine(DamageLightChange());
+        }
         //Vector3 playerDir = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         //Vector3 EnemyDir = new Vector3(enemyPos.x, enemyPos.y + 1f, enemyPos.z);
         //damageEffect.transform.rotation = Quaternion.LookRotation((EnemyDir - playerDir).normalized);
         //damageEffect.SetActive(true);
 
         yield return new WaitForSeconds(0.1f);
+        
         isDamage = false;
         //damageEffect.SetActive(false);
         yield return null;

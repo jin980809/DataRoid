@@ -7,6 +7,7 @@ public class ChangeHPMat : MonoBehaviour
     public Material[] changeMat;
     SkinnedMeshRenderer mesh;
     public Player player;
+    public bool isPlayerHit;
 
     // Start is called before the first frame update
     void Start()
@@ -19,21 +20,28 @@ public class ChangeHPMat : MonoBehaviour
     {
         if(!GameManager.Instance.isPlayerDead)
         {
-            if(player.curHp > 66f)
+            if (!isPlayerHit)
             {
-                mesh.material = changeMat[0];
-            }
-            else if(player.curHp <= 66f && player.curHp > 33f)
-            {
-                mesh.material = changeMat[1];
-            }
-            else if(player.curHp <= 33f && player.curHp > 15f)
-            {
-                mesh.material = changeMat[2];
+                if (player.curHp > 66f)
+                {
+                    mesh.material = changeMat[0];
+                }
+                else if (player.curHp <= 66f && player.curHp > 33f)
+                {
+                    mesh.material = changeMat[1];
+                }
+                else if (player.curHp <= 33f && player.curHp > 15f)
+                {
+                    mesh.material = changeMat[2];
+                }
+                else
+                {
+                    mesh.material = changeMat[3];
+                }
             }
             else
             {
-                mesh.material = changeMat[3];
+                mesh.material = changeMat[4];
             }
         }
     }
