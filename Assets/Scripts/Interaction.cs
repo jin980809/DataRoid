@@ -45,6 +45,7 @@ public class Interaction : FadeController
     public bool weaponDrop;
     public bool isMapOpen;
     public bool isNeedElec;
+    public bool getBattery;
     public bool elecDetect = true;
     public Player player;
 
@@ -54,6 +55,11 @@ public class Interaction : FadeController
     public string questText;
     public bool useUSFDataVariation;
     public string questTextPlus;
+
+    [Space(10)]
+    [Header("Get Battery")]
+    public float geBatteryAmount;
+    public ObjectNameUI batteryNameTag;
 
     [Space(10)]
     [Header("Map Open")]
@@ -89,6 +95,7 @@ public class Interaction : FadeController
     [Space(10)]
     [Header("ChargeElec")]
     public float healAmount;
+    public ObjectNameUI chargeNameTag;
 
     [Space(10)]
     [Header("ConnectCCTV")]
@@ -381,6 +388,14 @@ public class Interaction : FadeController
         if(isMapOpen)
         {
             UIManager.Instance.MapOpenUI(mapOpenIndex);
+        }
+
+        if(getBattery)
+        {
+            UIManager.Instance.GetBatteryUI(geBatteryAmount);
+            player.curHp += geBatteryAmount;
+
+            player.ElecChargeNameTagFalse();
         }
     }
 

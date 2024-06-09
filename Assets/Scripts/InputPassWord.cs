@@ -28,7 +28,7 @@ public class InputPassWord : PassWord
         qDown = Input.GetButtonDown("Cancel");
         eDown = Input.GetButton("Enter");
 
-        if (qDown)
+        if (qDown && !isNameRegist)
         {
             ExitPassWord();
         }

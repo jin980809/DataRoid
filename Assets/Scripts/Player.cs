@@ -181,7 +181,7 @@ public class Player : MonoBehaviour
     bool isTriggerInteraction = false;
     public ChangeHPMat cHpMat;
     private Coroutine changeDamageLightCor;
-
+    public ObjectNameUI elecChargeNameTag = null;
     void Awake()
     {
         anim = GetComponentInChildren<Animator>();
@@ -194,7 +194,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        curHp = maxHp;
+        //curHp = maxHp;
     }
 
     void Update()
@@ -1196,6 +1196,7 @@ public class Player : MonoBehaviour
     {
         RaycastHit hit;
         Interaction interactionObj;
+
         if (!isTriggerInteraction)
         {
             if (Physics.Raycast(_mainCamera.transform.position + (_mainCamera.transform.forward * Vector3.Distance(ShootPos.transform.position, _mainCamera.transform.position)), _mainCamera.transform.forward, out hit, 2, LayerMask.GetMask("Interaction")))
@@ -1220,6 +1221,22 @@ public class Player : MonoBehaviour
                             UIManager.Instance.InteractionButtonImage(0, interactionObj.interactionName);
                         }
                         UIManager.Instance.interactionUIOpen = true;
+                    }
+
+                    if((int)interactionObj.interactionType == 1 || interactionObj.getBattery)
+                    {
+                        //elecChargeNameTag = interactionObj.GetComponentInChildren<ObjectNameUI>();
+
+                        if(interactionObj.getBattery)
+                        {
+                            elecChargeNameTag = interactionObj.batteryNameTag;
+                        }
+                        else
+                        {
+                            elecChargeNameTag = interactionObj.chargeNameTag;
+                        }
+
+                        elecChargeNameTag.isNameTagOpen = true;
                     }
 
                     if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
@@ -1279,10 +1296,20 @@ public class Player : MonoBehaviour
                     UIManager.Instance.InteractionButtonImage(-1, " ");
                     UIManager.Instance.interactionUIOpen = false;
                 }
+
+                if(elecChargeNameTag != null)
+                {
+                    ElecChargeNameTagFalse();
+                }
             }
         }
     }
 
+    public void ElecChargeNameTagFalse()
+    {
+        elecChargeNameTag.isNameTagOpen = false;
+        elecChargeNameTag = null;
+    }
 
     //void EnemyHacking()
     //{

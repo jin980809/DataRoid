@@ -76,8 +76,14 @@ public class PassWord : MonoBehaviour
 
         if(doEndToInteraction)
         {
-            endToInteraction.InteractionResult();
+            StartCoroutine(ActionInteraction());
         }
+    }
+
+    IEnumerator ActionInteraction()
+    {
+        yield return new WaitForSeconds(0.1f);
+        endToInteraction.InteractionResult();
     }
 
     public void ExitPassWord()

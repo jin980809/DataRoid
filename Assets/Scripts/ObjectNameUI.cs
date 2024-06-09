@@ -13,6 +13,7 @@ public class ObjectNameUI : MonoBehaviour
     public Camera mainCamera;
     private float distance;
     private Text distText;
+    public bool isBatteryTag;
 
     void Update()
     {
@@ -26,7 +27,8 @@ public class ObjectNameUI : MonoBehaviour
         {
             CreateEnemyUI();
 
-            distText.text = ((int)Vector3.Distance(player.transform.position, transform.position)) + "m";
+            if(!isBatteryTag)
+                distText.text = ((int)Vector3.Distance(player.transform.position, transform.position)) + "m";
 
             if (IsEnemyVisible())
             {
@@ -57,7 +59,9 @@ public class ObjectNameUI : MonoBehaviour
         if (nameUI == null)
         {
             nameUI = Instantiate(nameUIPrefab, canvas.transform);
-            distText = nameUI.GetComponentInChildren<Text>();
+
+            if(!isBatteryTag)
+                distText = nameUI.GetComponentInChildren<Text>();
         }
         else
         {
