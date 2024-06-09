@@ -103,6 +103,8 @@ public class Enemy : MonoBehaviour
     public Coroutine bombCor = null;
     public bool isA = false;
 
+    public bool isBombDeath = false;
+
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -306,8 +308,14 @@ public class Enemy : MonoBehaviour
             nav.isStopped = true;
             nav.speed = 0;
             anim.SetTrigger("doDie");
-            DropItems();
+
+            if (!isBombDeath)
+            {
+                DropItems();
+            }
+
             OnOffObject();
+
             StartCoroutine(Dead());
         }
     }

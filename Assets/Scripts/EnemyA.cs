@@ -147,7 +147,7 @@ public class EnemyA : Enemy
         {
             if (!isAttack && !isShotChase && !isDeath && !isStun && isSubdueReady && !isPlayerSubdue) //감지되지 않고 맞지도 않고 돌아다닐때
             {
-                Debug.Log("BB");
+                //Debug.Log("BB");
 
                 nav.speed = walkSpeed * speedDiscountRate;
                 isChase = false;
@@ -158,7 +158,7 @@ public class EnemyA : Enemy
 
                 if (isStop && isNotAround)
                 {
-                    Debug.Log("Bb");
+                    //Debug.Log("Bb");
                     nav.speed = 0;
                 }
 
@@ -388,7 +388,7 @@ public class EnemyA : Enemy
     {
         if (!isChase && !isDeath && !isStun && !isNotAround && !isShotChase)
         {
-            Debug.Log("CC");
+            //Debug.Log("CC");
             if (nav.remainingDistance <= 0f)
             {
                 //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
@@ -426,7 +426,7 @@ public class EnemyA : Enemy
 
         else if (!isChase && !isDeath && !isStun && isNotAround && !isShotChase && !isStop)
         {
-            Debug.Log("DD");
+            //Debug.Log("DD");
             if(!isShotChase)
                 nav.SetDestination(aroundTarget[0].position);
 

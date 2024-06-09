@@ -26,6 +26,7 @@ public class Interaction : FadeController
         ObjectOn = 13,
         WeaponBox = 14,
         RotationObject = 15,
+        GetProgressData = 16,
     };
     public Type interactionType;
 
@@ -137,6 +138,8 @@ public class Interaction : FadeController
     public GameObject[] OnLight;
     public int needUFSData;
     public float getData;
+    public bool isCinematicOn;
+    public GameObject cinematicObject;
 
     [Space(10)]
     [Header("TextBox")]
@@ -154,6 +157,7 @@ public class Interaction : FadeController
     [Space(10)]
     [Header("PassWord")]
     public bool isActive = false;
+    public bool isNotCameraMove;
     public Transform cameraPos;
     public GameObject passWordUI;
     private PassWord passWord;
@@ -219,6 +223,11 @@ public class Interaction : FadeController
     public float targetAngle = 90f;
     private float currentAngle = 0f;
     private bool isRotate = false;
+
+    [Space(10)]
+    [Header("Get Progress Data")]
+    public int dataAmount;
+
     void Awake()
     {
 
@@ -485,6 +494,10 @@ public class Interaction : FadeController
                 case Type.RotationObject:
                     RotateObject();
                     break;
+
+                case Type.GetProgressData:
+                    GetProgressData();
+                    break;
             }
         }
         else
@@ -652,22 +665,18 @@ public class Interaction : FadeController
     {
         if (MaterialManager.Instance.UFSData >= needUFSData)
         {
-            SaveObject();
-            for(int i = 0; i < offLight.Length; i++)
-            {
-                offLight[i].SetActive(false);
-
-            }
-            for (int i = 0; i < OnLight.Length; i++)
-            {
-                OnLight[i].SetActive(true);
-
-            }
+            //SaveObject();
+            LightOnObjectOnOff();
 
             GetComponent<BoxCollider>().enabled = false;
             LightManager.Instance.lightObjects[lightIndex] = true;
             MaterialManager.Instance.UFSData -= needUFSData;
             ProgressManager.Instance.curData += getData;
+
+            if (isCinematicOn)
+            {
+                cinematicObject.SetActive(true);
+            }
             ObjectOn();
             UIObjectOn();
         }
@@ -677,6 +686,20 @@ public class Interaction : FadeController
             {
                 TextOn();
             }
+        }
+    }
+
+    public void LightOnObjectOnOff()
+    {
+        for (int i = 0; i < offLight.Length; i++)
+        {
+            offLight[i].SetActive(false);
+
+        }
+        for (int i = 0; i < OnLight.Length; i++)
+        {
+            OnLight[i].SetActive(true);
+
         }
     }
 
@@ -762,7 +785,14 @@ public class Interaction : FadeController
             player.isCommunicate = true;
             v_Cam.SetActive(false);
             p_cameraMove.enabled = false;
-            StartCoroutine(MoveCameraCoroutine(cameraPos.position, cameraPos.rotation));
+            if(isNotCameraMove)
+            {
+                passWordUI.SetActive(true);
+            }
+            else
+            {
+                StartCoroutine(MoveCameraCoroutine(cameraPos.position, cameraPos.rotation));
+            }  
         }
     }
 
@@ -867,7 +897,7 @@ public class Interaction : FadeController
         }
     }
 
-    void ObjectOnOff()
+    public void ObjectOnOff()
     {
         for (int i = 0; i < a_col.Length; i++)
             a_col[i].enabled = true;
@@ -966,5 +996,12 @@ public class Interaction : FadeController
         {
             elecDetect = false;
         }
+    }
+
+    void GetProgressData()
+    {
+        UIManager.Instance.GetDataUI(dataAmount);
+        ProgressManager.Instance.curData += dataAmount;
+        gameObject.SetActive(false);
     }
 }

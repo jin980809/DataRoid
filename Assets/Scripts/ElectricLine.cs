@@ -4,8 +4,53 @@ using UnityEngine;
 
 public class ElectricLine : MonoBehaviour
 {
-
     public bool detectElec;
+    //private bool alreadyDetect;
+    public bool isDetectObjectOnOff;
+    public GameObject[] detectOnObject;
+    public GameObject[] detectOffObject;
+
+    public  ElectricLine e = null;
+
+    void Update()
+    {
+        if(isDetectObjectOnOff)
+        {
+            if(detectElec)
+            {
+                for(int i = 0; i < detectOnObject.Length; i++)
+                {
+                    detectOnObject[i].SetActive(true);
+                }
+                for (int i = 0; i < detectOffObject.Length; i++)
+                {
+                    detectOffObject[i].SetActive(false);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < detectOnObject.Length; i++)
+                {
+                    detectOnObject[i].SetActive(false);
+                }
+                for (int i = 0; i < detectOffObject.Length; i++)
+                {
+                    detectOffObject[i].SetActive(true);
+                }
+            }
+        }
+
+        if (e != null)
+        {
+            if(!e.detectElec)
+            {
+                Debug.Log("AA");
+                detectElec = false;
+                e = null;
+            }
+        }
+    }
+
     void OnTriggerStay(Collider other)
     {
         if(other.CompareTag("Electric"))
@@ -14,10 +59,7 @@ public class ElectricLine : MonoBehaviour
             if (elec.detectElec)
             {
                 detectElec = true;
-            }
-            else
-            {
-                detectElec = false;
+                e = elec;
             }
         }
     }
@@ -26,7 +68,12 @@ public class ElectricLine : MonoBehaviour
     {
         if (other.CompareTag("Electric"))
         {
-            detectElec = false;
+            if (this != other.GetComponent<SetElecLine>().elec.e)
+            {
+                //Debug.Log("AA");
+                detectElec = false;
+                e = null;
+            }
         }
     }
 }

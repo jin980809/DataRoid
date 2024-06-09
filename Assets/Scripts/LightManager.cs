@@ -36,6 +36,7 @@ public class LightManager : MonoBehaviour
     public GameObject tutLightOn;
     public GameObject tutLightOff;
     public Interaction tutLightInteraction;
+    public Collider tutInteractionCol;
 
     void Awake()
     {
@@ -67,9 +68,11 @@ public class LightManager : MonoBehaviour
     {
         if(lightObjects[0])
         {
+            tutLightInteraction.ObjectOnOff();
+
             tutLightOn.SetActive(true);
             tutLightOff.SetActive(false);
-            tutLightInteraction.enabled = false;
+            tutInteractionCol.enabled = false;
         }
         else
         {
