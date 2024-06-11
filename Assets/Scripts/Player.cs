@@ -227,11 +227,11 @@ public class Player : MonoBehaviour
 
         ZoomInOut();
 
-        OCMap();
+        //OCMap();
 
         //HackingCoolDown();
 
-        EnemysStun();
+        //EnemysStun();
 
         SubdueCancel();
 
