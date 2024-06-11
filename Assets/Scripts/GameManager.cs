@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     [Header("Player Spawn")]
     public Transform[] spawnPoints;
     public int spawnPoint;
-
+    public int isNewGame;
 
     [Space(10)]
     [Header("ESN08")]
@@ -43,6 +43,10 @@ public class GameManager : MonoBehaviour
     public CameraMove cameraArm;
     void Awake()
     {
+        Time.timeScale = 1f;
+
+        isNewGame = PlayerPrefs.GetInt("NewGame");
+
         data.Clear();
 
         tempData = new string[17];
@@ -70,7 +74,15 @@ public class GameManager : MonoBehaviour
     {
         dicList.Clear();
 
-        dicList = CSVReader.Read(fileName);
+        if (isNewGame == 0)
+        {
+            dicList = CSVReader.Read(fileName);
+        }
+        else
+        {
+            dicList = CSVReader.Read("Start" + fileName);
+        }
+
 
         ProgressManager.Instance.curData = int.Parse(dicList[0]["Data"] + "");
         ProgressManager.Instance.saveData = int.Parse(dicList[0]["MaxData"] + "");
@@ -93,9 +105,6 @@ public class GameManager : MonoBehaviour
         spawnPoint = int.Parse(dicList[0]["SavePoint"] + "");
 
         SpawnPlayer();
-
-
-        //총기 추가 할떄마다 추가하기
     }
 
     void SpawnPlayer()
@@ -105,16 +114,20 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDead()
     {
+        Time.timeScale = 0f;
         player.enabled = false;
         isPlayerDead = true;
         UIManager.Instance.endPanel.SetActive(true);
-        LightManager.Instance.SetDeadVolume();
+        //LightManager.Instance.SetDeadVolume();
         cameraArm.enabled = false;
     }
 
     void Update()
     {
-
+        if(player.curHp <= 0)
+        {
+            PlayerDead();
+        }
     }
 
     public void SaveCSVFile(int savePointIndex)

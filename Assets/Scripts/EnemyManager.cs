@@ -47,7 +47,14 @@ public class EnemyManager : MonoBehaviour
 
         enemyInfo.Clear();
 
-        enemyInfo = CSVReader.Read(fileName);
+        if (GameManager.Instance.isNewGame == 0)
+        {
+            enemyInfo = CSVReader.Read(fileName);
+        }
+        else
+        {
+            enemyInfo = CSVReader.Read("Start" + fileName);
+        }
     }
 
     void Start()

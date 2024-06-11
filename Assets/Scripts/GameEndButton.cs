@@ -10,6 +10,7 @@ public class GameEndButton : MonoBehaviour
     public void RestartClick()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        PlayerPrefs.SetInt("NewGame", 0);
     }
 
     public void ExitClick()

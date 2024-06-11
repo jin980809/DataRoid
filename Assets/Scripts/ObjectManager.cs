@@ -44,7 +44,15 @@ public class ObjectManager : MonoBehaviour
 
         objectInfo.Clear();
 
-        objectInfo = CSVReader.Read(fileName);
+        if (GameManager.Instance.isNewGame == 0)
+        {
+            objectInfo = CSVReader.Read(fileName);
+        }
+        else
+        {
+            objectInfo = CSVReader.Read("Start" + fileName);
+        }
+        
 
         Initialization();
     }

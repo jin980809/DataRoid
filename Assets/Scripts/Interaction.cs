@@ -461,7 +461,6 @@ public class Interaction : FadeController
                     GameManager.Instance.SaveCSVFile(savePoint);
                     ObjectManager.Instance.SaveObjectFile();
                     EnemyManager.Instance.SaveEnemyData();
-                    TextManager.Instance.SaveTextObjectFile();
                     LightManager.Instance.SaveLightObjectFile();
                     player.curHp = player.maxHp;
                     break;

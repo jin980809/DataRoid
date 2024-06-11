@@ -44,8 +44,15 @@ public class LightManager : MonoBehaviour
 
         lightInfo.Clear();
 
-        lightInfo = CSVReader.Read(fileName);
-
+        if (GameManager.Instance.isNewGame == 0)
+        {
+            lightInfo = CSVReader.Read(fileName);
+        }
+        else
+        {
+            lightInfo = CSVReader.Read("Start" + fileName);
+        }
+        
         Initialization();
     }
 
