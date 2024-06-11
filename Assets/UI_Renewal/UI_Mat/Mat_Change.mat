@@ -7,11 +7,12 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_HardGlitch
+  m_Name: Mat_Change
   m_Shader: {fileID: 4800000, guid: bb134d7d4389e3a45a6c49e898a344a4, type: 3}
   m_ValidKeywords:
-  - _ENABLEGLITCH_ON
-  - _ENABLESHARPEN_ON
+  - _ENABLEBRIGHTNESS_ON
+  - _ENABLEHOLOGRAM_ON
+  - _ENABLEOUTEROUTLINE_ON
   - _SHADERFADING_NONE
   - _SHADERSPACE_UV
   - _TEXTURELAYER1SHEETTOGGLE_ON
@@ -132,9 +133,9 @@ Material:
     - _BakedMaterial: 0
     - _BlackTintFade: 1
     - _BlackTintPower: 4
-    - _Brightness: 1
+    - _Brightness: 2
     - _BurnEdgeNoiseFactor: 0.5
-    - _BurnFade: 1
+    - _BurnFade: 0
     - _BurnInsideContrast: 2
     - _BurnInsideNoiseFactor: 0.05
     - _BurnRadius: 5
@@ -183,7 +184,7 @@ Material:
     - _EnableAddHue: 0
     - _EnableAlphaTint: 0
     - _EnableBlackTint: 0
-    - _EnableBrightness: 0
+    - _EnableBrightness: 1
     - _EnableBurn: 0
     - _EnableCamouflage: 0
     - _EnableCheckerboard: 0
@@ -200,15 +201,15 @@ Material:
     - _EnableFullDistortion: 0
     - _EnableFullGlowDissolve: 0
     - _EnableGaussianBlur: 0
-    - _EnableGlitch: 1
+    - _EnableGlitch: 0
     - _EnableHalftone: 0
-    - _EnableHologram: 0
+    - _EnableHologram: 1
     - _EnableHue: 0
     - _EnableInkSpread: 0
     - _EnableInnerOutline: 0
     - _EnableMetal: 0
     - _EnableNegative: 0
-    - _EnableOuterOutline: 0
+    - _EnableOuterOutline: 1
     - _EnablePingPongGlow: 0
     - _EnablePixelOutline: 0
     - _EnablePixelate: 0
@@ -219,7 +220,7 @@ Material:
     - _EnableSaturation: 0
     - _EnableScreenTiling: 0
     - _EnableShadow: 0
-    - _EnableSharpen: 1
+    - _EnableSharpen: 0
     - _EnableShiftHue: 0
     - _EnableShifting: 0
     - _EnableShine: 0
@@ -257,11 +258,11 @@ Material:
     - _FadingFade: 1
     - _FadingNoiseFactor: 0.2
     - _FadingWidth: 0.3
-    - _FlameBrightness: 10
+    - _FlameBrightness: 0.87
     - _FlameNoiseFactor: 2.5
     - _FlameNoiseHeightFactor: 1.5
-    - _FlameRadius: 0.2
-    - _FlameSmooth: 2
+    - _FlameRadius: 1.68
+    - _FlameSmooth: 0.97
     - _ForceAlpha: 0
     - _FrozenContrast: 2
     - _FrozenFade: 1
@@ -269,27 +270,27 @@ Material:
     - _FrozenHighlightDensity: 1
     - _FrozenSnowContrast: 1
     - _FrozenSnowDensity: 0.25
-    - _FullAlphaDissolveFade: 0.5
+    - _FullAlphaDissolveFade: 1
     - _FullAlphaDissolveWidth: 0.5
     - _FullDistortionFade: 1
-    - _FullGlowDissolveFade: 0.5
+    - _FullGlowDissolveFade: 0
     - _FullGlowDissolveWidth: 0.5
     - _GaussianBlurFade: 1
     - _GaussianBlurOffset: 1
-    - _GlitchBrightness: 3
-    - _GlitchFade: 1
-    - _GlitchHueSpeed: 1.5
-    - _GlitchMaskMin: 1
+    - _GlitchBrightness: 1.5
+    - _GlitchFade: 0.5
+    - _GlitchHueSpeed: 1
+    - _GlitchMaskMin: 0.4
     - _HalftoneFade: 1
     - _HalftoneFadeWidth: 1.5
     - _HalftoneInvert: 0
     - _HalftoneTiling: 4
     - _HologramContrast: 5
-    - _HologramDistortionDensity: 0.5
-    - _HologramDistortionOffset: 0.5
+    - _HologramDistortionDensity: 0.2
+    - _HologramDistortionOffset: 0.2
     - _HologramDistortionScale: 10
-    - _HologramDistortionSpeed: 2
-    - _HologramFade: 0.5
+    - _HologramDistortionSpeed: 5
+    - _HologramFade: 0.35
     - _HologramLineFrequency: 500
     - _HologramLineGap: 3
     - _HologramLineSpeed: 0.01
@@ -317,7 +318,7 @@ Material:
     - _OuterOutlineFade: 1
     - _OuterOutlineOutlineOnlyToggle: 0
     - _OuterOutlineTextureToggle: 0
-    - _OuterOutlineWidth: 0.04
+    - _OuterOutlineWidth: 0.06
     - _PingPongGlowContrast: 1
     - _PingPongGlowFade: 1
     - _PingPongGlowFrequency: 3
@@ -405,7 +406,7 @@ Material:
     - _SplitToningFade: 1
     - _SplitToningShift: 0
     - _SpriteSheetFix: 0
-    - _SqueezeFade: 1
+    - _SqueezeFade: 0
     - _SqueezePower: 1
     - _SquishFade: 1
     - _SquishFlip: 0
@@ -527,7 +528,7 @@ Material:
     - _FrozenHighlightSpeed: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _FrozenSnowColor: {r: 1.123529, g: 1.373203, b: 1.498039, a: 0}
     - _FrozenSnowScale: {r: 0.1, g: 0.1, b: 0, a: 0}
-    - _FrozenTint: {r: 1.819608, g: 4.611765, b: 5.992157, a: 0}
+    - _FrozenTint: {r: 1.8509802, g: 5.992157, b: 4.9539413, a: 0}
     - _FullAlphaDissolveNoiseScale: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _FullDistortionDistortion: {r: 0.2, g: 0.2, b: 0, a: 0}
     - _FullDistortionNoiseScale: {r: 0.5, g: 0.5, b: 0, a: 0}
@@ -541,11 +542,11 @@ Material:
     - _GlitchNoiseScale: {r: 0, g: 3, b: 0, a: 0}
     - _GlitchNoiseSpeed: {r: 0, g: 1, b: 0, a: 0}
     - _HalftonePosition: {r: 0, g: 0, b: 0, a: 0}
-    - _HologramTint: {r: 0.82502675, g: 2.3739195, b: 3.8867922, a: 1}
+    - _HologramTint: {r: 3.886792, g: 1.6816132, b: 0.83433753, a: 1}
     - _InkSpreadColor: {r: 8.47419, g: 5.013525, b: 0.08873497, a: 0}
     - _InkSpreadNoiseScale: {r: 0.4, g: 0.4, b: 0, a: 0}
     - _InkSpreadPosition: {r: 2, g: -50, b: 0, a: 0}
-    - _InnerOutlineColor: {r: 11.98431, g: 1.254902, b: 1.254902, a: 1}
+    - _InnerOutlineColor: {r: 11.984312, g: 4.776004, b: 1.3176466, a: 1}
     - _InnerOutlineDistortionIntensity: {r: 0.01, g: 0.01, b: 0, a: 0}
     - _InnerOutlineNoiseScale: {r: 4, g: 4, b: 0, a: 0}
     - _InnerOutlineNoiseSpeed: {r: 0, g: 0.1, b: 0, a: 0}
@@ -557,7 +558,7 @@ Material:
     - _MetalNoiseDistortionSpeed: {r: -0.05, g: -0.05, b: 0, a: 0}
     - _MetalNoiseScale: {r: 0.25, g: 0.25, b: 0, a: 0}
     - _MetalNoiseSpeed: {r: 0.05, g: 0.05, b: 0, a: 0}
-    - _OuterOutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OuterOutlineColor: {r: 0.9433962, g: 0.4888439, b: 0.31505868, a: 1}
     - _OuterOutlineDistortionIntensity: {r: 0.01, g: 0.01, b: 0, a: 0}
     - _OuterOutlineNoiseScale: {r: 4, g: 4, b: 0, a: 0}
     - _OuterOutlineNoiseSpeed: {r: 0, g: 0.1, b: 0, a: 0}
@@ -586,7 +587,7 @@ Material:
     - _ShadowOffset: {r: 0.05, g: -0.05, b: 0, a: 0}
     - _ShiftingColorA: {r: 1.498039, g: 0, b: 0, a: 0}
     - _ShiftingColorB: {r: 1.498039, g: 0.7490196, b: 0, a: 0}
-    - _ShineColor: {r: 11.98431, g: 11.98431, b: 11.98431, a: 0}
+    - _ShineColor: {r: 15.999997, g: 5.4303665, b: 0, a: 0}
     - _SineGlowColor: {r: 0, g: 2.007843, b: 2.996078, a: 0}
     - _SineMoveFrequency: {r: 1, g: 1, b: 0, a: 0}
     - _SineMoveOffset: {r: 0, g: 0.5, b: 0, a: 0}
