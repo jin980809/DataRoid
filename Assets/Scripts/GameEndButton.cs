@@ -9,8 +9,9 @@ public class GameEndButton : MonoBehaviour
 
     public void RestartClick()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1f;
         PlayerPrefs.SetInt("NewGame", 0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);  
     }
 
     public void ExitClick()
@@ -24,7 +25,7 @@ public class GameEndButton : MonoBehaviour
 
     public void StartScene()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(startSceneName);
     }
-
 }
