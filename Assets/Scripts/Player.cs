@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
     public bool isStun;
     public bool isCommunicate = false;
     public bool isMeleeAttack = false;
+    public bool isSettingOn = false;
 
     private float rotationVelocity;
     private float _animationBlend;
@@ -350,7 +351,7 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        if (!isDodge && !isSubdue && !isInteraction && !isCommunicate && !isInventoryOpen)
+        if (!isDodge && !isSubdue && !isInteraction && !isCommunicate && !isInventoryOpen && !isSettingOn)
         {
             if(isGunOn)
             {
@@ -444,7 +445,7 @@ public class Player : MonoBehaviour
         culDodgeTime += Time.deltaTime;
         isDodgeReady = dodgeCoolTime < culDodgeTime;
 
-        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if (!isDodge && dDown && isDodgeReady && !isShot && isWalk && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && !isSettingOn)
         {
             isShotEnd = true;
             isDodge = true;
@@ -476,7 +477,7 @@ public class Player : MonoBehaviour
 
     void GunOnMove()
     {
-        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun && hasWeapons[lastSwapWeaponIndex] && !isMeleeAttack && !isCommunicate)
+        if (gDown && !isReload && !isInteraction && !isInventoryOpen && !isDodge && !isInteraction && !isInventoryOpen && !isHacking && isShotEnd && !isSubdue && !isStun && hasWeapons[lastSwapWeaponIndex] && !isMeleeAttack && !isCommunicate && !isSettingOn)
         {
             isGunOn = !isGunOn;
             weapon.gameObject.SetActive(isGunOn);
@@ -511,7 +512,7 @@ public class Player : MonoBehaviour
         if (sDown4 && (!hasWeapons[3] || equipWeaponIndex == 3))
             return;
 
-        if ((sDown1 || sDown2 || sDown3 || sDown4) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if ((sDown1 || sDown2 || sDown3 || sDown4) && !isSwap  && !isShot && !isDodge && !isReload && !isInteraction && !isHacking && !isInventoryOpen && isShotEnd && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && !isSettingOn)
         {
             isGunOn = true;
             isZoom = false;
@@ -608,7 +609,7 @@ public class Player : MonoBehaviour
 
         isShot = fDown && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !qToggle && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack;
 
-        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack )
+        if (fDown && !qToggle && isFireReady && !isDodge && isGunOn && weapon.curAmmo > 0 && !isReload && !isInteraction && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && !isSettingOn)
         {
             //recoil.Shot();
             isShotEnd = false;
@@ -788,7 +789,7 @@ public class Player : MonoBehaviour
     void ObjectNameTag()
     {
         //RaycastHit hit;
-        if (vDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn && !isScan)
+        if (vDown && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && droneOn && !isScan && !isSettingOn)
         {
             scanEffect.SetActive(true);
             RaycastHit[] hits = Physics.SphereCastAll(ShootPos.position, searchDistance, Vector3.up, 0f, LayerMask.GetMask("Interaction"));
@@ -842,7 +843,7 @@ public class Player : MonoBehaviour
 
     void ZoomInOut()
     {
-        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if(f2Down && !isInteraction && !isReload && !isInventoryOpen && !isHacking && !isCreaingUIOpen && !isSwap && isGunOn && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && !isSettingOn)
         {
             isZoom = true;
         }
@@ -903,7 +904,7 @@ public class Player : MonoBehaviour
     void Reload()
     {
         if (lDown && weapon.curAmmo < weapon.maxAmmo && isGunOn && !isShot && !isReload && !isDodge && !isInteraction 
-            && /*MaterialManager.Instance.Ammo > 0 &&*/ !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
+            && /*MaterialManager.Instance.Ammo > 0 &&*/ !isInventoryOpen && !isHacking && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && !isSettingOn) // 가지고 있는 총알 개수가 0 이하가 아니면 추가
         {
             //if (equipWeaponIndex == 0)
             //    return;
@@ -1080,7 +1081,7 @@ public class Player : MonoBehaviour
                 UIManager.Instance.interactionUIOpen = true;
             }
 
-            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
+            if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack && !isSettingOn)
             {
                 if (interactionObj.isNonCharging)
                 {
@@ -1148,7 +1149,6 @@ public class Player : MonoBehaviour
     {
         if (!isDamage)
         {
-
             StartCoroutine(OnDamage(damage));
         }
     }
@@ -1158,7 +1158,7 @@ public class Player : MonoBehaviour
     public IEnumerator DamageLightChange()
     {
         cHpMat.isPlayerHit = true;
-
+        //https://blog.naver.com/cdw0424/222239813775
         yield return new WaitForSeconds(1f);
 
         cHpMat.isPlayerHit = false;
@@ -1239,7 +1239,7 @@ public class Player : MonoBehaviour
                         elecChargeNameTag.isNameTagOpen = true;
                     }
 
-                    if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack)
+                    if (aDown && !isShot && !isDodge && !isReload && !interactionObj.isCoolTime && !isHacking && !isInventoryOpen && !isSubdue && !isStun && interactionObj.enabled && !isCommunicate && !isMeleeAttack && !isSettingOn)
                     {
                         if (interactionObj.isNonCharging)
                         {
@@ -1479,7 +1479,7 @@ public class Player : MonoBehaviour
 
     void newOCInventory()
     {
-        if ((skDown2 || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && deviceOn)
+        if ((skDown2 || qDown) && !isShot && !isDamage && !isReload && !isDodge && !isInteraction /*&& !CreateManager.Instance.isCreating*/ && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && deviceOn && !isSettingOn)
         {
             if (!isInventoryOpen && skDown2)
             {
@@ -1501,6 +1501,25 @@ public class Player : MonoBehaviour
                 //Time.timeScale = 1.0f;
                 cameraArm.enabled = !isInventoryOpen;
                 UIManager.Instance.mainUIAnim.SetTrigger("Open_Main");
+            }
+        }
+    }
+
+    void OCSettingUI()
+    {
+        if(qDown && !isCommunicate)
+        {
+            isSettingOn = !isSettingOn;
+
+            if (isSettingOn)
+            {
+                Time.timeScale = 0;
+                //UIManager.Instance.settingUI.SetActive(true);
+            }
+            else
+            {
+                Time.timeScale = 1;
+                //UIManager.Instance.settingUI.SetActive(false);
             }
         }
     }
@@ -1586,6 +1605,15 @@ public class Player : MonoBehaviour
             isStun = true;
             //기절 애니메이션 실행
             StartCoroutine(StunOut(stunTime));
+            if (changeDamageLightCor != null)
+            {
+                StopCoroutine(changeDamageLightCor);
+                StartCoroutine(DamageLightChange());
+            }
+            else
+            {
+                StartCoroutine(DamageLightChange());
+            }
         }
     }
 

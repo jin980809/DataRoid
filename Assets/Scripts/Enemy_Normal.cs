@@ -140,6 +140,7 @@ public class Enemy_Normal : Enemy
         }
         else // 플레이어 감지 안될떄
         {
+            isChase = false;
             if(isShotChase) //플레이어가 총을 쐈을때
             {
                 //Debug.Log("플레이어 총쏜위치 감");
@@ -170,9 +171,10 @@ public class Enemy_Normal : Enemy
                 }
                 else // 돌아다니는 적
                 {
-                    //Debug.Log("적 돌아다님");
+                    Debug.Log("적 돌아다님");
                     //nav.isStopped = false;
                     nav.speed = walkSpeed * speedDiscountRate;
+
                     if (nav.remainingDistance <= 0.1f && isA)
                     {
                         if (aroundTargetIndex == aroundTarget.Length - 1)
@@ -192,6 +194,10 @@ public class Enemy_Normal : Enemy
                         {
                             aroundTargetIndex--;
                         }
+                        nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                    }
+                    else
+                    {
                         nav.SetDestination(aroundTarget[aroundTargetIndex].position);
                     }
                 }

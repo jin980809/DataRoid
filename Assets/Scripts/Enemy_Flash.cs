@@ -52,10 +52,10 @@ public class Enemy_Flash : Enemy
     {
         FlashAttack();
 
-        Around();
+        //Around();
 
         if (!isRanged)
-            TargetPlayer();
+            EnemyAI();
         else
         {
             Lazers = GetComponentInChildren<Hovl_DemoLasers>();
@@ -111,6 +111,139 @@ public class Enemy_Flash : Enemy
         //}
     }
 
+    void EnemyAI()
+    {
+        RaycastHit[] hit = Physics.SphereCastAll(transform.position, chasingDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
+        Vector3 thisPos = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+
+        if (hit.Length > 0) // 플레이어 감지
+        {
+            //Debug.Log("플레이어 감지");
+            //nav.isStopped = false;
+            Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
+            isShotChase = false;
+
+            if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment", "Door", "Object"))) //특정 오브젝트 사이에 있는지 확인  
+            {
+                //Debug.Log("플레이어 공격");
+                isChase = true;
+                nav.SetDestination(target.transform.position);
+                nav.speed = runSpeed * speedDiscountRate;
+
+                RaycastHit[] attackHit = Physics.SphereCastAll(transform.position, attackDistance, Vector3.up, 0f, LayerMask.GetMask("Player"));
+                if (attackHit.Length > 0 && !isAttack && !isDeath && !isPlayerSubdue && isSubdueReady) // 적 공격
+                {
+                    Vector3 AttackPos = new Vector3(attackHit[0].transform.position.x, attackHit[0].transform.position.y + 1, attackHit[0].transform.position.z);
+                    if (!IsObstacleBetween(thisPos, AttackPos, LayerMask.GetMask("Enviroment")) && !isStun)
+                    {
+                        isShotChase = false;
+
+                        if (RandPercentage(subduePercentage)) //제압기 확률 성공(제압기)
+                        {
+                            if (!isPlayerSubdue && isSubdueReady)
+                            {
+                                DoSubdueCor();
+                            }
+                        }
+                        else // 실패(일반공격)
+                        {
+                            if (curFlashCoolTime >= flashCoolTime)
+                            {
+                                flash = StartCoroutine(FlashReady());
+                            }
+                            else
+                            {
+                                int attackNum = AttackPercentage();
+                                //isStop = false;
+                                nav.isStopped = true;
+                                switch (attackNum)
+                                {
+                                    case 1:
+                                        attackCoroutine = StartCoroutine(DoAttack1());
+                                        break;
+                                    case 2:
+                                        attackCoroutine = StartCoroutine(DoAttack2());
+                                        break;
+                                    case 3:
+                                        attackCoroutine = StartCoroutine(DoAttack3());
+                                        break;
+                                }
+                            }
+                        }
+
+
+                        // 제압기시 적 subdue 콜라이더 활성화(코루틴으로 약간의 딜레이주기)
+                        // 제압기 성공시 플레이어 subdue활성화 및 게이지 설정
+                        // 제압기 패링시 (코루틴 딜레이 사이에 근접 공격을 넣으면) 코루틴 중지, 스턴?  
+                    }
+                }
+            }
+        }
+        else // 플레이어 감지 안될떄
+        {
+            if (isShotChase) //플레이어가 총을 쐈을때
+            {
+                //Debug.Log("플레이어 총쏜위치 감");
+                //nav.isStopped = false;
+                nav.SetDestination(playerShotPos);
+                nav.speed = runSpeed * speedDiscountRate;
+
+                if (nav.remainingDistance <= 0.1f && !isA)
+                {
+                    isShotChase = false;
+                }
+                isA = false;
+            }
+            else
+            {
+                isA = true;
+                if (isNotAround) //돌아다니지 않는 적
+                {
+                    //Debug.Log("적 원래위치로");
+                    nav.SetDestination(aroundTarget[0].position);
+                    nav.speed = walkSpeed * speedDiscountRate;
+                    if (nav.remainingDistance <= 0.1f)
+                    {
+                        //Debug.Log("적 멈춤");
+                        //nav.isStopped = true;
+                        nav.speed = 0;
+                    }
+                }
+                else // 돌아다니는 적
+                {
+                    //Debug.Log("적 돌아다님");
+                    //nav.isStopped = false;
+                    nav.speed = walkSpeed * speedDiscountRate;
+                    if (nav.remainingDistance <= 0.1f && isA)
+                    {
+                        if (aroundTargetIndex == aroundTarget.Length - 1)
+                        {
+                            aroundIndexIncre = false;
+                        }
+                        else if (aroundTargetIndex == 0)
+                        {
+                            aroundIndexIncre = true;
+                        }
+
+                        if (aroundIndexIncre)
+                        {
+                            aroundTargetIndex++;
+                        }
+                        else if (!aroundIndexIncre)
+                        {
+                            aroundTargetIndex--;
+                        }
+                        nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                    }
+                    else
+                    {
+                        nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                    }
+                }
+            }
+        }
+
+    }
 
     IEnumerator FlashReady()
     {
@@ -452,62 +585,6 @@ public class Enemy_Flash : Enemy
         if (isChase && !isDeath && !isStun)
         {
             nav.SetDestination(target.transform.position);
-        }
-    }
-
-    void Around()
-    {
-        if (!isChase && !isDeath && !isStun && !isNotAround)
-        {
-            if (nav.remainingDistance <= 0f)
-            {
-                //Debug.Log("dectect" + aroundTarget[aroundTargetIndex].name);
-                //if (aroundTargetIndex == aroundTarget.Length - 1)
-                //{
-                //    aroundTargetIndex = 0;
-                //}
-                //else
-                //{
-                //    aroundTargetIndex++;
-                //}
-
-
-                if (aroundTargetIndex == aroundTarget.Length - 1)
-                {
-                    aroundIndexIncre = false;
-                }
-                else if (aroundTargetIndex == 0)
-                {
-                    aroundIndexIncre = true;
-                }
-
-                if (aroundIndexIncre)
-                {
-                    aroundTargetIndex++;
-                }
-                else if (!aroundIndexIncre)
-                {
-                    aroundTargetIndex--;
-                }
-
-                nav.SetDestination(aroundTarget[aroundTargetIndex].position);
-            }
-        }
-
-        if (!isChase && !isDeath && !isStun && isNotAround)
-        {
-            nav.SetDestination(aroundTarget[0].position);
-
-            if (nav.remainingDistance <= 0f)
-            {
-                nav.speed = 0;
-                isStop = true;
-            }
-            else
-            {
-                //nav.isStopped = true;
-                nav.speed = walkSpeed * speedDiscountRate;
-            }
         }
     }
 

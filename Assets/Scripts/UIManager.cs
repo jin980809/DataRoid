@@ -146,6 +146,10 @@ public class UIManager : MonoBehaviour
     [Header("Map Open UI")]
     public Animator[] mapOpenAnims;
 
+    [Space(10)]
+    [Header("Setting UI")]
+    public GameObject settingUI;
+
     void Start()
     {
         mainUIAnim.SetTrigger("Open");

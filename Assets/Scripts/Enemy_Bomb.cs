@@ -31,7 +31,7 @@ public class Enemy_Bomb : Enemy
     public Collider bombRange;
     public float bombActiveSpeed;
     public GameObject bombEffect;
-
+    public MaterialSwitcher[] m_Switcher;
     void Update()
     {
         //Around();
@@ -86,7 +86,7 @@ public class Enemy_Bomb : Enemy
         if (!isDetectBomb)
         {
             // ÆøÅº ÀÛµ¿Àü
-            if (isBomb)
+            if (!isBomb)
             {
                 if (hit.Length > 0) // ÇÃ·¹ÀÌ¾î °¨Áö
                 {
@@ -200,19 +200,27 @@ public class Enemy_Bomb : Enemy
                                 }
                                 nav.SetDestination(aroundTarget[aroundTargetIndex].position);
                             }
+                            else
+                            {
+                                nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                            }
                         }
                     }
                 }
             }
             else //ÆøÅº ÁøÇà
             {
-                bombCor = StartCoroutine(Bomb());
-                isBombAttack = true;
+                if (!isBombAttack && !isDeath)
+                {
+                    //anim.SetTrigger("doRise");
+                    nav.isStopped = true;
+                    bombCor = StartCoroutine(Bomb());
+                    isBombAttack = true;
+                }
 
                 if (bombChasing)
                 {
                     nav.SetDestination(target.transform.position);
-
 
                     if (nav.remainingDistance <= 1f)
                     {
@@ -273,10 +281,16 @@ public class Enemy_Bomb : Enemy
 
     IEnumerator Bomb()
     {
-        yield return new WaitForSeconds(3f);
+        if(isDetectBomb)
+            yield return new WaitForSeconds(3f);
+
         nav.speed = bombActiveSpeed;
         nav.isStopped = false;
         bombChasing = true;
+        for (int i = 0; i < m_Switcher.Length; i++)
+        {
+            m_Switcher[i].enabled = true;
+        }
 
         yield return new WaitForSeconds(bombTime);
         isBombDeath = true;
