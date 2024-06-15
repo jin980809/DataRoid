@@ -122,9 +122,15 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
 
     void ExitImage()
     {
-        player.isCommunicate = false;
+        StartCoroutine(FalseCommunicate());
         mainCamera.SetActive(true);
         rotation_Camera.gameObject.SetActive(false);
+    }
+
+    IEnumerator FalseCommunicate()
+    {
+        yield return new WaitForSeconds(0.1f);
+        player.isCommunicate = false;
         transform.gameObject.SetActive(false);
     }
 }

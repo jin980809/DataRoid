@@ -19,6 +19,7 @@ public class Granade : MonoBehaviour
     IEnumerator Damage()
     {
         yield return new WaitForSeconds(cookingTime);
+        SoundManager.Instance.PlaySound3D("TimeBomb_Explosion", transform);
         range.SetActive(true);
         effect.SetActive(true);
         rb.isKinematic = true;

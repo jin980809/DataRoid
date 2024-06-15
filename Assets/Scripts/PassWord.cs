@@ -91,7 +91,6 @@ public class PassWord : MonoBehaviour
         interaction.isActive = false;
         interaction.v_Cam.SetActive(true);
         interaction.p_cameraMove.enabled = true;
-        player.isCommunicate = false;
         StartCoroutine(ActiveFalse());
     }
 
@@ -99,5 +98,6 @@ public class PassWord : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         transform.gameObject.SetActive(false);
+        player.isCommunicate = false;
     }
 }
