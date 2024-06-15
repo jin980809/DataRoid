@@ -8,7 +8,6 @@ public class LoadingSceneManager : MonoBehaviour
 {
     public static string nextScene;
     [SerializeField] Image progressBar;
-    [SerializeField] Image glowprogressBar;
 
     private void Start()
     {
@@ -38,25 +37,12 @@ public class LoadingSceneManager : MonoBehaviour
                 if (progressBar.fillAmount >= op.progress)
                 {
                     timer = 0f;
-                }
-
-                glowprogressBar.fillAmount = Mathf.Lerp(glowprogressBar.fillAmount, op.progress, timer);
-                if (glowprogressBar.fillAmount >= op.progress)
-                {
-                    timer = 0f;
-                }
+                }             
             }
             else
             {
                 progressBar.fillAmount = Mathf.Lerp(progressBar.fillAmount, 1f, timer);
                 if (progressBar.fillAmount == 1.0f)
-                {
-                    op.allowSceneActivation = true;
-                    yield break;
-                }
-
-                glowprogressBar.fillAmount = Mathf.Lerp(glowprogressBar.fillAmount, 1f, timer);
-                if (glowprogressBar.fillAmount == 1.0f)
                 {
                     op.allowSceneActivation = true;
                     yield break;
