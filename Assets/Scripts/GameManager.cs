@@ -71,7 +71,8 @@ public class GameManager : MonoBehaviour
     }
 
     void Start()
-    {
+    { 
+
         dicList.Clear();
 
         if (isNewGame == 0)
@@ -105,6 +106,7 @@ public class GameManager : MonoBehaviour
         spawnPoint = int.Parse(dicList[0]["SavePoint"] + "");
 
         SpawnPlayer();
+
     }
 
     void SpawnPlayer()

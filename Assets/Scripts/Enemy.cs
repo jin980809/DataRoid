@@ -311,6 +311,7 @@ public class Enemy : MonoBehaviour
 
             if (!isBombDeath)
             {
+                SoundManager.Instance.PlaySound3D("Enemy_Die", transform);
                 DropItems();
             }
 
@@ -613,4 +614,19 @@ public class Enemy : MonoBehaviour
             onObject[i].SetActive(false);
         }
     }
+
+    public void OnFootstep()
+    {
+        if (nav.speed == runSpeed)
+        {
+            SoundManager.Instance.PlaySound3D("Enemy_Footstep", this.gameObject.transform);
+        }
+        else
+        {
+            SoundManager.Instance.PlaySound3D("Enemy_Footstep", this.gameObject.transform);
+        }
+    }
 }
+
+
+

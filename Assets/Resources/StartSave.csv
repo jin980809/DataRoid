@@ -1,2 +1,2 @@
 SavePoint,Data,MaxData,HandgunAmmo,RifleAmmo,ShotgunAmmo,LazerAmmo,UFSData,LoadedHandgun,LoadedRiffle,LoadedShotgun,LoadedLazer,QuestText,TargetIcon,UserName,BatteryLevel,StatLevel
-0,10,10,10,0,0,0,0,0,0,0,0, ,-1,Lora,0,0
+1,10,10,0,0,0,0,0,0,0,0,0, ,-1,Lora,0,0

@@ -436,6 +436,8 @@ public class Interaction : FadeController
 
     public void InteractionResult()
     {
+        SoundManager.Instance.PlaySound2D("Interaction");
+
         if (isFade)
         {
             FadeInOut();
@@ -602,8 +604,11 @@ public class Interaction : FadeController
 
     void OpenDoor()
     {
-        Debug.Log(openImageObject.Length);
-        for(int i = 0; i < openImageObject.Length; i++)
+        //Debug.Log(openImageObject.Length);
+
+        SoundManager.Instance.PlaySound3D("Door_Open", transform);
+
+        for (int i = 0; i < openImageObject.Length; i++)
         {
             openImageObject[i].SetActive(true);
             closeImageObject[i].SetActive(false);
@@ -617,6 +622,8 @@ public class Interaction : FadeController
 
     void CloseDoor()
     {
+        SoundManager.Instance.PlaySound3D("Door_Close", transform);
+
         for (int i = 0; i < openImageObject.Length; i++)
         {
             openImageObject[i].SetActive(false);

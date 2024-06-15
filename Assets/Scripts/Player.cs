@@ -202,6 +202,8 @@ public class Player : MonoBehaviour
     {
         GetInput();
 
+        OCSettingUI();
+
         Move();
 
         GunOnMove();
@@ -240,7 +242,9 @@ public class Player : MonoBehaviour
 
         ObjectNameTag();
 
-        if(curHp > maxHp)
+
+
+        if (curHp > maxHp)
         {
             curHp = maxHp;
         }
@@ -341,6 +345,7 @@ public class Player : MonoBehaviour
                 weapons[3].SetActive(false);
                 weapons[0].SetActive(true);
                 muzzleEffect = weapon.muzzleFlash;
+                SoundManager.Instance.StopLoopSound("Laser_Loop");
 
                 isSwap = true;
 
@@ -375,7 +380,7 @@ public class Player : MonoBehaviour
         }
 
         moveVec = new Vector3(hAxis, 0f, vAxis).normalized;
-        if (moveVec == Vector3.zero && !isDodge || (isInteraction || isSubdue || isMeleeAttack || isCommunicate || isInventoryOpen)) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
+        if (moveVec == Vector3.zero && !isDodge || (isInteraction || isSubdue || isMeleeAttack || isCommunicate || isInventoryOpen || isSettingOn)) { targetSpeed = 0.0f;/* crouchSpeed = 0;*/ }
 
         float targetRotation = Mathf.Atan2(moveVec.x, moveVec.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
 
@@ -383,7 +388,7 @@ public class Player : MonoBehaviour
         {
             isWalk = true;
 
-            if (!isDodge && !isInteraction && !isCommunicate && !isInventoryOpen && !isMeleeAttack)
+            if (!isDodge && !isInteraction && !isCommunicate && !isInventoryOpen && !isMeleeAttack && !isSettingOn)
             {
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, 0.17f);
 
@@ -391,7 +396,7 @@ public class Player : MonoBehaviour
             }
             else
             {
-                if (isDodgeReady && !isInteraction && !isCommunicate && !isInventoryOpen && !isMeleeAttack)
+                if (isDodgeReady && !isInteraction && !isCommunicate && !isInventoryOpen && !isMeleeAttack && !isSettingOn)
                     transform.rotation = Quaternion.Euler(0.0f, targetRotation, 0.0f); //도약할때 바로 캐릭터가 회전하게
             }
         }
@@ -399,7 +404,7 @@ public class Player : MonoBehaviour
         {
             isWalk = false;
 
-            if ((!isShotEnd || isZoom || isHacking || isShot) && !isDodge && !isInteraction && !isMeleeAttack)
+            if ((!isShotEnd || isZoom || isHacking || isShot) && !isDodge && !isInteraction && !isMeleeAttack && !isSettingOn)
                 transform.rotation = Quaternion.Euler(0.0f, _mainCamera.transform.eulerAngles.y, 0.0f);
         }
 
@@ -419,7 +424,7 @@ public class Player : MonoBehaviour
             if (horBlend < 0.01f) horBlend = 0f;
         }
 
-        if (!isBorder && !isInteraction && !isCommunicate)
+        if (!isBorder && !isInteraction && !isCommunicate && !isSettingOn)
             transform.position += targetDirection.normalized * (/*sDown ? crouchSpeed : */targetSpeed) * Time.deltaTime;
 
         float aimAngle = _mainCamera.transform.eulerAngles.x + 35f;
@@ -468,6 +473,7 @@ public class Player : MonoBehaviour
     }
 
     
+
     void DodgeOut()
     {
         //targetSpeed *= 0.25f;
@@ -619,7 +625,26 @@ public class Player : MonoBehaviour
             //muzzleEffect.SetActive(true);
             anim.SetTrigger("doShot");
             weapon.curAmmo -= 1;
-           
+
+            switch(equipWeaponIndex)
+            {
+                case 0:
+                    SoundManager.Instance.PlaySound2D("Pistol");
+                    break;
+
+                case 1:
+                    SoundManager.Instance.PlaySound2D("Riffle");
+                    break;
+
+                case 2:
+                    SoundManager.Instance.PlaySound2D("ShotGun");
+                    break;
+
+                case 3:
+                    //SoundManager.Instance.PlaySound2D("Laser_Start");
+                    break;
+            }
+            
 
             Vector3 playerShotPos = ShootPos.position;
             if (!weapon.isShotGun)
@@ -734,9 +759,13 @@ public class Player : MonoBehaviour
             isSemiReady = true;
             if (weapon.isLazer)
             {
-                if(isLazerAttack)
+                if (isLazerAttack)
+                {
+                    SoundManager.Instance.StopLoopSound("Laser_Loop");
                     Lazers.LazerOff();
+                }
                 isLazerAttack = false;
+
             }
         }
         
@@ -755,6 +784,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         if (!isLazerAttack)
         {
+            SoundManager.Instance.PlaySound2D("Laser_Loop", 0, true);
             Lazers.LazerOn();
             isLazerAttack = true;
         }
@@ -915,6 +945,24 @@ public class Player : MonoBehaviour
             if (equipWeaponIndex == 3 && MaterialManager.Instance.LazerAmmo <= 0)
                 return;
 
+            switch (equipWeaponIndex)
+            {
+                case 0:
+                    SoundManager.Instance.PlaySound2D("Gun_Reload");
+                    break;
+
+                case 1:
+                    SoundManager.Instance.PlaySound2D("RiffleReload");
+                    break;
+
+                case 2:
+                    SoundManager.Instance.PlaySound2D("Gun_Reload");
+                    break;
+
+                case 3:
+                    SoundManager.Instance.PlaySound2D("RiffleReload");
+                    break;
+            }
 
             isReload = true;
             isZoom = false;
@@ -1152,8 +1200,6 @@ public class Player : MonoBehaviour
             StartCoroutine(OnDamage(damage));
         }
     }
-
-
 
     public IEnumerator DamageLightChange()
     {
@@ -1507,19 +1553,19 @@ public class Player : MonoBehaviour
 
     void OCSettingUI()
     {
-        if(qDown && !isCommunicate)
+        if(qDown && !isCommunicate && !isInventoryOpen && deviceOn)
         {
             isSettingOn = !isSettingOn;
 
             if (isSettingOn)
             {
                 Time.timeScale = 0;
-                //UIManager.Instance.settingUI.SetActive(true);
+                UIManager.Instance.mainUIAnim.SetTrigger("Open_ESC");
             }
             else
             {
                 Time.timeScale = 1;
-                //UIManager.Instance.settingUI.SetActive(false);
+                UIManager.Instance.mainUIAnim.SetTrigger("Open_Main");
             }
         }
     }
@@ -1623,9 +1669,16 @@ public class Player : MonoBehaviour
         isStun = false;
     }
 
-    void OnFootstep(AnimationEvent animationEvent)
+    public void OnFootstep()
     {
-
+        if(isRun)
+        {
+            SoundManager.Instance.PlaySound2D("Player_Run");
+        }
+        else
+        {
+            SoundManager.Instance.PlaySound2D("Player_Walk");
+        }
     }
 
     public void ShotAnimEnd()

@@ -249,6 +249,7 @@ public class Enemy_Flash : Enemy
     {
         isFlash = true;
         chargingEffect.SetActive(true);
+        SoundManager.Instance.PlaySound3D("Flash_Start", transform);
         anim.SetTrigger("doFlash");
         nav.isStopped = true;
 
@@ -273,6 +274,7 @@ public class Enemy_Flash : Enemy
             if (Vector3.Angle(transform.forward, dirToTarget) < flashAngle / 2 && !IsObstacleBetween(FlashPos.position, hits[0].transform.position, LayerMask.GetMask("Enviroment")))
             {
                 Debug.Log("player stun");
+                SoundManager.Instance.PlaySound3D("Flash_End", transform);
                 flashEffect.FlashBanged();
                 Player playerObject = hits[0].collider.gameObject.GetComponent<Player>();
                 playerObject.Stun(3f);

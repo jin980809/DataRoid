@@ -284,6 +284,7 @@ public class Enemy_Bomb : Enemy
         if(isDetectBomb)
             yield return new WaitForSeconds(3f);
 
+        SoundManager.Instance.PlaySound3D("TimeBomb_Start", transform);
         nav.speed = bombActiveSpeed;
         nav.isStopped = false;
         bombChasing = true;
@@ -293,6 +294,7 @@ public class Enemy_Bomb : Enemy
         }
 
         yield return new WaitForSeconds(bombTime);
+        SoundManager.Instance.PlaySound3D("TimeBomb_Explosion", transform);
         isBombDeath = true;
         bombRange.enabled = true;
         bombEffect.SetActive(true);

@@ -10,6 +10,9 @@ public class ElectricLine : MonoBehaviour
     public GameObject[] detectOnObject;
     public GameObject[] detectOffObject;
 
+    public bool isDontMove;
+    public GameObject dataPath;
+
     public  ElectricLine e = null;
 
     void Update()
@@ -37,6 +40,18 @@ public class ElectricLine : MonoBehaviour
                 {
                     detectOffObject[i].SetActive(true);
                 }
+            }
+        }
+
+        if (isDontMove)
+        {
+            if (detectElec)
+            {
+                dataPath.SetActive(true);
+            }
+            else
+            {
+                dataPath.SetActive(false);
             }
         }
 

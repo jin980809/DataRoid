@@ -13,7 +13,7 @@ public class SetCursor : MonoBehaviour
 
     void Update()
     {
-        if(player.isInventoryOpen || player.isCreaingUIOpen || GameManager.Instance.isPlayerDead || player.isCommunicate)
+        if(player.isInventoryOpen || player.isCreaingUIOpen || GameManager.Instance.isPlayerDead || player.isCommunicate || player.isSettingOn)
         {
             Cursor.lockState = CursorLockMode.None;
         }
