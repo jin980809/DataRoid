@@ -13,14 +13,25 @@ public class MonsterWave : MonoBehaviour
     private bool isSpawnStart = false;
     private Collider collider;
     public float deleyTime;
+    private int totalEnemy = 0;
 
     [Space(10f)]
     [Header("Save")]
     public bool isSave;
     public int objectID;
 
+    [Space(10f)]
+    [Header("ActiveObject")]
+    public GameObject[] doneActiveObject;
+
+
     void Start()
     {
+        for(int i = 0; i< spawnAmount.Length; i++)
+        {
+            totalEnemy += spawnAmount[i];
+        }
+
         if (isSave)
         {
             transform.gameObject.SetActive(ObjectManager.Instance.saveObjects[objectID]);
@@ -29,10 +40,26 @@ public class MonsterWave : MonoBehaviour
         collider = GetComponent<BoxCollider>();
     }
 
+    void Update()
+    {
+        if (GameManager.Instance.monsterWaveDeathCount >= totalEnemy)
+        {
+            Debug.Log("complete MonsterWave");
+
+            for(int i = 0; i < doneActiveObject.Length; i++)
+            {
+                doneActiveObject[i].SetActive(true);
+            }
+        }
+    }
+
+
     void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("Player") && !isSpawnStart)
         {
+            GameManager.Instance.monsterWaveDeathCount = 0;
+
             collider.enabled = false;
 
             for(int i = 0; i < spawnPoints.Length; i++)
@@ -40,12 +67,12 @@ public class MonsterWave : MonoBehaviour
                 StartCoroutine(SpawnEnemy(spawnPoints[i], spawnAmount[i]));
             }
 
-            isSpawnStart = true;
-
             if (isSave)
             {
                 ObjectManager.Instance.saveObjects[objectID] = false;
             }
+
+            isSpawnStart = true;
         }
     }
 

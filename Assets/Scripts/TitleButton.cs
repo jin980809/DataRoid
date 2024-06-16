@@ -14,7 +14,6 @@ public class TitleButton : FadeController
     private void Start()
     {
         fadeImage.color = new Color(0, 0, 0, 0);
-        SoundManager.Instance.PlaySound2D("Start_Background");
     }
 
     void Awake()

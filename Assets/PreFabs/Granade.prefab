@@ -158,8 +158,8 @@ Rigidbody:
   m_GameObject: {fileID: 7705928362304442694}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 1
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -190,7 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66600b69f868df546ab8473b46128d6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cookingTime: 3
+  cookingTime: 2
   effect: {fileID: 4597337243206874662}
 --- !u!1001 &4451048367346952821
 PrefabInstance:

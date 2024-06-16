@@ -181,6 +181,8 @@ public class Enemy_Flash : Enemy
         }
         else // 플레이어 감지 안될떄
         {
+            isChase = false;
+
             if (isShotChase) //플레이어가 총을 쐈을때
             {
                 //Debug.Log("플레이어 총쏜위치 감");

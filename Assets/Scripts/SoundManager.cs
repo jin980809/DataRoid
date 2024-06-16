@@ -56,8 +56,7 @@ public class SoundManager : MonoBehaviour
 
         mInstantiatedSounds = new List<TemporarySoundPlayer>();
 
-
-        PlaySound2D("Background", 0, true, SoundType.BGM);
+        SoundManager.Instance.PlaySound2D("Background", 0, true, SoundType.BGM);
     }
 
     /// <summary>

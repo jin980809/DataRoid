@@ -29,6 +29,7 @@ public class UIManager : MonoBehaviour
     public Player player;
     public Image hpGauge;
     public Text hpText;
+    public GameObject aim;
 
     [Space(10)]
     [Header("Interaction")]

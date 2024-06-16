@@ -41,6 +41,12 @@ public class GameManager : MonoBehaviour
     public bool isPlayerDead = false;
 
     public CameraMove cameraArm;
+
+
+    [Space(10)]
+    [Header("MonsterWave")]
+    public int monsterWaveDeathCount = 0;
+
     void Awake()
     {
         Time.timeScale = 1f;
@@ -106,7 +112,6 @@ public class GameManager : MonoBehaviour
         spawnPoint = int.Parse(dicList[0]["SavePoint"] + "");
 
         SpawnPlayer();
-
     }
 
     void SpawnPlayer()

@@ -242,7 +242,14 @@ public class Player : MonoBehaviour
 
         ObjectNameTag();
 
-
+        if(deviceOn)
+        {
+            UIManager.Instance.aim.SetActive(true);
+        }
+        else
+        {
+            UIManager.Instance.aim.SetActive(false);
+        }
 
         if (curHp > maxHp)
         {

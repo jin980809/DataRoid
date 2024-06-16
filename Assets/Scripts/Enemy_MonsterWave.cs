@@ -75,6 +75,7 @@ public class Enemy_MonsterWave : Enemy
             //ProgressManager.Instance.curSilentData += 1;
             //ProgressManager.Instance.curNetworkData += 1;
             getData = true;
+            GameManager.Instance.monsterWaveDeathCount += 1;
         }
     }
 

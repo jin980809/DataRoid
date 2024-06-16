@@ -171,7 +171,7 @@ public class Enemy_Normal : Enemy
                 }
                 else // 돌아다니는 적
                 {
-                    Debug.Log("적 돌아다님");
+                    //Debug.Log("적 돌아다님");
                     //nav.isStopped = false;
                     nav.speed = walkSpeed * speedDiscountRate;
 
