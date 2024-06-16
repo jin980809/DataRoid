@@ -31,5 +31,6 @@ public class DiscriptionImage : MonoBehaviour
         //transform.gameObject.SetActive(false);
         Time.timeScale = 1f;
         GetComponent<Animator>().SetTrigger("Guide_End");
+        transform.gameObject.SetActive(false);
     }
 }

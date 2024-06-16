@@ -1562,17 +1562,17 @@ public class Player : MonoBehaviour
     {
         if(qDown && !isCommunicate && !isInventoryOpen && deviceOn)
         {
-            isSettingOn = !isSettingOn;
-
-            if (isSettingOn)
+            if (!isSettingOn)
             {
-                Time.timeScale = 0;
+                isSettingOn = true;
                 UIManager.Instance.mainUIAnim.SetTrigger("Open_ESC");
+                Time.timeScale = 0;
             }
             else
             {
-                Time.timeScale = 1;
+                isSettingOn = false;
                 UIManager.Instance.mainUIAnim.SetTrigger("Open_Main");
+                Time.timeScale = 1;
             }
         }
     }
