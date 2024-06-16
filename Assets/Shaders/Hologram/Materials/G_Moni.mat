@@ -34,7 +34,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AlphaMask:
-        m_Texture: {fileID: 2800000, guid: 450c456a5a8ea4a43bcbd45d8cbefd1f, type: 3}
+        m_Texture: {fileID: 2800000, guid: 50c1bbcc0a4528a45b89ec89b3812f6e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DefaultLine:
@@ -229,7 +229,7 @@ Material:
     - _LineColor1: {r: 0.620945, g: 1.420074, b: 3.953349, a: 1}
     - _LineColor2: {r: 0.620945, g: 1.420074, b: 3.953349, a: 1}
     - _LineGlitchOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _MainColor: {r: 0, g: 5.772549, b: 23.968628, a: 1}
+    - _MainColor: {r: 0, g: 1.4431373, b: 5.992157, a: 1}
     - _MaskCenter: {r: 0, g: 0, b: 0, a: 0}
     - _MaskSize: {r: 0, g: 0, b: 0, a: 0}
     - _RandomGlitchOffset: {r: 0, g: 0, b: 0, a: 0}
