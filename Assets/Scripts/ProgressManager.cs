@@ -118,6 +118,11 @@ public class ProgressManager : MonoBehaviour
         DataLevelUp();
 
         SetDataName();
+
+        if(dataLevel >= 1)
+        {
+            player.qSkillOn = true;
+        }
     }
 
     void SetDataName()

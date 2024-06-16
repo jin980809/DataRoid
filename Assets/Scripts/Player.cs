@@ -1457,7 +1457,7 @@ public class Player : MonoBehaviour
             curGranadeCoolTime = granadeCoolTime;
         }
 
-        if (isGranade && skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen  && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack)
+        if (isGranade && skDown1 && !isShot && !isDodge && !isReload && !isInteraction && !isCreaingUIOpen && !isInventoryOpen  && !isSubdue && !isStun && !isCommunicate && !isMeleeAttack && qSkillOn && !isSettingOn)
         {
             curGranadeCoolTime = 0;
             isGranade = false;
