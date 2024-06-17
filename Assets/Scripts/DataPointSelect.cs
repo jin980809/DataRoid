@@ -17,6 +17,7 @@ public class DataPointSelect : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         UIManager.Instance.LevelPointUIAnim.SetTrigger("Close");
+        UIManager.Instance.upgradeUI.SetActive(false);
     }
 
     public void SelectStatLevel()
@@ -32,6 +33,4 @@ public class DataPointSelect : MonoBehaviour
         UIManager.Instance.LevelUpAnim.SetTrigger("LevelUp");
         ExitPanel();
     }
-
-
 }

@@ -28,4 +28,11 @@ public class GameEndButton : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene(startSceneName);
     }
+
+    public void Resume()
+    {
+        GameManager.Instance.player.isSettingOn = false;
+        UIManager.Instance.mainUIAnim.SetTrigger("Open_Main");
+        Time.timeScale = 1;
+    }
 }

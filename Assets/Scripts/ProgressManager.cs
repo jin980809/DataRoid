@@ -149,6 +149,7 @@ public class ProgressManager : MonoBehaviour
         if(curData >= 100)
         { 
             dataLevel += 1;
+            UIManager.Instance.upgradeUI.SetActive(true);
             UIManager.Instance.LevelPointUIAnim.SetTrigger("Open");
             Time.timeScale = 0f;
             player.isCommunicate = true;

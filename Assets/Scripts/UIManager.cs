@@ -70,6 +70,7 @@ public class UIManager : MonoBehaviour
     public Image DataGauge;
     public Text Datatext;
     public Text DataName;
+    public GameObject upgradeUI;
 
     [Space(10)]
     [Header("HackingUI")]
