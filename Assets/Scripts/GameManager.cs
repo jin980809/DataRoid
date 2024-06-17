@@ -49,9 +49,9 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        Time.timeScale = 1f;
-
         isNewGame = PlayerPrefs.GetInt("NewGame");
+
+        Time.timeScale = 1f;
 
         data.Clear();
 

@@ -142,6 +142,8 @@ public class Player : MonoBehaviour
     public float granadeCoolTime;
     float curGranadeCoolTime = 0;
     bool isGranade;
+    public Transform granadeShotPos;
+
 
     [Space(10)]
     [Header("EMP Skill")]
@@ -1212,7 +1214,7 @@ public class Player : MonoBehaviour
     {
         cHpMat.isPlayerHit = true;
         //https://blog.naver.com/cdw0424/222239813775
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
 
         cHpMat.isPlayerHit = false;
     }
@@ -1462,7 +1464,7 @@ public class Player : MonoBehaviour
             curGranadeCoolTime = 0;
             isGranade = false;
             instGranade = Instantiate(granade);
-            instGranade.transform.position = ShootPos.position;
+            instGranade.transform.position = granadeShotPos.position;
             Rigidbody granadeRig = instGranade.GetComponent<Rigidbody>();
             granadeRig.AddForce(transform.forward * 10, ForceMode.Impulse);
         }
