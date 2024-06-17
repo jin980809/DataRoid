@@ -177,7 +177,7 @@ public class UIManager : MonoBehaviour
         float hp = player.curHp / 100f;
         if (hp < 0) hp = 0;
         hpGauge.fillAmount = hp;
-        hpText.text = ((int)player.curHp) + "%";
+        hpText.text = ((player.curHp).ToString("F2")) + "%";
 
         float data = ProgressManager.Instance.curData / 100f;
         if (data < 0) data = 0;
