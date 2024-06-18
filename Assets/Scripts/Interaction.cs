@@ -47,6 +47,7 @@ public class Interaction : FadeController
     public bool isNeedElec;
     public bool getBattery;
     public bool elecDetect = true;
+    public bool bgmOn;
     public Player player;
 
     [Space(10)]
@@ -74,6 +75,9 @@ public class Interaction : FadeController
     public int getDataAmount;
     public bool hasData;
 
+    [Space(10)]
+    [Header("BGM ON")]
+    public string bGMName;
 
     [Space(10)]
     [Header("Weapon Drop")]
@@ -396,6 +400,12 @@ public class Interaction : FadeController
             player.curHp += geBatteryAmount;
 
             player.ElecChargeNameTagFalse();
+        }
+
+        if(bgmOn)
+        {
+            SoundManager.Instance.StopLoopSound("Background");
+            SoundManager.Instance.PlaySound2D(bGMName, 0, true, SoundType.BGM);
         }
     }
 

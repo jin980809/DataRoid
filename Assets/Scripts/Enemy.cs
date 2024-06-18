@@ -47,6 +47,11 @@ public class Enemy : MonoBehaviour
     public float sheild;
     public float maxSheild;
 
+    [Space(10)]
+    [Header("Back BGM")]
+    public bool isBackBGM;
+    public string stopBGMName;
+
     [Serializable]
     public struct dropItem
     {
@@ -313,6 +318,12 @@ public class Enemy : MonoBehaviour
             {
                 SoundManager.Instance.PlaySound3D("Enemy_Die", transform);
                 DropItems();
+            }
+
+            if(isBackBGM)
+            {
+                SoundManager.Instance.StopLoopSound(stopBGMName);
+                SoundManager.Instance.PlaySound2D("Background", 0, true, SoundType.BGM);
             }
 
             OnOffObject();

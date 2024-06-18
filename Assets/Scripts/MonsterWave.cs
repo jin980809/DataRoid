@@ -24,6 +24,9 @@ public class MonsterWave : MonoBehaviour
     [Header("ActiveObject")]
     public GameObject[] doneActiveObject;
 
+    [Space(10)]
+    [Header("Back BGM")]
+    public string stopBGMName;
 
     void Start()
     {
@@ -46,7 +49,10 @@ public class MonsterWave : MonoBehaviour
         {
             Debug.Log("complete MonsterWave");
 
-            for(int i = 0; i < doneActiveObject.Length; i++)
+            SoundManager.Instance.StopLoopSound("stopBGMName");
+            SoundManager.Instance.PlaySound2D("Background", 0, true, SoundType.BGM);
+
+            for (int i = 0; i < doneActiveObject.Length; i++)
             {
                 doneActiveObject[i].SetActive(true);
             }
