@@ -111,10 +111,10 @@ Material:
     - _cut_level: 10
     - _deform: 2
     - _glitchColor: 1
-    - _intensity: 0.3
+    - _intensity: 0.35
     - _monchrom: 1
     - _monochrom: 0
-    - _noise_details: 6.5
+    - _noise_details: 10
     - _t: 1
     m_Colors:
     - _Color: {r: 1.6245048, g: 0.019111821, b: 0, a: 1}

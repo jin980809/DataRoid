@@ -50,6 +50,12 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   player: {fileID: 0}
   interaction: {fileID: 0}
+  isQuestUpdate: 0
+  questText: 
+  useUSFDataVariation: 0
+  questTextPlus: 
+  scanIncreaseSpeed: 1
+  scanImage: {fileID: 0}
 --- !u!1001 &4569143563928246604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -141,7 +147,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 700ff23c7d0b38240bb403ef8fc23076, type: 2}
+      objectReference: {fileID: 2100000, guid: 796d0d3966b2b234f9d7db9cbfed5ef7, type: 2}
     - target: {fileID: 6144047023475844875, guid: 5b29c2f0db4a92341a9f1cf3ecf4d7ad,
         type: 3}
       propertyPath: m_Layer
