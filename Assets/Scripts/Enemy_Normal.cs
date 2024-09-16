@@ -389,10 +389,14 @@ public class Enemy_Normal : Enemy
         if (hit.Length > 0) //플레이어 감지
         {
             Vector3 playerPos = new Vector3(hit[0].transform.position.x, hit[0].transform.position.y + 1, hit[0].transform.position.z);
-            if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment")))
+            isShotChase = false;
+
+            if (!IsObstacleBetween(thisPos, playerPos, LayerMask.GetMask("Enviroment", "Door", "Object")))
             {
-                nav.speed = 0;
                 isChase = true;
+                nav.SetDestination(target.transform.position);
+                nav.speed = 0;
+
                 if (rangedAttackCoolTime <= curRangedAttackCoolTime && !isRangedAttack && !isRangedAttackReady)
                 {
                     rangeAttack = StartCoroutine(RangeAttackReady());
@@ -401,6 +405,8 @@ public class Enemy_Normal : Enemy
         }
         else // 플레이어 감지 x
         {
+            isChase = false;
+
             if (isRangedAttack)
             {
                 Lazers.LazerOff();
@@ -409,8 +415,70 @@ public class Enemy_Normal : Enemy
                 rotateRate = 1f;
                 isRangedAttack = false;
             }
+            else
+            {
+                if (isShotChase) //플레이어가 총을 쐈을때
+                {
+                    //Debug.Log("플레이어 총쏜위치 감");
+                    //nav.isStopped = false;
+                    nav.SetDestination(playerShotPos);
+                    nav.speed = runSpeed * speedDiscountRate;
 
-            if (!isRangedAttack && !isShotChase && !isDeath && !isStun)
+                    if (nav.remainingDistance <= 0.1f && !isA)
+                    {
+                        isShotChase = false;
+                    }
+                    isA = false;
+                }
+                else
+                {
+                    isA = true;
+                    if (isNotAround) //돌아다니지 않는 적
+                    {
+                        //Debug.Log("적 원래위치로");
+                        nav.SetDestination(aroundTarget[0].position);
+                        nav.speed = walkSpeed * speedDiscountRate;
+                        if (nav.remainingDistance <= 0.1f)
+                        {
+                            //Debug.Log("적 멈춤");
+                            //nav.isStopped = true;
+                            nav.speed = 0;
+                        }
+                    }
+                    else // 돌아다니는 적
+                    {
+                        //Debug.Log("적 돌아다님");
+                        //nav.isStopped = false;
+                        nav.speed = walkSpeed * speedDiscountRate;
+                        if (nav.remainingDistance <= 0.1f && isA)
+                        {
+                            if (aroundTargetIndex == aroundTarget.Length - 1)
+                            {
+                                aroundIndexIncre = false;
+                            }
+                            else if (aroundTargetIndex == 0)
+                            {
+                                aroundIndexIncre = true;
+                            }
+
+                            if (aroundIndexIncre)
+                            {
+                                aroundTargetIndex++;
+                            }
+                            else if (!aroundIndexIncre)
+                            {
+                                aroundTargetIndex--;
+                            }
+                            nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                        }
+                        else
+                        {
+                            nav.SetDestination(aroundTarget[aroundTargetIndex].position);
+                        }
+                    }
+                }
+            }
+            /*if (!isRangedAttack && !isShotChase && !isDeath && !isStun)
             {
                 nav.speed = walkSpeed * speedDiscountRate;
                 isChase = false;
@@ -432,7 +500,7 @@ public class Enemy_Normal : Enemy
                 }
                 isStop = false;
                 nav.speed = runSpeed * speedDiscountRate;
-            }
+            }*/
         }
     }
 
