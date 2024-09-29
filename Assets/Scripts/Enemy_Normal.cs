@@ -508,6 +508,8 @@ public class Enemy_Normal : Enemy
     {
         isRangedAttackReady = true;
         Debug.Log("RangedAttackReady");
+        anim.SetFloat("attackIndex", 1);
+        anim.SetBool("isAttack", true);
 
         yield return new WaitForSeconds(rangedAttackChargingTime);
         rotateRate = 0.75f;
@@ -516,6 +518,7 @@ public class Enemy_Normal : Enemy
         Lazers.LazerOn();
 
         yield return new WaitForSeconds(rangedAttackTime);
+        anim.SetBool("isAttack", false);
         Lazers.LazerOff();
         stunTime = 0;
         isRangedAttackReady = false;
