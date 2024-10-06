@@ -110,6 +110,7 @@ public class Interaction : FadeController
     [Space(10)]
     [Header("Door")]
     public int needLV;
+    public bool isDetectElectoOpen;
     public float openSpeed;
     public bool isOpen;
     public GameObject leftDoor;
@@ -345,7 +346,36 @@ public class Interaction : FadeController
         //    }
         //}
 
+        if(interactionType == Type.Door)
+        {
+            if(isDetectElectoOpen)
+            {
+                if (elecDetect)
+                {
+                    if (!isOpen)
+                    {
+                        Debug.Log("AA");
 
+                        OpenDoor();
+
+                        SaveObject();
+
+                        UIObjectOn();
+
+                        if (!isNotClose)
+                            Invoke("CloseDoor", openTime);
+                    }
+                }
+                else
+                {
+                    if (isOpen)
+                    {
+                        if (isNotClose)
+                            CloseDoor();
+                    }
+                }
+            }
+        }
     }
 
     void UIObjectOn()
@@ -614,6 +644,7 @@ public class Interaction : FadeController
 
     void OpenDoor()
     {
+        isOpen = true;
         //Debug.Log(openImageObject.Length);
 
         SoundManager.Instance.PlaySound3D("Door_Open", transform);
@@ -627,11 +658,13 @@ public class Interaction : FadeController
         StartCoroutine(MoveLeftDoor(leftDoor));
         StartCoroutine(MoveRightDoor(rightDoor));
 
-        isOpen = true;
+        
     }
 
     void CloseDoor()
     {
+        isOpen = false;
+
         SoundManager.Instance.PlaySound3D("Door_Close", transform);
 
         for (int i = 0; i < openImageObject.Length; i++)
@@ -643,7 +676,7 @@ public class Interaction : FadeController
         StartCoroutine(MoveRightDoor(leftDoor));
         StartCoroutine(MoveLeftDoor(rightDoor));
 
-        isOpen = false;
+       
     }
 
     void MovePlayer()

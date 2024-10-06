@@ -45,21 +45,20 @@ public class ElectricLine : MonoBehaviour
 
         if (isDontMove)
         {
-            if (detectElec)
+            /*if (detectElec)
             {
                 dataPath.SetActive(true);
             }
             else
             {
                 dataPath.SetActive(false);
-            }
+            }*/
         }
 
         if (e != null)
         {
             if(!e.detectElec)
             {
-                Debug.Log("AA");
                 detectElec = false;
                 e = null;
             }

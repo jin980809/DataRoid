@@ -13,9 +13,23 @@ public class ParkourEnemyTrigger : MonoBehaviour
     private BoxCollider boxCollider;
     private Animator enemyAnim;
 
+    public bool isSave;
+    public int saveID;
+
     void Start()
     {
         boxCollider = GetComponent<BoxCollider>();
+        if(isSave)
+        {
+            if(ObjectManager.Instance.saveObjects[saveID])
+            {
+                boxCollider.enabled = true;
+            }
+            else
+            {
+                boxCollider.enabled = false;
+            }
+        }
     }
 
     void Update()
@@ -37,6 +51,11 @@ public class ParkourEnemyTrigger : MonoBehaviour
             parkourEnemy = Instantiate(parkourEnemyPreb, spawnPoint.position, spawnPoint.rotation, transform);
             boxCollider.enabled = false;
             enemyAnim = parkourEnemy.GetComponent<Animator>();
+
+            if(isSave)
+            {
+                ObjectManager.Instance.saveObjects[saveID] = false;
+            }
         }
     }
 
