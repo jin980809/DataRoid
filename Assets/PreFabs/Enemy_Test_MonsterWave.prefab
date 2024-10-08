@@ -551,6 +551,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   curDamage: 0
   damage: 10
+  isExplosion: 0
 --- !u!1 &4175310826444243021
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,6 +612,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   curDamage: 0
   damage: 10
+  isExplosion: 0
 --- !u!1 &4270282824947504394
 GameObject:
   m_ObjectHideFlags: 0
@@ -6036,6 +6038,8 @@ MonoBehaviour:
   ID: 0
   sheild: 0
   maxSheild: 0
+  isBackBGM: 0
+  stopBGMName: 
   dropItems: []
   rotateRate: 1
   partsEffect:
@@ -6051,10 +6055,14 @@ MonoBehaviour:
   subdueCol: {fileID: 0}
   parryingTime: 0
   getData: 0
+  onObject: []
+  offObject: []
   subdueCoolTime: 0
   subdueProgress: 0
   curSubdueProgress: 0
   speedDiscountRate: 1
+  isA: 0
+  isBombDeath: 0
   hitAreaType: 0
   aroundTargetIndex: 0
   aroundTarget: []

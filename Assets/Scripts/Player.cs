@@ -657,7 +657,7 @@ public class Player : MonoBehaviour
                         Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
                         //BulletInstance((hit.point - muzzleEffect.transform.position).normalized);
 
-                        /*switch (hit.transform.gameObject.layer)
+                        switch (hit.transform.gameObject.layer)
                         {
                             case 9://Enemy
                                 SpawnHitEffect(hit.point, 1);
@@ -671,7 +671,7 @@ public class Player : MonoBehaviour
                             case 16: // Glass
                                 SpawnHitEffect(hit.point, 2);
                                 break;
-                        }*/
+                        }
 
                         if (isEnemyHitArea(hit.collider.transform.gameObject) && !enemy.isDeath && hit.transform.gameObject.layer == 9)
                         {
@@ -776,7 +776,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         muzzleEffect.SetActive(true);
-        BulletInstance((hitPos - muzzleEffect.transform.position).normalized);
+        BulletInstance((_mainCamera.transform.forward).normalized);
     }
 
     IEnumerator LazerEffect(Vector3 hitPos)
@@ -1204,7 +1204,7 @@ public class Player : MonoBehaviour
     public IEnumerator DamageLightChange()
     {
         cHpMat.isPlayerHit = true;
-        //https://blog.naver.com/cdw0424/222239813775
+
         yield return new WaitForSeconds(1.5f);
 
         cHpMat.isPlayerHit = false;
