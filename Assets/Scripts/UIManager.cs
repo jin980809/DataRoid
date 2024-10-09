@@ -288,7 +288,7 @@ public class UIManager : MonoBehaviour
         if(index != -1)
         {
             switch(index)
-            {
+            { 
                 case 0:
                     fButton.SetActive(true);
                     fButtonAnim.SetTrigger("Quest_In");

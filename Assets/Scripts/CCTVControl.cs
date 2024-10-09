@@ -69,6 +69,8 @@ public class CCTVControl : MonoBehaviour
             player.enabled = true;
             cameraMove.enabled = true;
 
+            UIManager.Instance.InteractionButtonImage(0, "CCTV");
+
             this.gameObject.SetActive(false);
         }
     }

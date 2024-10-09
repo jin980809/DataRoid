@@ -54,7 +54,7 @@ public class DotConnectManager : PassWord
     {
 
 
-        //qDown = Input.GetButtonDown("Cancel");
+        qDown = Input.GetButtonDown("Cancel");
 
         /*if (unLocking && !lastDot.isConnect)
         {
@@ -67,10 +67,10 @@ public class DotConnectManager : PassWord
                 );
         }*/
 
-        //if (qDown)
-        //{
-        //    ExitPassWord();
-        //}
+        if (qDown)
+        {
+            ExitPassWord();
+        }
     }
 
     GameObject CreateLine(Vector3 pos, int id)

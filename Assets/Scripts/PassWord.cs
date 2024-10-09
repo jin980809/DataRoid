@@ -92,6 +92,8 @@ public class PassWord : MonoBehaviour
         interaction.v_Cam.SetActive(true);
         interaction.p_cameraMove.enabled = true;
         StartCoroutine(ActiveFalse());
+
+        UIManager.Instance.InteractionButtonImage(0, interaction.interactionName);
     }
 
     IEnumerator ActiveFalse()

@@ -125,6 +125,7 @@ public class ObjectRotater : MonoBehaviour, IDragHandler
         StartCoroutine(FalseCommunicate());
         mainCamera.SetActive(true);
         rotation_Camera.gameObject.SetActive(false);
+        UIManager.Instance.InteractionButtonImage(0, interaction.interactionName);
     }
 
     IEnumerator FalseCommunicate()

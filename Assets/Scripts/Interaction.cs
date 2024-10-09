@@ -586,7 +586,7 @@ public class Interaction : FadeController
         mainCamera.enabled = false;
         player.enabled = false;
         cameraMove.enabled = false;
-
+        UIManager.Instance.InteractionButtonImage(-1, " ");
         CCTV.SetActive(true);
     }
 
@@ -849,7 +849,10 @@ public class Interaction : FadeController
             player.isCommunicate = true;
             v_Cam.SetActive(false);
             p_cameraMove.enabled = false;
-            if(isNotCameraMove)
+
+            UIManager.Instance.InteractionButtonImage(-1, " ");
+
+            if (isNotCameraMove)
             {
                 passWordUI.SetActive(true);
             }
@@ -1007,6 +1010,7 @@ public class Interaction : FadeController
     {
         if (!isRotate)
         {
+            UIManager.Instance.InteractionButtonImage(-1, " ");
             StartCoroutine(RotateToTargetAngle());
         }
     }
