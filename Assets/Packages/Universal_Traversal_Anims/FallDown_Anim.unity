@@ -496,11 +496,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Traversal_Hole_JumpDown_End
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 9d7ba799cab2c004bbeae0198d5522de,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 9d7ba799cab2c004bbeae0198d5522de,
         type: 3}
       propertyPath: m_Controller
@@ -800,11 +795,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Traversal_Hole_JumpDown_FallLoop
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 9d7ba799cab2c004bbeae0198d5522de,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 9d7ba799cab2c004bbeae0198d5522de,
         type: 3}

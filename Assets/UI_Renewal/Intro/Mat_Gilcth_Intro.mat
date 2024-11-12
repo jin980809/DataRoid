@@ -10,6 +10,7 @@ Material:
   m_Name: Mat_Gilcth_Intro
   m_Shader: {fileID: 4800000, guid: bb134d7d4389e3a45a6c49e898a344a4, type: 3}
   m_ValidKeywords:
+  - _ENABLEGLITCH_ON
   - _SHADERFADING_NONE
   - _SHADERSPACE_UV
   - _TEXTURELAYER1SHEETTOGGLE_ON
@@ -198,7 +199,7 @@ Material:
     - _EnableFullDistortion: 0
     - _EnableFullGlowDissolve: 0
     - _EnableGaussianBlur: 0
-    - _EnableGlitch: 0
+    - _EnableGlitch: 1
     - _EnableHalftone: 0
     - _EnableHologram: 0
     - _EnableHue: 0
@@ -274,9 +275,9 @@ Material:
     - _FullGlowDissolveWidth: 0.5
     - _GaussianBlurFade: 1
     - _GaussianBlurOffset: 1
-    - _GlitchBrightness: 5
-    - _GlitchFade: 0.04
-    - _GlitchHueSpeed: 1
+    - _GlitchBrightness: 6.44
+    - _GlitchFade: 0.15
+    - _GlitchHueSpeed: 8.43
     - _GlitchMaskMin: 0.4
     - _HalftoneFade: 1
     - _HalftoneFadeWidth: 1.5
